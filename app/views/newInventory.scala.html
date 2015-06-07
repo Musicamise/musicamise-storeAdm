@@ -1,0 +1,110 @@
+@(inventory:models.Inventory,products:List[models.Product])
+@import helper._
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Inventory New/Edit
+        <small>Panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.listInventory"><i class="fa fa-dashboard"></i> Inventory List</a></li>
+        <li class="active">Inventory</li>
+    </ol>
+</section>
+
+        <!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+            <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+              <!-- general form elements -->
+              <div class="box box-primary">
+                <div class="box-header">
+                  <h3 class="box-title">Inventory Overview</h3>
+                    <br/><p class="text-red">@flash.get("inventory")</p>
+
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" method="POST" @if(inventory!=null){
+                  action="@routes.Application.saveInventory(inventory.getSku())"
+                  } else  {action="@routes.Application.saveInventory()"}
+                  >
+                  @CSRF.formField
+
+                  <div class="box-body">
+
+
+                      <div class="form-group">
+                          <label >Product</label>
+                          <select name="product" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(product<- products){
+                              <option @if(product.getId.equals(inventory.getProduct.getId)){selected=""} value="@product.getId" >@product.getTitle</option>
+                              }
+                          </select>
+                      </div>
+
+                      <label >Visibility</label>
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="outOfStock" @if(inventory.isOrderOutOfStock){checked=""}  > Out of Stock
+                      </label>
+                    </div>
+
+                      <div class="form-group">
+                          <label >Product Size</label>
+                          <select name="productSize" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(size<- Utils.ProductSizeType.getList()){
+                              <option @if(size.equals(inventory.getSize)){selected=""} >@size</option>
+                              }
+                          </select>
+                      </div>
+
+                      <div class="form-group">
+                          <label for="quantity">Quantity</label><br/>
+                          <input type="text" class="" id="quantity" name="quantity" value="@inventory.getQuantity" placeholder="Quantity">
+                      </div>
+                      <div class="checkbox">
+                          <label>
+                              <input type="checkbox" name="sellInOutOfStock" @if(inventory.isSellInOutOfStock){checked=""}> Sell in Out of Stock
+                          </label>
+                      </div>
+
+                  </div><!-- /.box-body -->
+
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                </form>
+              </div><!-- /.box -->
+
+              <!-- Form Element sizes -->
+            </div><!--/.col (left) -->
+              <!-- right column -->
+          </div>   <!-- /.row -->
+        </section><!-- /.content -->
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+             $(".treeview" ).addClass("active");
+
+
+            $("#li-inventory" ).addClass("active");
+        });
+
+        $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+            $('#quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
+
+            var spinner = $( "#quantity" ).spinner();
+
+        });
+
+</script>
+}

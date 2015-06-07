@@ -1,0 +1,248 @@
+@(user:models.User,tags:List[String])
+@import helper._
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Costumer New/Edit
+        <small>Panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.listCostumers"><i class="fa fa-dashboard"></i> Costumer List</a></li>
+        <li class="active">Costumer</li>
+    </ol>
+</section>
+        <!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+            <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="box box-primary">
+                <div class="box-header">
+                  <h3 class="box-title">User Overview</h3>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                 <form method="POST" @if(user!=null){
+                                         action="@routes.Application.saveCostumer(user.getId())"
+                                    } else  {action="@routes.Application.saveCostumer()"}
+                        role="form">
+
+                  @CSRF.formField
+                     <div class="box-body">
+
+                         <div class="col-md-6">
+
+                       <h3>Customer overview</h3>
+                        <br/><p class="text-red">@flash.get("costumer")</p>
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">First Name</label>
+                        <input type="text" class="form-control" name="firstname" value="@user.getFirstName" placeholder="Enter email">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Last Name</label>
+                        <input type="text" class="form-control" name="lastname" value="@user.getLastName" placeholder="Enter email">
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input type="email" class="form-control" name="email" value="@user.getEmail" placeholder="Enter email">
+                      </div>
+                      <div class="form-group">
+                          <div class="checkbox">
+                            <label>
+                              <input name="mktAccept" type="checkbox" @if(user.isMkt){checked}>
+                              Customer accepts marketing
+                            </label>
+                          </div>
+                      </div>
+
+
+
+
+
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Notes</label>
+                        <input type="text" class="form-control" name="notes" value="@user.getNotes"  placeholder="Enter Note">
+                      </div>
+
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Tags</label>
+                        <select name="tags" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
+                            <option value=""></option>
+                            @for(tag<- tags){
+                                <option @if(user.getTags().contains(tag)){selected=""} >@tag</option>
+                            }
+                        </select>
+                      </div>
+
+
+                         </div>
+
+                         <div class="col-md-6">
+                            Address
+                            <br/>
+                             <div id="addressContent">
+                                 <button type="button" onclick="addAddress()" class="btn btn-primary">Add Address</button>
+                                 @for(index <- 0 until user.getAddress.size()) {
+
+                                 <div id="address@index" class="box box-solid box-warning">
+                                     <div class="box-header with-border">
+                                         <i class="fa fa-text-width"></i>
+                                         <h3 class="box-title">@user.getAddress.get(index).getName</h3>
+                                         <input type="hidden" name="name" value="@user.getAddress.get(index).getName" />
+                                         <button type="button" class="close" onclick="removeAddress(@index)" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                     </div><!-- /.box-header -->
+                                     <div class="box-body">
+                                         <dl>
+                                             <dt>Address</dt>
+                                             <dd>@user.getAddress.get(index).getAddress</dd>
+                                             <input type="hidden" name="address" value="@user.getAddress.get(index).getAddress" />
+                                             <dt>Number</dt>
+                                             <dd>@user.getAddress.get(index).getNumber</dd>
+                                             <input type="hidden" name="number" value="@user.getAddress.get(index).getNumber" />
+                                             <dt>City</dt>
+                                             <dd>@user.getAddress.get(index).getCity</dd>
+                                             <input type="hidden" name="city" value="@user.getAddress.get(index).getCity" />
+                                             <dt>State</dt>
+                                             <dd>@user.getAddress.get(index).getState</dd>
+                                             <input type="hidden" name="state" value="@user.getAddress.get(index).getState" />
+                                             <dt>Country</dt>
+                                             <dd>@user.getAddress.get(index).getCountry</dd>
+                                             <input type="hidden" name="country" value="@user.getAddress.get(index).getCountry" />
+                                             <dt>zip Code</dt>
+                                             <dd>@user.getAddress.get(index).getCep</dd>
+                                             <input type="hidden" name="zipcode" value="@user.getAddress.get(index).getCep" />
+                                         </dl>
+                                     </div><!-- /.box-body -->
+                                 </div><!-- /.box -->
+                                 }
+                             </div>
+                             <div id="modalAddress" class="modal modal-primary">
+                                 <div class="modal-dialog">
+                                     <div class="modal-content">
+                                         <div class="modal-header">
+                                             <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                             <h4 class="modal-title">Add Address</h4>
+                                         </div>
+                                         <div class="modal-body">
+                                             <p>Add the Address of costume</p>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">Name</label>
+                                                 <input type="text" class="form-control" id="name" placeholder="Enter name">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">Address</label>
+                                                 <input type="text" class="form-control" id="address" placeholder="Enter address">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">Number</label>
+                                                 <input type="text" class="form-control" id="number" placeholder="Enter number">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">City</label>
+                                                 <input type="text" class="form-control" id="city" placeholder="Enter city">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">Postal / Zip Code</label>
+                                                 <input type="text" class="form-control" id="zipcode" placeholder="Enter zip code">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">Country</label>
+                                                 <input type="text" class="form-control" id="country" placeholder="Enter Country">
+                                             </div>
+                                             <div class="form-group">
+                                                 <label for="exampleInputEmail1">State</label>
+                                                 <input type="text" class="form-control" id="state" placeholder="Enter State">
+                                             </div>
+                                         </div>
+                                         <div class="modal-footer">
+                                             <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                             <button type="button" onclick="saveAddress()" class="btn btn-outline">Save changes</button>
+                                         </div>
+                                     </div><!-- /.modal-content -->
+                                 </div><!-- /.modal-dialog -->
+                             </div><!-- /.modal -->
+                        </div>
+
+
+                     </div><!-- /.box-body -->
+                     <div class="box-footer">
+                         <button type="submit" class="btn btn-primary">Submit</button>
+                     </div>
+                 </form>
+               </div>
+              </div><!-- /.box -->
+
+              <!-- Form Element sizes -->
+            </div><!--/.col (left) -->
+                <!-- right column -->
+
+
+          </div>   <!-- /.row -->
+        </section><!-- /.content -->
+
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+
+    var countAddress = @user.getAddress.size();
+
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+            $("#li-costumer" ).addClass("active");
+        });
+    function addAddress(){
+        $("#modalAddress").modal();
+    }
+    function saveAddress(){
+        name = $("#name").val();
+        address = $("#address").val();
+        number = $("#number").val();
+        zipcode = $("#zipcode").val();
+        city = $("#city").val();
+        state = $("#state").val();
+        country = $("#country").val();
+        var modelAddress = '<div id="address'+countAddress+'" class="box box-solid box-warning"> \
+                                         <div class="box-header with-border"> \
+                                             <i class="fa fa-text-width"></i> \
+                                             <h3 class="box-title">'+name+'</h3> \
+                                              <input type="hidden" name="name" value="'+name+'" /> \
+                                             <button type="button" class="close" onclick="removeAddress('+countAddress+')" aria-label="Close"><span aria-hidden="true">×</span></button> \
+                                         </div><!-- /.box-header --> \
+                                         <div class="box-body"> \
+                                             <dl> \
+                                                 <dt>Address</dt> \
+                                                 <dd>'+address+'</dd> \
+                                                 <input type="hidden" name="address" value="'+address+'" /> \
+                                                 <dt>Number</dt> \
+                                                 <dd>'+number+'</dd> \
+                                                 <input type="hidden" name="number" value="'+number+'" /> \
+                                                 <dt>City</dt> \
+                                                 <dd>'+city+'</dd> \
+                                                 <input type="hidden" name="city" value="'+city+'" /> \
+                                                 <dt>State</dt> \
+                                                 <dd>'+state+'</dd> \
+                                                 <input type="hidden" name="state" value="'+state+'" /> \
+                                                 <dt>Country</dt> \
+                                                 <dd>'+country+'</dd> \
+                                                 <input type="hidden" name="country" value="'+country+'" /> \
+                                                 <dt>zip Code</dt> \
+                                                 <dd>'+zipcode+'</dd> \
+                                                 <input type="hidden" name="zipcode" value="'+zipcode+'" /> \
+                                             </dl>\
+                                         </div><!-- /.box-body --> \
+                                     </div><!-- /.box -->';
+
+        $('#addressContent').append(modelAddress);
+        countAddress++
+        $("#modalClose").click();
+    }
+
+    function removeAddress(id){
+        $("#address"+id).remove();
+    }
+</script>
+
+}

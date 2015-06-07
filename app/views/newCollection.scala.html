@@ -1,0 +1,156 @@
+@(collection:models.Collection,productsInCollection:List[models.Product],products:List[models.Product])
+@import helper._
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Collection New/Edit
+        <small>Panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.listCollections"><i class="fa fa-dashboard"></i> Collection List</a></li>
+        <li class="active">Collection</li>
+    </ol>
+</section>
+        <!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+            <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Collection Overview //filters</h3>
+                    <br/><p class="text-green">@flash.get("listCollection")</p>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+                <form role="form" enctype="multipart/form-data" method="POST" @if(collection!=null){
+                                                          action="@routes.Application.saveCollection(collection.getId())"
+                                                          } else  {action="@routes.Application.saveCollection()"}
+                        >
+                  @CSRF.formField
+
+                  <div class="box-body">
+                    <div class="form-group">
+                      <label >Title</label>
+                      <input type="text" class="form-control" value="@collection.getTitle" name="title" placeholder="Enter title">
+                    </div>
+
+                      <div class="form-group">
+                          <label >Visibility</label>
+
+                          <div class="checkbox">
+                              <label>
+                                  <input name="visibleOnline" @if(collection.isOnLineVisible){checked=""} type="checkbox"> Online store
+                              </label>
+                          </div>
+                          <div class="checkbox">
+                              <label>
+                                  <input name="hasOnLocalStore" @if(collection.isOnLocalStore){checked=""} type="checkbox"> Local Point store
+                              </label>
+                          </div>
+                      </div>
+
+                    <div class="form-group">
+                      <label >Description</label>
+                       <textarea id="editor1" name="description" value="@collection.getDescription" rows="10" cols="80">
+                         </textarea>
+                     </div>
+
+                      <div class="form-group">
+                          <label for="exampleInputEmail1">Product</label> <br/>
+                          <select name="products" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(product<- products){
+                              <option @if(productsInCollection.contains(product)){selected=""} value="@product.getId" >@product.getTitle</option>
+                              }
+                          </select>
+                      </div>
+
+                    <div class="form-group">
+                      <label >Upload a banner image</label>
+                      <input type="file" name="image" >
+                      <p class="help-block">Image banner</p>
+
+                    </div>
+                      @if(collection.getImage!=null){
+                          <ul class="mailbox-attachments clearfix">
+                              <li id = "li-@collection.getImage.getName">
+                                  <span class="mailbox-attachment-icon has-img"><img width="20%" src="@collection.getImage.getUrl()" alt="@collection.getImage.getName"></span>
+                                  <div class="mailbox-attachment-info">
+                                      <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @collection.getImage.getName</a>
+                                            <span class="mailbox-attachment-size">
+                                               @collection.getImage.getSize
+                                              <a href="javascript:void(0);"  onclick="showDeleteModal('@collection.getImage.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                            </span>
+                                  </div>
+                              </li>
+                          </ul>
+                      }
+
+
+                      </div><!-- /.box-body -->
+
+                  <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </div>
+                </form>
+              </div><!-- /.box -->
+
+              <!-- Form Element sizes -->
+            </div><!--/.col (left) -->
+              <!-- right column -->
+          </div>   <!-- /.row -->
+        </section><!-- /.content -->
+
+<div id="modalDelete" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Remove Image</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this Images? <span id="modalSpan"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="deleteButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+             $(".treeview" ).addClass("active");
+
+            $("#li-collections" ).addClass("active");
+        });
+
+    function showDeleteModal(id){
+        $("#deleteButton").attr('onclick', "deleteImage('@collection.getId','"+id+"')");
+        $("#modalSpan").html(id)
+        $("#modalDelete").modal();
+    }
+
+    function deleteImage(id,imageName){
+
+        $.ajax({
+            method:'POST',
+            url: "@routes.Application.deleteCollectionImage()",
+            data:{'collectionId':id,'imageName':imageName},
+        }).success(function() {
+            $("#li-"+imageName).remove();
+        }).error(function() {
+            alert("Erro on delete!")
+        });
+        $(".close").click();
+    }
+</script>
+}

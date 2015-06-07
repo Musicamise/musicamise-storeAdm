@@ -1,0 +1,57 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+
+GET     /order                           controllers.Application.listOrders()
+POST     /order/detail                              controllers.Application.order(id :String )
+
+
+
+GET     /collection                          controllers.Application.listCollections()
+GET     /collection/newOrEdit                                  controllers.Application.collection(id :String ?= null)
+POST     /collection/newOrEdit/saveCollection                              controllers.Application.saveCollection(id :String ?= null)
+GET     /collection/delete                               controllers.Application.deleteCollection(id :String ?= null)
+POST     /collection/image/delete/                                controllers.Application.deleteCollectionImage()
+
+
+GET     /discountCode                           controllers.Application.listDiscount()
+GET     /discountCode/newOrEdit                           controllers.Application.discountCode(id :String ?= null)
+POST     /discountCode/newOrEdit/saveDiscountCode                               controllers.Application.saveDiscountCode(id :String ?= null)
+GET     /discountCode/delete                               controllers.Application.deleteDiscountCode(id :String ?= null)
+
+
+GET     /giftcard                           controllers.Application.listGiftCard()
+GET     /giftcard/newOrEdit                           controllers.Application.giftCard(id :String ?= null)
+POST     /giftcard/newOrEdit/saveProduct                               controllers.Application.saveGiftCard(id :String ?= null)
+GET     /giftcard/delete                               controllers.Application.deleteGiftCard(id :String ?= null)
+
+
+
+GET     /                                   controllers.Application.listProduct()
+GET     /product/newOrEdit                                 controllers.Application.product(id :String ?= null)
+POST     /product/newOrEdit/saveProduct                               controllers.Application.saveProduct(id :String ?= null)
+GET     /product/delete                               controllers.Application.deleteProduct(id :String ?= null)
+GET     /product/image/delete/                                controllers.Application.deleteProductImage(productId: String ?= null,imageName :String ?= null)
+
+GET     /costumer                           controllers.Application.listCostumers()
+GET     /costumer/newOrEdit                            controllers.Application.costumer(id :String ?= null)
+POST     /costumer/newOrEdit/saveCostumer                               controllers.Application.saveCostumer(id :String ?= null)
+GET     /costumer/delete                               controllers.Application.deleteCostumer(id :String ?= null)
+
+GET     /inventory                           controllers.Application.listInventory()
+GET     /inventory/newOrEdit                                 controllers.Application.inventory(id :String ?= null)
+POST     /inventory/newOrEdit/saveInventory                               controllers.Application.saveInventory(id :String ?= null)
+GET     /inventory/delete                               controllers.Application.deleteInventory(id :String ?= null)
+GET     /inventory/updateQuantity                               controllers.Application.updateInventoryQuantity(id :String ?= null,quantity :String ?=null)
+
+
+
+
+GET     /orders                           controllers.Application.listOrders()
+
+
+
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file               controllers.Assets.at(path="/public", file)

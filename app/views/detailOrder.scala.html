@@ -1,0 +1,66 @@
+@(order:models.Order)
+@import helper._
+@index{ <!-- Main content -->
+<section class="content">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Order Overall</h3>
+                    <br/><p class="text-red">@flash.get("order")</p>
+
+                </div><!-- /.box-header -->
+                <!-- form start -->
+
+                <div class="box-body">
+                    @CSRF.formField
+
+
+
+                    <div class="form-group">
+                        <label >Preço</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">R$</span>
+                            <input type="text" id="price"  name="price"  value=""  class="price form-control">
+                        </div>
+                    </div>
+
+
+
+
+
+                </div><!-- /.box-body -->
+
+
+            </div><!-- /.box -->
+
+            <!-- Form Element sizes -->
+        </div><!--/.col (left) -->
+        <!-- right column -->
+    </div>   <!-- /.row -->
+</section><!-- /.content -->
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active");
+            $("#li-orders" ).addClass("active");
+        });
+
+        $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+            $('#price').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+        });
+
+
+
+
+</script>
+
+}

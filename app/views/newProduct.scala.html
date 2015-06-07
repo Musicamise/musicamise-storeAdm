@@ -1,0 +1,284 @@
+@(product:models.Product,collections:List[models.Collection])
+@import helper._
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Product New/Edit
+        <small>Panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.listProduct"><i class="fa fa-dashboard"></i> Product List</a></li>
+        <li class="active">Product</li>
+    </ol>
+</section>
+        <!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+            <div class="row">
+                <form  name="myForm" id="myForm" enctype="multipart/form-data" method="POST" @if(product!=null){
+                    action="@routes.Application.saveProduct(product.getId())"
+                    } else  {action="@routes.Application.saveProduct()"}
+                role="form">
+                @CSRF.formField
+
+                <!-- left column -->
+                <div class="col-md-6">
+                  <!-- general form elements -->
+                  <div class="box box-primary">
+                    <div class="box-header">
+                        @if(product.getId!=null){
+                        <h3 class="box-title">Edit Product</h3>
+                        } else{
+                        <h3 class="box-title">New Product</h3>
+                        }
+                       <br/><p class="text-red">@flash.get("product")</p>
+                    </div><!-- /.box-header -->
+                    <!-- form start -->
+                      <div class="box-body">
+                        <div class="form-group">
+                          <label >Title</label>
+                          <input type="text" class="form-control" name="title" value="@product.getTitle" placeholder="Enter Title">
+                        </div>
+
+                        <div class="form-group">
+                          <label >Description</label>
+                           <textarea id="editor1" name="description"  value="@product.getDescription" rows="10" cols="80">
+
+                            </textarea>
+                         </div>
+
+
+
+
+
+
+                        <div class="form-group">
+                          <label >Preço</label>
+                          <div class="input-group">
+                            <span class="input-group-addon">R$</span>
+                            <input type="text" id="price"  name="price"  value="@product.getPrice"  class="price form-control">
+                          </div>
+                        </div>
+
+
+                        <div class="form-group">
+                          <label >Compare com o preço</label>
+                            <div class="input-group">
+                              <span class="input-group-addon">R$</span>
+                              <input type="text" name="priceCompareWith" id="priceCompareWith"  value="@product.getPriceCompareWith"  class="price form-control">
+                            </div>
+                          </div>
+
+
+                          <h3 class="box-title">Visibility</h3>
+                        <div class="checkbox">
+                          <label>
+                              <input type="checkbox" class="minimal"  name="online"  @if(product.isOnLineVisible){checked=""}  /> Online store
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
+                            <input name="store" type="checkbox" @if(product.isStoreVisible){checked=""}> Local Point store
+                          </label>
+                        </div>
+                          <div class="checkbox">
+                              <label>
+                                  <input name="newProduct" type="checkbox" @if(product.isNewProduct){checked=""}>New Product
+                              </label>
+                          </div>
+
+                      </div><!-- /.box-body -->
+
+
+                  </div><!-- /.box -->
+
+                  <!-- Form Element sizes -->
+                </div><!--/.col (left) -->
+                  <!-- right column -->
+                <div class="col-md-6">
+              <!-- general form elements disabled -->
+              <div class="box box-warning">
+                <div class="box-header">
+                    <h3 class="box-title">Organization</h3>
+
+                </div><!-- /.box-header -->
+                <div class="box-body">
+                    <!-- text input -->
+                      <div class="form-group">
+                          <label >Product Type</label>
+                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(tag<- Utils.ProductType.getList()){
+                              <option @if(tag.equals(product.getType)){selected=""} >@tag</option>
+                              }
+                          </select>
+                      </div>
+
+                      <div class="form-group">
+                          <label >User Tags</label>
+                          <select name="tags" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(tag<- Utils.UserTags.getList()){
+                              <option @if(product.getUserTags().contains(tag)){selected=""} >@tag</option>
+                              }
+                          </select>
+                      </div>
+
+                    <div class="form-group">
+                        <label >Collections</label>
+                        <select name="collections" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
+                            <option value=""></option>
+                            @for(collection<- collections){
+                            <option @if(product.getCollectionsSlugs().contains(collection.getSlug)){selected=""} >@collection.getSlug</option>
+                            }
+                        </select>
+                    </div>
+
+
+
+                    <h3 class="box-title">Shipping</h3>
+
+                    <div class="form-group">
+                        <label >Weight</label>
+                        <div class="input-group">
+                            <input name="weight" id="weight" type="text" value="@product.getWeight"class="form-control price">
+                            <span class="input-group-addon">Kg</span>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input name="mail" @if(product.isSendMail){checked=""}  type="checkbox"> Precisa de entrega por correios
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+
+                        <div class="btn btn-default btn-file">
+                            <i class="fa fa-paperclip"></i> Attachment Images
+                        </div><br/>
+                        <input type="file" multiple="multiple" class="multi with-preview " name="images"  value="">
+
+                        <p class="help-block">Max. 32MB</p>
+                    </div>
+
+                    @if(product.getImages.size>0){
+                    <div class="box box-success">
+                        <div class="box-header">
+                            <h3 class="box-title">Images Already Uploaded Start</h3>
+                        </div>
+                        <div class="box-body">
+                            <!-- Minimal style -->
+                            <ul class="mailbox-attachments clearfix">
+                            @for( image <- product.getImages){
+                            <!-- checkbox -->
+                            <li id = "li-@image.getName">
+                                <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
+                                <div class="mailbox-attachment-info">
+                                    <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
+                                            <span class="mailbox-attachment-size">
+                                               @image.getSize
+                                              <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                            </span>
+                                </div>
+                            </li>
+                            }
+                            </ul>
+                            <div id="modalDelete" class="modal modal-primary">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                            <h4 class="modal-title">Remove Image</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to remove this Images? <span id="modalSpan"></span></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                            <button type="button" id="deleteButton" class="btn btn-outline">Confirm</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div><!-- /.modal -->
+                        </div><!-- /.box-body -->
+                        <div class="box-footer">
+                            Images Already Uploaded End
+                        </div>
+                    </div>
+                    }
+                </div><!-- /.box-body -->
+                  <div class="box-footer">
+                      <button type="button" onClick="sendForm();" class="btn btn-primary">Submit</button>
+                  </div>
+              </div><!-- /.box -->
+            </div><!--/.col (right) -->
+            </form>
+
+            </div>   <!-- /.row -->
+
+        </section><!-- /.content -->
+
+
+
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+                $(".treeview" ).addClass("active");
+
+            $("#li-product" ).addClass("active");
+
+
+        });
+
+     function sendForm(){
+            $.each($(".price"),function(index,item){
+               item.value = $('.price').maskMoney('unmasked')[index];
+            });
+            document.getElementById("myForm").submit();
+    }
+
+    function showDeleteModal(id){
+        $("#deleteButton").attr('onclick', "deleteImage('@product.getId','"+id+"')");
+        $("#modalSpan").html(id)
+        $("#modalDelete").modal();
+    }
+
+    function deleteImage(id,imageName){
+
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.deleteProductImage()",
+            data:{'productId':id,'imageName':imageName},
+        }).success(function() {
+            $("#li-"+imageName).remove();
+        }).error(function() {
+            alert("Erro on delete!")
+        });
+        $(".close").click();
+    }
+
+
+     $(function() {
+        $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+        $('#weight').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:3, affixesStay: true});
+
+        $('#weight').maskMoney('mask',@product.getPrice);
+         $('#priceCompareWith').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+        $('#priceCompareWith').maskMoney('mask',@product.getPriceCompareWith);
+
+        $('#price').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+        $('#price').maskMoney('mask',@product.getPrice);
+        });
+
+
+
+
+
+</script>
+}

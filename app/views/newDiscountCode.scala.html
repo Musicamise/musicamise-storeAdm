@@ -1,0 +1,336 @@
+@(discount:models.DiscountCode,collections:List[models.Collection],products:List[models.Product])
+@import helper._
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Discount Code New/Edit
+        <small>Panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="@routes.Application.listDiscount"><i class="fa fa-dashboard"></i> Discount Codes List</a></li>
+        <li class="active">Discount Code</li>
+    </ol>
+</section>
+<!-- Main content -->
+        <section class="content">
+          <!-- Small boxes (Stat box) -->
+            <div class="row">
+            <!-- left column -->
+            <form role="form" id="myForm" method="POST" @if(discount!=null){
+                action="@routes.Application.saveDiscountCode(discount.getCode())"
+                } else  {action="@routes.Application.saveDiscountCode(null)"}
+                >
+                @CSRF.formField
+
+                <div class="col-md-12">
+              <!-- general form elements -->
+                <div class="col-md-6">
+
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">Discount Card OverView</h3>
+                    </div><!-- /.box-header -->
+                    <!-- form start -->
+
+                    <div class="box-body">
+
+                        <div class="form-group">
+
+                            <label for="exampleInputFile">Code</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="code" id="code" value="@discount.getCode" class="form-control">
+                                  <span class="input-group-btn">
+                                    <button class="btn btn-info btn-flat" onclick="generateNumber();"   type="button">Generate Code!</button>
+                                  </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputFile">Is Active</label>
+                            <div class="input-group">
+                                <label>
+                                    <input  id="active" name="active" @if(discount.isActive){checked=""} type="checkbox">  Active
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                             <label for="exampleInputFile">How many times can this discount be used?</label>
+                            <div class="input-group">
+                                <input type="text" id="timesLeft" style="width:30px;" value="@discount.getTimesLeft" @if(discount.isNoTimesLimits){disabled=""} name="timesLeft" class="">
+                                <label>
+                                <input  id="noLimits" name="noLimits"  @if(discount.isNoTimesLimits){checked=""} type="checkbox">  No Limits &infin;
+                                </label>
+
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label >Discount type:</label>
+                            <select id="discountType" name="discountType"  class="form-control">
+                                @for(tag<- Utils.DiscountType.getList()){
+                                <option @if(discount.getType!=null&&tag.equals(discount.getType.name())) {selected=""} >@tag</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label> Take </label>
+                            <div class="input-group">
+                                <span id="valueSign" class="input-group-addon">R$</span>
+                                <input type="text" id="price" name="valueOF" id="valueOF" class="form-control price">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label> off for </label>
+                            <select id="validationType" name="validationType" class="form-control">
+                                @for(tag<- Utils.DiscountValidation.getList()){
+                                <option  @if(discount.getOrdersValidation!=null&&tag.equals(discount.getOrdersValidation.name())){selected=""} >@tag</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div id="overValue"  class="form-group bg-gray">
+                            <label>Set the value:</label>
+                            <div class="input-group">
+                                <span id="valueSign" class="input-group-addon">R$</span>
+                                <input type="text" id="overValueInput"  name="overValue" class="form-control price">
+                            </div>
+                        </div>
+
+                        <div id="collections"  class="form-group bg-red ">
+                            <label>Collections</label>
+                            <select name="collections" data-placeholder="Chose the Collection" style="width: 350px; display: none;" multiple class="chosen-select-width" tabindex="-1">
+                                @for(collection<- collections){
+                                <option value="@collection.getSlug" @if(discount.getCollectionsId!=null&&discount.getCollectionsId.contains(collection.getSlug)) {selected=""}  >@collection.getTitle</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div id="products"  class="form-group bg-green">
+                            <label>Products</label>
+                            <select name="products" data-placeholder="Chose the product" style="width: 350px; display: none;" multiple class="chosen-select-width" tabindex="-1">
+                                @for(product<- products){
+                                <option  value="@product.getId" @if(discount.getProducts!=null&&discount.getProducts.contains(product.getId)) {selected=""}>@product.getTitle</option>
+                                }
+                            </select>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label>Apply discount </label>
+                            <select name="applyCondition" class="form-control">
+                                @for(tag<- Utils.DiscountPaymentAdjust.getList()){
+                                <option @if(discount.getWhereApply!=null&&tag.equals(discount.getWhereApply.name())){selected=""} >@tag</option>
+                                }
+                            </select>
+                        </div>
+
+                    </div><!-- /.box-body -->
+
+                    <div class="box-footer">
+                        <button type="button" onclick="sendForm();" class="btn btn-primary pull-right">Submit</button>
+                    </div>
+                    </form>
+                </div><!-- /.box -->
+            </div>
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header">
+                        <h3 class="box-title">Dates</h3>
+                    </div><!-- /.box-header -->
+                    <!-- form start -->
+                     <div class="box-body">
+
+                        <div class="form-group">
+                            <label >Limits on date use</label>
+                            <div class="input-group">
+                            <label>
+                                <input id="noDateLimite" name="noDateLimite" type="checkbox"  @if(discount.isNoDateLimits){checked=""} > No Limits
+                            </label>
+                            </div><!-- /.input group -->
+
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label>Date range:</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <i class="fa fa-calendar"></i>
+                                </div>
+                                <input type="text" id="dateRange" name="dateRange" value="@discount.getDateRangeWithTime" class="form-control pull-right active" @if(discount.isNoDateLimits){disabled=""}  id="reservation">
+                            </div><!-- /.input group -->
+                        </div>
+
+
+                     </div><!-- /.box-body -->
+
+
+                 </div><!-- /.box -->
+            </div>
+          </form>
+
+                <!-- Form Element sizes -->
+            </div><!--/.col (left) -->
+              <!-- right column -->
+          </div>   <!-- /.row -->
+        </section><!-- /.content -->
+
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+
+            $("#li-discount" ).addClass("active");
+            var spinner = $( "#timesLeft" ).spinner();
+
+
+
+
+
+            //Datemask dd/mm/yyyy
+            //$("#datemask").inputmask("dd/mm/yyyy", {"placeholder": "dd/mm/yyyy"});
+            //Datemask2 mm/dd/yyyy
+            //$("#datemask2").inputmask("mm/dd/yyyy", {"placeholder": "mm/dd/yyyy"});
+            //Money Euro
+            //$("[data-mask]").inputmask();
+
+            //Date range picker
+            $('#dateRange').daterangepicker({
+                    timePicker: true,
+                    timePickerIncrement: 30,
+                    format: 'DD/MM/YYYY H:mm '
+                  });
+
+
+
+        });
+
+         $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+            $('#price').maskMoney('mask',@discount.getValueOf);
+            $('#overValueInput').maskMoney('mask',@discount.getOverValueOf);
+            $('#valueOF').maskMoney('mask',@discount.getValueOf);
+
+            $("#collections").hide();
+            $("#products").hide();
+            $("#overValue").hide();
+
+            var discountValidation = '@discount.getOrdersValidation';
+            var collection = '@Utils.DiscountValidation.collections.name()';
+            var product = '@Utils.DiscountValidation.specificProduct.name()';
+            var overValue = '@Utils.DiscountValidation.overValue.name()';
+
+
+            if(discountValidation==collection){
+                $("#collections").show();
+                $("#products").hide();
+                $("#overValue").hide();
+
+            }else if(discountValidation==product){
+                $("#collections").hide();
+                $("#products").show();
+                $("#overValue").hide();
+
+            }else if(discountValidation==overValue){
+                $("#collections").hide();
+                $("#products").hide();
+                $("#overValue").show();
+            }
+
+            var type = $("#discountType").val();
+            var percent = '@Utils.DiscountType.percent.name()';
+
+            if(type==percent){
+                $('#valueSign').html('%');
+            }else{
+                $('#valueSign').html('R$');
+            }
+
+
+        });
+
+
+       function sendForm(){
+                $.each($(".price"),function(index,item){
+                   item.value = $('.price').maskMoney('unmasked')[index];
+                });
+                document.getElementById("myForm").submit();
+       }
+
+
+        $('#noDateLimite').change(function() {
+            $("#dateRange").attr("disabled",$(this).is(":checked"));
+        });
+
+        $('#noLimits').change(function() {
+            $("#timesLeft").attr("disabled",$(this).is(":checked"));
+        });
+
+
+        $('#discountType').change(function() {
+            var type = $(this).val();
+            var percent = '@Utils.DiscountType.percent.name()';
+
+            if(type==percent){
+                $('#valueSign').html('%');
+            }else{
+                $('#valueSign').html('R$');
+            }
+
+        });
+
+        $('#validationType').change(function() {
+            var validationType = $(this).val();
+
+            var collection = '@Utils.DiscountValidation.collections.name()';
+            var product = '@Utils.DiscountValidation.specificProduct.name()';
+            var overValue = '@Utils.DiscountValidation.overValue.name()';
+
+
+            if(validationType==collection){
+                $("#collections").show();
+                $("#products").hide();
+                $("#overValue").hide();
+
+            }else if(validationType==product){
+                $("#collections").hide();
+                $("#products").show();
+                $("#overValue").hide();
+
+            }else if(validationType==overValue){
+                $("#collections").hide();
+                $("#products").hide();
+                $("#overValue").show();
+            }else{
+                 $("#collections").hide();
+                $("#products").hide();
+                $("#overValue").hide();
+            }
+
+        });
+
+
+      function generateNumber(){
+            var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+            for( var i=0; i < 10; i++ )
+                text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+
+            $("#code").val(text);
+
+        }
+</script>
+}

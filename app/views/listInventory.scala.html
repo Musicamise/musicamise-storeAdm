@@ -1,0 +1,169 @@
+@(inventories:List[models.Inventory])
+@index{
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <h1>
+        Inventory List
+        <small>Control panel</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li class="active">Inventory List</li>
+    </ol>
+</section>
+
+        <!-- Main content -->
+       <section class="content">
+          <div class="row">
+            <div class="col-xs-12">
+          <!-- Small boxes (Stat box) -->
+              <div class="box">
+                <div class="box-header">
+                    <div class="col-sm-8">
+
+                        <h3 class="box-title">List Inventory //filter</h3>
+
+                        <br/><p id="messageUpdate" class="text-green">@flash.get("listInventory")</p>
+
+                    </div>
+                    <div class="col-xs-4">
+                        <a href="@routes.Application.inventory()"> <button type="button" class="btn btn-primary">Add Inventory</button>
+                            </a>
+                    </div>                </div><!-- /.box-header -->
+                <div class="box-body">  
+                  <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                      <tr>
+                        <th>SKU</th>
+                        <th>Product Slug</th>
+                        <th>Quantity</th>
+                        <th>Product Price</th>
+                        <th>Product type</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                @for(inventory<-inventories){
+                      <tr>
+                        <td>@inventory.getSku</td>
+                        <td>@inventory.getProduct.getSlug
+
+                        <span class="label label-success" style="font-size: 100%; font-weight: 200;">@inventory.getSize</span>
+
+                        </td>
+                        <td>
+                            <input type="text" style="width:30px;" id="quantity@inventory.getSku" class="quantity" name="quantity" value="@inventory.getQuantity" placeholder="Quantity">
+                            <button type="button" onclick="showUpdateModal('@inventory.getSku')" class="btn btn-primary btn-flat">UpDate</button>
+                            </td>
+                        <td>@inventory.getProduct.getPrice</td>
+                        <td>@inventory.getProduct.getType</td>
+                        <td>
+                            <a href="@routes.Application.inventory(inventory.getSku())"><i class="fa fa-file-text-o"></i> Edit</a>
+                            <span> | </span>
+                            <a href="javascript:void(0)" onclick="showDeleteModal('@inventory.getSku()')"><i class="fa fa-trash-o"></i> Delete</a>
+                        </td>
+                      </tr>
+                    }
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <th>SKU</th>
+                        <th>Product Slug</th>
+                        <th>Quantity</th>
+                        <th>Product Price</th>
+                        <th>Product type</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div><!-- /.box-body -->
+              </div><!-- /.box -->
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </section><!-- /.content -->
+
+<div id="modalDelete" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Remove Product</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to remove this inventory? <span id="modalSpan"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="deleteButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="modalUpdateQuantity" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Update Quantity</h4>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to up date this inventory? </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="updateButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active")
+             $(".treeview" ).addClass("active");
+
+            $("#li-inventory" ).addClass("active");
+
+        });
+
+        $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+            $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
+                var spinner = $( ".quantity" ).spinner();
+
+        });
+
+    function showUpdateModal(id){
+        $("#updateButton").attr('onclick', 'updateQuantity("'+id+'")');
+        $("#modalUpdateQuantity").modal();
+    }
+
+    function updateQuantity(id){
+        quantity = $("#quantity"+id).val();
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.updateInventoryQuantity()",
+            data:{'id':id,'quantity':quantity},
+        }).success(function() {
+            $("#messageUpdate").html("Update!")
+        }).error(function() {
+            alert("Erro on update!")
+        });
+        $(".close").click();
+    }
+
+    function showDeleteModal(id){
+        $("#deleteButton").attr('onclick', 'deleteInventory("'+id+'")');
+        $("#modalSpan").html($("#"+id).html())
+        $("#modalDelete").modal();
+    }
+
+
+    function deleteInventory(id){
+        var query = "?id="+id
+        window.location = "@routes.Application.deleteInventory()"+query;
+    }
+</script>
+    }
