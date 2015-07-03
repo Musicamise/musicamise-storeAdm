@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Created by Alvaro on 29/03/2015.
  */
 @Document
-public class Collection {
+public class Tag {
 
     @Id
     private String id;
@@ -43,31 +43,12 @@ public class Collection {
     private boolean onLineVisible;
     private boolean onLocalStore;
 
-    private boolean mainMenu;
-    private boolean gender;
-
-
     public boolean isOnLocalStore() {
         return onLocalStore;
     }
 
     public void setOnLocalStore(boolean onLocalStore) {
         this.onLocalStore = onLocalStore;
-    }
-
-    public boolean isGender() {
-        return gender;
-    }
-
-    public void setGender(boolean gender) {
-        this.gender = gender;
-    }
-    public boolean isMainMenu() {
-        return mainMenu;
-    }
-
-    public void setMainMenu(boolean mainMenu) {
-        this.mainMenu = mainMenu;
     }
 
     public String getSlug() {

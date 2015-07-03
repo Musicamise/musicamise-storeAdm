@@ -17,16 +17,22 @@
           <!-- Small boxes (Stat box) -->
               <div class="box">
                 <div class="box-header">
-                  <h3 class="box-title">Orders //filter</h3>
+                    <div class="col-sm-8">
+                        <h3 class="box-title">Orders //filters</h3>
+                        <br/><p class="text-green">@flash.get("listOrders")</p>
+                    </div>
+                    <div class="col-xs-4">
+                        <a href="@routes.Application.order()"><button type="button" class="btn btn-primary">Add Order</button></a>
+                    </div>
                 </div><!-- /.box-header -->
                 <div class="box-body">  
                   <table id="example1" class="table table-bordered table-striped">
                     <thead>
                       <tr>
                         <th>ID</th>
-                        <th>Email</th>
+                        <th>Created Date</th>
                         <th>Full Name</th>
-                        <th>Date</th>
+                        <th>Email</th>
                         <th>Status</th>
                       </tr>
                     </thead>

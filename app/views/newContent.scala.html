@@ -1,0 +1,226 @@
+@(content:models.SiteContent)
+@import helper._
+@index{ <!-- Main content -->
+<section class="content">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <form  name="myForm" id="myForm" enctype="multipart/form-data" method="POST" @if(content!=null){
+                    action="@routes.Application.saveContent(content.getType().name())"
+                    } else  {action="@routes.Application.saveContent()"}
+                role="form">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="box box-primary">
+                <div class="box-header">
+                    @if(content.getType!=null){
+                        <h3 class="box-title">@content.getType</h3>
+                    }
+                   <br/>
+                   <p class="text-red">@flash.get("content")</p>
+                </div><!-- /.box-header -->
+                <!-- form start -->
+
+                <div class="box-body">
+                    @CSRF.formField
+
+                    <div class="form-group">
+                          <label >Title</label>
+                          <input type="text" class="form-control" name="title" value="@content.getTitle" placeholder="Enter Title">
+                    </div>
+
+                    <div class="form-group">
+                        <label >Description</label>
+                        <textarea id="editor1" name="content"  value="" rows="10" cols="80">
+                        @content.getContent
+                        </textarea>
+                    </div>
+
+                    <h3 class="box-title">Visibility</h3>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" class="minimal"  name="visible"  @if(content.isVisible){checked=""}  /> Visible on Site
+                        </label>
+                    </div>
+
+                    @if(Utils.SiteContent.socialPage.equals(content.getType)){
+                        <div class="form-group">
+                          <label >Email</label>
+                          <input type="text" class="form-control" name="email" value="@content.getEmail" placeholder="Enter Email">
+                        </div>
+                        <div class="form-group">
+                          <label >Facebook</label>
+                          <input type="text" class="form-control" name="facebook" value="@content.getFacebook" placeholder="Enter Facebook Link">
+                        </div>
+                        <div class="form-group">
+                          <label >Twitter</label>
+                          <input type="text" class="form-control" name="twitter" value="@content.getTwitter" placeholder="Enter Twitter name">
+                        </div>
+                        <div class="form-group">
+                          <label >Gplus</label>
+                          <input type="text" class="form-control" name="gPlus" value="@content.getGPlus" placeholder="Enter Gplus link">
+                        </div>
+                        <div class="form-group">
+                          <label >Instagram</label>
+                          <input type="text" class="form-control" name="instagram" value="@content.getInstagram" placeholder="Enter instagram link">
+                        </div>
+
+                    }
+
+
+
+
+
+                </div><!-- /.box-body -->
+
+                <div class="box-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div><!-- /.box -->
+
+            <!-- Form Element sizes -->
+        </div><!--/.col (left) -->
+        <!-- right column -->
+        <div class="col-md-6">
+        @if(Utils.SiteContent.frontPage.equals(content.getType)){
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Images Section</h3>
+                </div>
+                <div id ="imgesContainer" class="box-body">
+
+                    <div class="box box-primary">
+
+                        <div class="form-group">
+                          <label >Upload a banner image</label>
+                          <input type="file" name="image" >
+                          <p class="help-block">Image banner</p>
+                        </div>
+                        <div class="form-group">
+                              <label >SubTitle</label>
+                              <input type="text" class="form-control" name="subtitle" value="" placeholder="Enter SubTitle">
+                        </div>
+                        <div class="form-group">
+                              <label >Url Redirect</label>
+                              <input type="text" class="form-control" name="urlRedirect" value="" placeholder="Enter Url Redirect">
+                        </div> 
+                    </div>
+                </div>
+                <button type="button" onClick="addNewImage();" class="btn btn-secondary">Add New Image</button>
+                <br/><br/><br/><br/>
+                    @if(content.getImages!=null && content.getImages.size>0){
+                        <div class="box box-success">
+                            <div class="box-header">
+                                <h3 class="box-title">Images Already Uploaded Start</h3>
+                            </div>
+                            <div class="box-body">
+                                <!-- Minimal style -->
+                                <ul class="mailbox-attachments clearfix">
+                                @for( image <- content.getImages){
+                                <!-- checkbox -->
+                                <li id = "li-@image.getName">
+                                    <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
+                                    <div class="mailbox-attachment-info">
+                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
+                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getSubtitle</a>
+                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getRedirectUrl</a>
+                                        <span class="mailbox-attachment-size">
+                                                   @image.getSize
+                                        <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                        </span>
+                                    </div>
+                                </li>
+                                }
+                                </ul>
+                                <div id="modalDelete" class="modal modal-primary">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                                                <h4 class="modal-title">Remove Image</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to remove this Images? <span id="modalSpan"></span></p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                                                <button type="button" id="deleteButton" class="btn btn-outline">Confirm</button>
+                                            </div>
+                                        </div><!-- /.modal-content -->
+                                    </div><!-- /.modal-dialog -->
+                                </div><!-- /.modal -->
+                            </div><!-- /.box-body -->
+                            <div class="box-footer">
+                                Images Already Uploaded End
+                            </div>
+                        </div>
+                    }
+                </div><!-- /.box-body -->
+            </div><!-- /.box -->    
+
+        }
+        </div><!--/.col (right) -->
+
+
+    </div>   <!-- /.row -->
+</section><!-- /.content -->
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active");
+            $("#li-contents" ).addClass("active");
+        });
+
+        $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+            $('#price').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+        });
+
+    function addNewImage(){
+        var imageContainer = "<div class='box box-primary'> \
+                        <div class='form-group'> \
+                          <label >Upload a banner image</label> \
+                          <input type='file' name='image' > \
+                          <p class='help-block'>Image banner</p> \
+                        </div> \
+                        <div class='form-group'> \
+                              <label >SubTitle</label> \
+                              <input type='text' class='form-control' name='subtitle' value='' placeholder='Enter SubTitle'> \
+                        </div> \
+                        <div class='form-group'> \
+                              <label >Url Redirect</label> \
+                              <input type='text' class='form-control' name='urlRedirect' value='' placeholder='Enter Url Redirect'> \
+                        </div>  \
+                    </div>";
+        $("#imgesContainer").append(imageContainer);
+    }
+
+    function showDeleteModal(id){
+        $("#deleteButton").attr('onclick', "deleteImage('@content.getType.name()','"+id+"')");
+        $("#modalSpan").html(id)
+        $("#modalDelete").modal();
+    }
+
+    function deleteImage(id,imageName){
+
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.deleteSiteContentImage()",
+            data:{'contentId':id,'imageName':imageName},
+        }).success(function() {
+            $("#li-"+imageName).remove();
+        }).error(function() {
+            alert("Erro on delete!")
+        });
+        $(".close").click();
+    }
+
+
+
+</script>
+
+}

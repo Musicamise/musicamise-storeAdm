@@ -1,13 +1,13 @@
-@(collections:List[models.Collection])
+@(tags:List[models.Tag])
 @index{
 <!-- Content Header (Page header) -->
 <section class="content-header">
     <h1>
-        Collections List
+        Tags List
         <small>Control panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li class="active">Collection List</li>
+        <li class="active">Tag List</li>
     </ol>
 </section>
 
@@ -20,11 +20,11 @@
                 <div class="box-header">
                     <div class="col-sm-8">
 
-                        <h3 class="box-title">Collection //filters</h3>
-                        <br/><p class="text-green">@flash.get("listCollections")</p>
+                        <h3 class="box-title">Tags //filters</h3>
+                        <br/><p class="text-green">@flash.get("listTags")</p>
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.collection()"> <button type="button" class="btn btn-primary">Add Collection</button>
+                        <a href="@routes.Application.tag()"> <button type="button" class="btn btn-primary">Add Tag</button>
                         </a>
                     </div>
                 </div><!-- /.box-header -->
@@ -40,27 +40,21 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @for(collection <- collections){
+                        @for(tag <- tags){
                         <tr>
-                            <td >@collection.getSlug</td>
-                            <td id="@collection.getId">@collection.getTitle</td>
-                            <td>@collection.getDescription</td>
-                            <td>@if(collection.isOnLineVisible){
-                                    <span class="badge bg-green">Visible Online</span>
+                            <td >@tag.getSlug</td>
+                            <td id="@tag.getId">@tag.getTitle</td>
+                            <td>@tag.getDescription</td>
+                            <td>@if(tag.isOnLineVisible){
+                                <span class="badge bg-green">Visible Online</span>
                                 }else{
-                                    <span class="badge bg-red">Not Visible Online</span>
-                                }
-                                @if(collection.isMainMenu){
-                                    <span class="badge bg-blue">Is Main menu</span>
-                                }
-                                @if(collection.isGender){
-                                    <span class="badge bg-gray">Is Gender</span>
+                                <span class="badge bg-red">Not Visible Online</span>
                                 }
                             </td>
                             <td>
-                                <a href="@routes.Application.collection(collection.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
+                                <a href="@routes.Application.tag(tag.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
                                 <span> | </span>
-                                <a href="javascript:void(0)" onclick="showDeleteModal('@collection.getId()')"><i class="fa fa-trash-o"></i> Delete</a>
+                                <a href="javascript:void(0)" onclick="showDeleteModal('@tag.getId()')"><i class="fa fa-trash-o"></i> Delete</a>
                             </td>
                         </tr>
                         }
@@ -85,10 +79,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-                <h4 class="modal-title">Remove Collection</h4>
+                <h4 class="modal-title">Remove Tag</h4>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to remove this collection? <span id="modalSpan"></span></p>
+                <p>Are you sure you want to remove this tag? <span id="modalSpan"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
@@ -106,18 +100,18 @@
              $("li" ).removeClass("active")
              $(".treeview" ).addClass("active");
 
-            $("#li-collections" ).addClass("active");
+            $("#li-tags" ).addClass("active");
         });
 
     function showDeleteModal(id){
-        $("#deleteButton").attr('onclick', 'deleteCollection("'+id+'")');
+        $("#deleteButton").attr('onclick', 'deleteTag("'+id+'")');
         $("#modalSpan").html($("#"+id).html())
         $("#modalDelete").modal();
     }
 
-    function deleteCollection(id){
+    function deleteTag(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteCollection()"+query;
+        window.location = "@routes.Application.deleteTag()"+query;
     }
 
 </script>

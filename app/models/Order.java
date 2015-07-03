@@ -37,7 +37,7 @@ public class Order {
 
     private GiftCard giftCard;
 
-    private DiscountCode descountCode;
+    private DiscountCode discountCode;
 
     public Order(){
         this.products = new ArrayList<>();
@@ -47,7 +47,6 @@ public class Order {
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
-
 
     public String getId() {
         return id;
@@ -105,12 +104,12 @@ public class Order {
         this.giftCard = giftCard;
     }
 
-    public DiscountCode getDescountCode() {
-        return descountCode;
+    public DiscountCode getDiscountCode() {
+        return discountCode;
     }
 
-    public void setDescountCode(DiscountCode descountCode) {
-        this.descountCode = descountCode;
+    public void setDiscountCode(DiscountCode discountCode) {
+        this.discountCode = discountCode;
     }
 
     public Utils.StatusCompra getStatus() {

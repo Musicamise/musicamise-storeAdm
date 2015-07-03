@@ -16,22 +16,65 @@
                 <!-- form start -->
 
                 <div class="box-body">
+                  <form role="form" id="myForm" method="POST" action="@routes.Application.saveOrder(order.getId)"
+                    >
+                <div class="box-body">
                     @CSRF.formField
-
-
-
-                    <div class="form-group">
-                        <label >Preço</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">R$</span>
-                            <input type="text" id="price"  name="price"  value=""  class="price form-control">
+     
+                    @for(inventorie<-order.getProducts){
+                    <div id ="productsContainer" class="box-body">
+                        <div class="form-group">
+                            <label > 
+                              @inventorie.getProduct.getSlug / @inventorie.getSize / @inventorie.getGenderSlug</label>
+                              <br/>
+                             <label > @inventorie.getQuantity</label>
                         </div>
                     </div>
+                    }
+                      
 
+                    <div class="form-group">
+                        <label >User</label>
+                        <label >@order.getUser.getFullName - @order.getUser.getEmail</label>
+                    </div>
 
+                    <div class="form-group">
+                          <label >Email</label>
+                          <label >@order.getEmail </label>
+                    </div>
 
+                    <div class="form-group">
+                        <label >GiftCard</label>
+                            <label>@order.getGiftCard.toString</label>
+                        </select>
+                    </div>
 
+                    <div class="form-group">
+                        <label >DiscountCode</label>
+                        <label>@order.getDiscountCode.toString</label>
+                    </div>
 
+                    <div class="form-group">
+                        <label >Total</label>
+                        <label>@order.getTotal</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label >Status</label>
+                       <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(status<- Utils.StatusCompra.values){
+                              <option @if(status.equals(order.getStatus)){selected}  value="@status.code" >@status.name()</option>
+                              }
+                        </select>
+                    </div>
+
+                </div><!-- /.box-body -->
+
+                <div class="box-footer">
+                    <button type="submit"   class="btn btn-primary">Submit</button>
+                </div>
+                </form>
                 </div><!-- /.box-body -->
 
 
@@ -54,10 +97,12 @@
         $(function() {
             $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
 
-            $('#price').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+            $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
+                var spinner = $( ".quantity" ).spinner();
 
         });
 
+     
 
 
 

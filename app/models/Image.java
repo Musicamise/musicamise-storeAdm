@@ -32,6 +32,12 @@ public class Image {
 
     private String size;
 
+    private String url;
+
+    private String subtitle;
+    private String redirectUrl;
+
+
     @Transient
     private File imageFile;
 
@@ -49,6 +55,7 @@ public class Image {
             PutObjectRequest putObjectRequest = new PutObjectRequest(S3Plugin.s3Bucket, name, imageFile);
             putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead); // public for all
             S3Plugin.amazonS3.putObject(putObjectRequest); // upload file
+
         }
     }
 
@@ -68,6 +75,27 @@ public class Image {
 
     public void setSize(String size) {
         this.size = size;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    public String getRedirectUrl() {
+        return redirectUrl;
+    }
+
+    public void setRedirectUrl(String redirectUrl) {
+        this.redirectUrl = redirectUrl;
+    }
+
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getName() {

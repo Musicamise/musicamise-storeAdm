@@ -1,4 +1,4 @@
-@(product:models.Product,collections:List[models.Collection])
+@(product:models.Product,collections:List[models.Collection],tags:List[String],localStores:List[models.LocalStore],discounts:List[models.DiscountCode])
 @import helper._
 @index{
 <!-- Content Header (Page header) -->
@@ -43,15 +43,10 @@
 
                         <div class="form-group">
                           <label >Description</label>
-                           <textarea id="editor1" name="description"  value="@product.getDescription" rows="10" cols="80">
-
+                           <textarea id="editor1" name="description"  value="" rows="10" cols="80">
+                            @product.getDescription
                             </textarea>
                          </div>
-
-
-
-
-
 
                         <div class="form-group">
                           <label >Preço</label>
@@ -70,7 +65,97 @@
                             </div>
                           </div>
 
+                  @*******      
+                      @if(discounts!=null&&discounts.size()>0){
+                         <div class="form-group">
+                            <h3 class="box-title green">Has Discounts</h3>
+                        </div>
 
+                        <div id="discountView">
+                        @for(discount<-discounts){
+                            <label>Discount ID:  @discount.getCode </label> <br/>
+                            <label>Active:  
+                              @if(discount.isActive){
+                                  <span class="badge bg-green">@discount.isActive</span>
+                              }else{
+                                  <span class="badge bg-red">@discount.isActive</span>
+                              } 
+                            </label><br/>
+                            <label>Is Available in webSite:  
+                            @if(discount.isOnLineVisible){
+                                  <span class="badge bg-green">@discount.isOnLineVisible</span>
+
+                            }else{
+                                  <span class="badge bg-red">@discount.isOnLineVisible</span>
+
+                            } </label><br/>
+                            <label>Is Available in Local Store:
+                               @if(discount.isOnLocalStore){
+                                  <span class="badge bg-green">@discount.isOnLocalStore</span>
+
+                            }else{
+                                  <span class="badge bg-red">@discount.isOnLocalStore</span>
+
+                            }
+                            </label><br/>
+                            <label>where apply </label><br/>
+                             @if(discount.getOrdersValidation.equals(Utils.DiscountValidation.all)){               
+                              <span class="badge bg-blue">All</span>
+                            }
+                            @if(discount.getOrdersValidation.equals(Utils.DiscountValidation.overValue)){               
+                              Over Value: R$ @discount.getOverValueOf
+                            }
+                            @if(discount.getOrdersValidation.equals(Utils.DiscountValidation.collections)){     
+                             <label> @Utils.DiscountValidation.collections.name()</label><br/>
+                              @for( collectionSlug <- discount.getCollectionsSlug){
+                                <span class="badge bg-blue">@collectionSlug</span>
+                              }
+                            }
+                            @if(discount.getOrdersValidation.equals(Utils.DiscountValidation.specificProduct)){  
+                             <label> @Utils.DiscountValidation.specificProduct.name()</label><br/>           
+                              @for( productSlug <- discount.getProductSlugs){
+                                <span class="badge bg-blue">@productSlug</span>
+                              }
+                            }
+
+
+
+                            <div class="form-group">
+                              <label >Discount type:</label>
+                              <select id="discountType@discount.getCode"   class="form-control" disabled="">
+                                  @for(discountType<- Utils.DiscountType.getList){
+                                    <option @if(discount!=null&&discountType.equals(discount.getType)) {selected=""} value ="@discountType" >@discountType</option>
+                                  }
+                              </select>
+                            </div>
+
+                          <div class="form-group">
+                              <label> Take </label>
+                              <div class="input-group">
+                                  <span id="valueSign@discount.getCode" class="input-group-addon">R$</span>
+                                  <input type="text" disabled=""  id="valueOf@discount.getCode" class="form-control price" value='@discount.getValueOf'>
+                              </div>
+                          </div>
+                          <script type="text/javascript">
+                          $(document).ready(function() {
+                              $('#valueOf'+@discount.getCode).maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+                              $('#valueOf'+@discount.getCode).maskMoney('mask',@discount.getValueOf);
+
+                              var type = $("#discountType"+@discount.getCode).val();
+                              var percent = '@Utils.DiscountType.percent.name()';
+
+                              if(type==percent){
+                                $('#valueSign'+@discount.getCode).html('%');
+                              }else{
+                                $('#valueSign'+@discount.getCode).html('R$');
+                              }
+                          });
+                          </script>
+                        }
+                        </div> 
+
+                      }
+                  ************@
                           <h3 class="box-title">Visibility</h3>
                         <div class="checkbox">
                           <label>
@@ -82,6 +167,19 @@
                             <input name="store" type="checkbox" @if(product.isStoreVisible){checked=""}> Local Point store
                           </label>
                         </div>
+                        <div id="localStoreView" @if(!product.isStoreVisible){style="display:none"}>
+
+                          <div class="form-group">
+                            <label >Local Store:</label>
+                            <select name="localStores" data-placeholder="Chose the Local Stores" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
+                                @for(localStore<- localStores){
+                                  <option @if(product.getLocalStoresSlugs!=null&&product.getLocalStoresSlugs.contains(localStore.getSlug())) {selected=""} value ="@localStore.getSlug" >@localStore.getTitle</option>
+                                }
+                            </select>
+                          </div>
+
+                        
+                      </div> 
                           <div class="checkbox">
                               <label>
                                   <input name="newProduct" type="checkbox" @if(product.isNewProduct){checked=""}>New Product
@@ -109,17 +207,29 @@
                           <label >Product Type</label>
                           <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
                               <option value=""></option>
-                              @for(tag<- Utils.ProductType.getList()){
-                              <option @if(tag.equals(product.getType)){selected=""} >@tag</option>
+                              @for(productType<- Utils.ProductType.getList){
+                                <option @if(productType.equals(product.getType)){selected=""} value="@productType">@productType</option>
                               }
                           </select>
                       </div>
+                        <div class="form-group">
+                            <label >Cor</label>
+                            <div id="colorPicker"></div>
+                            <div class="input-group">
+                            <span @if(product.getColor!=null){
+                                  style="background-color:@product.getColor;"
+                                  }
+                                id="color" class="input-group-addon"></span>
+                            <input disabled="" type="text" id="colorRGB"  value="@product.getColor"  class="form-control"/>
+                            <input  type="hidden" name="color" id="colorRGBValue"  value="@product.getColor"  class="form-control"/>
+                            </div>
+                          </div>
 
                       <div class="form-group">
                           <label >User Tags</label>
                           <select name="tags" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
                               <option value=""></option>
-                              @for(tag<- Utils.UserTags.getList()){
+                              @for(tag<-tags){
                               <option @if(product.getUserTags().contains(tag)){selected=""} >@tag</option>
                               }
                           </select>
@@ -224,6 +334,17 @@
 <!-- jQuery 2.1.4 -->
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
 
+<style type="text/css">
+  
+  .ColorBlotch {
+    border: 1px solid #000000;
+    padding: 0 2px 0 2px;
+    font-family: monospace;
+    cursor: pointer;
+    font-size: 1.2em;
+  }
+
+</style>
 <script type="text/javascript">
      $(document).ready(function() {
              $("li" ).removeClass("active")
@@ -231,6 +352,15 @@
 
             $("#li-product" ).addClass("active");
 
+            $('#colorPicker').empty().addColorPicker({
+                clickCallback: function(c) {
+                  $('#color').css('background-color',c);
+                  $('#colorRGB').val(c);
+                  $('#colorRGBValue').val(c);
+
+                  
+                }
+              });
 
         });
 
@@ -266,7 +396,7 @@
         $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
         $('#weight').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:3, affixesStay: true});
 
-        $('#weight').maskMoney('mask',@product.getPrice);
+        $('#weight').maskMoney('mask',@product.getWeight);
          $('#priceCompareWith').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
 
         $('#priceCompareWith').maskMoney('mask',@product.getPriceCompareWith);
@@ -274,11 +404,28 @@
         $('#price').maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
 
         $('#price').maskMoney('mask',@product.getPrice);
+
         });
 
+      $('#discountType').change(function() {
+            var type = $(this).val();
+            var percent = '@Utils.DiscountType.percent.name()';
 
+            if(type==percent){
+                $('#valueSign').html('%');
+            }else{
+                $('#valueSign').html('R$');
+            }
 
-
+        });
+      
+      $('input[name="store"]').change(function(){
+          if(this.checked){
+            $("#localStoreView").show();
+          } else{
+            $("#localStoreView").hide();
+          }
+      });
 
 </script>
 }

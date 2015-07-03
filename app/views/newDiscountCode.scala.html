@@ -46,6 +46,7 @@
                             </div>
                         </div>
 
+
                         <div class="form-group">
                             <label for="exampleInputFile">Is Active</label>
                             <div class="input-group">
@@ -54,6 +55,24 @@
                                 </label>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="exampleInputFile">Is Available on Online Store (web site)</label>
+                            <div class="input-group">
+                                <label>
+                                    <input  id="onLineVisible" name="onLineVisible" @if(discount.isOnLineVisible){checked=""} type="checkbox">  OnLineVisible
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="exampleInputFile">Is Available on local Store (real store)</label>
+                            <div class="input-group">
+                                <label>
+                                    <input  id="onLocalStore" name="onLocalStore" @if(discount.isOnLocalStore){checked=""} type="checkbox">  OnLocalStore
+                                </label>
+                            </div>
+                        </div>
+
 
                         <div class="form-group">
                              <label for="exampleInputFile">How many times can this discount be used?</label>
@@ -72,7 +91,7 @@
                             <label >Discount type:</label>
                             <select id="discountType" name="discountType"  class="form-control">
                                 @for(tag<- Utils.DiscountType.getList()){
-                                <option @if(discount.getType!=null&&tag.equals(discount.getType.name())) {selected=""} >@tag</option>
+                                <option @if(discount.getType!=null&&tag.equals(discount.getType.name())) {selected=""} value="@tag" >@tag</option>
                                 }
                             </select>
                         </div>
@@ -107,7 +126,7 @@
                             <label>Collections</label>
                             <select name="collections" data-placeholder="Chose the Collection" style="width: 350px; display: none;" multiple class="chosen-select-width" tabindex="-1">
                                 @for(collection<- collections){
-                                <option value="@collection.getSlug" @if(discount.getCollectionsId!=null&&discount.getCollectionsId.contains(collection.getSlug)) {selected=""}  >@collection.getTitle</option>
+                                <option value="@collection.getSlug" @if(discount.getCollectionsSlug!=null&&discount.getCollectionsSlug.contains(collection.getSlug)) {selected=""}  >@collection.getTitle</option>
                                 }
                             </select>
                         </div>
@@ -116,7 +135,7 @@
                             <label>Products</label>
                             <select name="products" data-placeholder="Chose the product" style="width: 350px; display: none;" multiple class="chosen-select-width" tabindex="-1">
                                 @for(product<- products){
-                                <option  value="@product.getId" @if(discount.getProducts!=null&&discount.getProducts.contains(product.getId)) {selected=""}>@product.getTitle</option>
+                                <option  value="@product.getSlug" @if(discount.getProductSlugs!=null&&discount.getProductSlugs.contains(product.getSlug)) {selected=""}>@product.getTitle</option>
                                 }
                             </select>
                         </div>
@@ -130,6 +149,11 @@
                                 }
                             </select>
                         </div>
+                        <style type="text/css">
+                           .form-group .chosen-container{
+                                width:100%!important;
+                            }
+                        </style>
 
                     </div><!-- /.box-body -->
 

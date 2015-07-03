@@ -2,7 +2,6 @@ package bootstrap; /**
  * Created by Alvaro on 18/03/2015.
  */
 import models.*;
-import models.Content;
 import play.*;
 import play.mvc.*;
 import play.mvc.Http.*;
@@ -27,6 +26,9 @@ public class Global extends GlobalSettings {
     public void onStart(Application app) {
          DS.init();
          MongoService.createInitialColletions();
+         MongoService.createInitialTags();
+         MongoService.createInitialContent();
+
         //MongoHandler.getInstance(null);
         //models.Content test = new models.Content();
         //test.setTitle("Teste title alvaro@silvino.me");

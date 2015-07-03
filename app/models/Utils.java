@@ -9,6 +9,11 @@ import java.util.List;
 public class Utils {
 
     public enum ProductSizeType {
+        RN("recem nascido"),
+        um("um ano"),
+        dois("dois anos"),
+        tres("tres anos"),
+        quarto("quatro anos"),
         XP("extra pequeno"),
         P("pequeno"), 
         M("medio"),
@@ -36,7 +41,12 @@ public class Utils {
         regata("Regata"),
         bata("Bata"),
         manga_longa("Manga Longa"),
-        moletom("Moletom");
+        moletom("Moletom"),
+        body("Body"),
+        lenco("Lenço"),
+        poster("Poster"),
+        obra_de_arte("Obra de Arte");
+
         String name;
         private ProductType(String name){
             this.name = name;
@@ -46,10 +56,12 @@ public class Utils {
             List<String> tags = new ArrayList<>();
 
             for (Utils.ProductType tag : Utils.ProductType.values()) {
-                tags.add(tag.name());
+                tags.add(tag.name);
             }
             return tags;
         }
+
+
     }
 
     public enum DiscountType {
@@ -127,13 +139,17 @@ public class Utils {
     }
 
     public enum UserTags {
-        rock,
-        pop,
-        facebook,
-        instagram,
-        losHermanos,
-        metal,
-        heavyMetal;
+        rock("Rock"),
+        pop("Pop"),
+        facebook("Facebook"),
+        instagram("Instagram"),
+        losHermanos("Los Hermanos"),
+        metal("Metal"),
+        heavyMetal("Heavy Metal");
+        public String title;
+        private UserTags(String title){
+            this.title = title;
+        }
         public static List<String> getList() {
             List<String> tags = new ArrayList<>();
 
@@ -144,7 +160,7 @@ public class Utils {
         }
     }
 
-    public enum Content {
+    public enum SiteContent {
         frontPage,
         socialPage,
         aboutUsPage,

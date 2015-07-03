@@ -1,0 +1,154 @@
+@(order:models.Order,inventories:List[models.Inventory],users:List[models.User],discountCodes:List[models.DiscountCode],giftCards:List[models.GiftCard])
+@import helper._
+@index{ <!-- Main content -->
+<section class="content">
+    <!-- Small boxes (Stat box) -->
+    <div class="row">
+        <!-- left column -->
+        <div class="col-md-6">
+            <!-- general form elements -->
+            <div class="box box-primary">
+                <div class="box-header">
+                    <h3 class="box-title">Order Overall</h3>
+                    <br/><p class="text-red">@flash.get("order")</p>
+
+                </div><!-- /.box-header -->
+                <!-- form start -->
+
+                <div class="box-body">
+                @if(order.getId==null){
+                    <form role="form" id="myForm" method="POST" action="@routes.Application.saveOrder(null)"
+                    >
+                }
+                <div class="box-body">
+                    @CSRF.formField
+     
+                    
+                    <div id ="productsContainer" class="box-body">
+                        <div class="form-group">
+                            <label >Product </label>
+                             <select name="product" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(inventorie<- inventories){
+                              <option  value="@inventorie.getSku" >@inventorie.getProduct.getTitle / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>
+                              }
+                            </select>
+                            <input type="text" style="width:70px;" class="quantity" name="quantity" value="" placeholder="Quantity">
+                        </div>
+                    </div>
+                     <button type="button" onClick="addProduct();" class="btn btn-secondary">Add New Product</button>
+
+                    <div class="form-group">
+                        <label >User</label>
+                        <select name="user" data-placeholder="Chose the user receiver" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                            <option value=""></option>
+                            @for(user<- users){
+                                <option value="@user.getId" >@user.getFullName - @user.getEmail</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                          <label >Email</label>
+                          <input type="text" class="form-control" name="email" value="" placeholder="Enter Title">
+                    </div>
+
+                    <div class="form-group">
+                        <label >GiftCard</label>
+                        <select name="giftCard" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(giftCard<- giftCards){
+                              <option  value="@giftCard.getCode" >@giftCard.toString</option>
+                              }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label >DiscountCode</label>
+                        <select name="discountCode" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(discountCode<- discountCodes){
+                              <option  value="@discountCode.getCode" >@discountCode.toString</option>
+                              }
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label >Total</label>
+                        <input name="total" id="total" disabled="" type="text" class="form-control"  placeholder="Total Value" > 
+                    </div>
+
+                    <div class="form-group">
+                        <label >Status</label>
+                       <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(status<- Utils.StatusCompra.values){
+                              <option  value="@status.code" >@status.name()</option>
+                              }
+                        </select>
+                    </div>
+
+                </div><!-- /.box-body -->
+
+                @if(order.getId==null){
+                    <div class="box-footer">
+                        <button type="submit"   class="btn btn-primary">Submit</button>
+                    </div>
+                    </form>
+                }
+                </div><!-- /.box-body -->
+
+
+            </div><!-- /.box -->
+
+            <!-- Form Element sizes -->
+        </div><!--/.col (left) -->
+        <!-- right column -->
+    </div>   <!-- /.row -->
+</section><!-- /.content -->
+<!-- jQuery 2.1.4 -->
+<script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+
+<script type="text/javascript">
+     $(document).ready(function() {
+             $("li" ).removeClass("active");
+            $("#li-orders" ).addClass("active");
+        });
+
+        $(function() {
+            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+
+            $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
+                var spinner = $( ".quantity" ).spinner();
+
+            for (var selector in config) {
+              $(selector).chosen(config[selector]);
+            }
+
+        });
+
+    function addProduct(){
+
+      var productContainer = "<div class='form-group'>\
+                          <label >Product </label>\
+                          <select name='product' data-placeholder='Chose the product' style='width: 350px; display: none;'   class='chosen-select-width' tabindex='-1'>\
+                              <option value=''></option>";
+           @for(inventorie<- inventories){ 
+            productContainer+= "<option  value='@inventorie.getSku' >@inventorie.getProduct.getTitle / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>"
+           }                     
+
+      productContainer += "</select>\
+                          <input type='text' style='width:70px;' id='quantity' class='quantity' name='quantity' value='' placeholder='Quantity'>\
+                      </div>";
+        $("#productsContainer").append(productContainer);
+        $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
+        var spinner = $( ".quantity" ).spinner();
+
+        for (var selector in config) {
+          $(selector).chosen(config[selector]);
+        }
+    }
+ 
+</script>
+
+}

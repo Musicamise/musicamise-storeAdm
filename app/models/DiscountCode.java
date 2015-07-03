@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.*;
 /**
  * Created by Alvaro on 29/03/2015.
  */
@@ -29,6 +30,11 @@ public class DiscountCode {
 
     @Id
     private String code;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date createdDate = new Date();
+
+
 
     private int timesLeft;
     private int timesUsed;
@@ -53,12 +59,33 @@ public class DiscountCode {
 
     private boolean active;
 
+    private boolean onLineVisible;
+    private boolean onLocalStore;
+
+
     private double overValueOf;
-    private List<String> products ;
-    private List<String> collectionsId ;
+    private Set<String> productSlugs ;
+    private Set<String> collectionsSlug ;
 
     public DiscountCode(){
+        this.productSlugs = new HashSet<>();
+        this.collectionsSlug = new HashSet<>();
+    }
 
+    public boolean isOnLocalStore() {
+        return onLocalStore;
+    }
+
+    public void setOnLocalStore(boolean onLocalStore) {
+        this.onLocalStore = onLocalStore;
+    }
+
+    public boolean isOnLineVisible() {
+        return onLineVisible;
+    }
+
+    public void setOnLineVisible(boolean onLineVisible) {
+        this.onLineVisible = onLineVisible;
     }
 
     public String getDateRangeWithTime(){
@@ -79,12 +106,12 @@ public class DiscountCode {
         this.active = active;
     }
 
-    public List<String> getProducts() {
-        return products;
+    public Set<String> getProductSlugs() {
+        return productSlugs;
     }
 
-    public void setProducts(List<String> products) {
-        this.products = products;
+    public void setProductSlugs(Set<String> productSlugs) {
+        this.productSlugs = productSlugs;
     }
 
     public double getOverValueOf() {
@@ -95,12 +122,12 @@ public class DiscountCode {
         this.overValueOf = overValueOf;
     }
 
-    public List<String> getCollectionsId() {
-        return collectionsId;
+    public Set<String> getCollectionsSlug() {
+        return collectionsSlug;
     }
 
-    public void setCollectionsId(List<String> collectionsId) {
-        this.collectionsId = collectionsId;
+    public void setCollectionsSlug(Set<String> collectionsSlug) {
+        this.collectionsSlug = collectionsSlug;
     }
 
     public Utils.DiscountType getType() {
@@ -185,6 +212,15 @@ public class DiscountCode {
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
 
     public Date getEndDate() {
         return endDate;

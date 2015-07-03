@@ -38,6 +38,8 @@ public class Inventory {
 
     private String size;
 
+    private String genderSlug;
+
     private boolean orderOutOfStock;
 
     private boolean sellInOutOfStock;
@@ -61,6 +63,15 @@ public class Inventory {
 
     public void setSku(String sku) {
         this.sku = sku;
+    }
+
+
+    public String getGenderSlug() {
+        return genderSlug;
+    }
+
+    public void setGenderSlug(String genderSlug) {
+        this.genderSlug = genderSlug;
     }
 
     public boolean isOrderOutOfStock() {
@@ -93,5 +104,15 @@ public class Inventory {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public int hashCode()
+    {
+        return sku.hashCode();
+    }
+
+    public boolean equals(Object obj) 
+    {
+        return (((Inventory)this).getSku().equals(((Inventory)obj).getSku()));
     }
 }

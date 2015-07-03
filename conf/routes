@@ -4,9 +4,9 @@
 
 # Home page
 
-GET     /order                           controllers.Application.listOrders()
-POST     /order/detail                              controllers.Application.order(id :String )
-
+GET     /orders                           controllers.Application.listOrders()
+GET     /order                          controllers.Application.order(id :String ?= null)
+POST     /order/newOrEdit                              controllers.Application.saveOrder(id :String )
 
 
 GET     /collection                          controllers.Application.listCollections()
@@ -14,6 +14,28 @@ GET     /collection/newOrEdit                                  controllers.Appli
 POST     /collection/newOrEdit/saveCollection                              controllers.Application.saveCollection(id :String ?= null)
 GET     /collection/delete                               controllers.Application.deleteCollection(id :String ?= null)
 POST     /collection/image/delete/                                controllers.Application.deleteCollectionImage()
+
+
+GET     /tag                          controllers.Application.listTags()
+GET     /tag/newOrEdit                                  controllers.Application.tag(id :String ?= null)
+POST     /tag/newOrEdit/saveTag                              controllers.Application.saveTag(id :String ?= null)
+GET     /tag/delete                               controllers.Application.deleteTag(id :String ?= null)
+POST     /tag/image/delete/                                controllers.Application.deleteTagImage()
+
+
+GET     /localStore                          controllers.Application.listLocalStores()
+GET     /localStore/newOrEdit                                  controllers.Application.localStore(id :String ?= null)
+POST     /localStore/newOrEdit/saveLocalStore                              controllers.Application.saveLocalStore(id :String ?= null)
+GET     /localStore/delete                               controllers.Application.deleteLocalStore(id :String ?= null)
+POST     /localStore/image/delete/                                controllers.Application.deleteLocalStoreImage()
+
+
+
+GET     /content                          controllers.Application.listContent()
+GET     /content/newOrEdit                                  controllers.Application.content(id :String ?= null)
+POST     /content/newOrEdit/saveContent                              controllers.Application.saveContent(id :String ?= null)
+GET     /content/image/delete/                                controllers.Application.deleteSiteContentImage(contentId: String ?= null,imageName :String ?= null)
+
 
 
 GET     /discountCode                           controllers.Application.listDiscount()

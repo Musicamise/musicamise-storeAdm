@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Application extends Controller {
 
@@ -27,24 +28,36 @@ public class Application extends Controller {
      * */
 
     @AddCSRFToken
+    public static Result content(String id){
+        SiteContent contentObject = MongoService.findContentById(id);
+        contentObject = (contentObject!=null?contentObject:new SiteContent());
+        return ok(newContent.render(contentObject));
+    }
+
+    @AddCSRFToken
     public static Result product(String id){
         Product product = MongoService.findProductById(id);
         product= (product!=null?product:new Product());
         List<Collection> collections = MongoService.getAllCollections();
-        return ok(newProduct.render(product,collections));
+        List<String> tags = MongoService.getAllTags().stream().map(Tag::getSlug).collect(Collectors.toList());
+        List<DiscountCode> discounts = MongoService.findDiscountCodeByProduct(product);
+        List<LocalStore> localStores = MongoService.getAllLocalStores();
+        return ok(newProduct.render(product,collections,tags,localStores,discounts));
     }
     @AddCSRFToken
     public static Result inventory(String id){
         Inventory inventory = MongoService.findInventoryById(id);
         inventory= (inventory!=null?inventory:new Inventory());
         List<Product> products = MongoService.getAllProducts();
-        return ok(newInventory.render(inventory,products));
+        List<Collection> genders = MongoService.findCollectionByGender();
+        return ok(newInventory.render(inventory,products,genders));
     }
     @AddCSRFToken
     public static Result costumer(String id){
         User user = MongoService.findUserById(id);
         user= (user!=null?user:new User());
-        return ok(newCostumer.render(user, Utils.UserTags.getList()));
+        List<String> userTags = MongoService.getAllTags().stream().map(Tag::getSlug).collect(Collectors.toList());
+        return ok(newCostumer.render(user,userTags));
     }
     @AddCSRFToken
     public static Result collection(String id){
@@ -58,6 +71,32 @@ public class Application extends Controller {
 
         return ok(newCollection.render(collection,productsByCollections,products));
     }
+    @AddCSRFToken
+    public static Result tag(String id){
+        Tag tag = MongoService.findTagById(id);
+        tag= (tag!=null?tag:new Tag());
+
+        List<String> tagsSlug = new ArrayList<>();
+        tagsSlug.add(tag.getSlug());
+        List<Product> productsByTags = MongoService.findProductByTagsSlug(tagsSlug);
+        List<Product> products = MongoService.getAllProducts();
+
+        return ok(newTag.render(tag,productsByTags,products));
+    }
+
+     @AddCSRFToken
+    public static Result localStore(String id){
+        LocalStore localStore = MongoService.findLocalStoreById(id);
+        localStore= (localStore!=null?localStore:new LocalStore());
+
+        List<String> localStoreSlug = new ArrayList<>();
+        localStoreSlug.add(localStore.getSlug());
+        List<Product> productsByLocalStore = MongoService.findProductByLocalStoreSlug(localStoreSlug);
+        List<Product> products = MongoService.getAllProducts();
+
+        return ok(newLocalStore.render(localStore,productsByLocalStore,products));
+    }
+
     @AddCSRFToken
     public static Result discountCode(String id){
         DiscountCode discountCode = MongoService.findDiscountCodeById(id);
@@ -77,18 +116,29 @@ public class Application extends Controller {
     }
     @AddCSRFToken
     public static Result order(String id){
-        Order order = MongoService.findOrdersById(id);
-        order= (order!=null?order:new Order());
-        List<User> users = MongoService.getAllUsers();
-
-        return ok(detailOrder.render(order));
+        Order order = MongoService.findOrderById(id);
+        if(order!=null){
+            return ok(detailOrder.render(order));
+        }else if(id!=null&&order==null){
+            return redirect(routes.Application.listOrders());
+        }else{
+            order = new Order();
+            List<User> users = MongoService.getAllUsers();
+            List<Inventory> inventories = MongoService.getAllInventories();
+            List<GiftCard> giftCards = MongoService.getAllGiftCards();
+            List<DiscountCode> discountCodes = MongoService.getAllDiscountCodes();
+            return ok(newOrder.render(order,inventories,users,discountCodes,giftCards));
+        }
     }
 
 
     /**
      * List
      * */
-
+    public static Result listContent() {
+        List<SiteContent> contents = MongoService.getAllContents();
+        return ok(listContent.render(contents));
+    }
     public static Result listProduct() {
         List<Product> products = MongoService.getAllProducts();
         return ok(listProduct.render(products));
@@ -103,6 +153,18 @@ public class Application extends Controller {
 
         return ok(listCollections.render(collections));
     }
+    public static Result listTags() {
+        List<Tag> tags = MongoService.getAllTags();
+
+        return ok(listTags.render(tags));
+    }
+
+    public static Result listLocalStores() {
+        List<LocalStore> localStores = MongoService.getAllLocalStores();
+
+        return ok(listLocalStores.render(localStores));
+    }
+
     public static Result listGiftCard() {
         List<GiftCard> giftCards = MongoService.getAllGiftCards();
         return ok(listGiftCard.render(giftCards));
@@ -125,7 +187,204 @@ public class Application extends Controller {
     /**
      * save or Edit From Form TODO
      * */
+    public static double CalculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode, GiftCard giftCard){
 
+        return 0.0;
+    }
+    @RequireCSRFCheck
+    public static Result saveOrder(String id){
+
+        //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
+        Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
+
+        String[] productIds = (dataFiles.get("product") != null && dataFiles.get("product").length > 0) ? dataFiles.get("product")  : null;
+        String[] quantities = (dataFiles.get("quantity") != null && dataFiles.get("quantity").length > 0) ? dataFiles.get("quantity") : null;
+        String userId = (dataFiles.get("user") != null && dataFiles.get("user").length > 0) ? dataFiles.get("user")[0] : null;
+        String email = (dataFiles.get("email") != null && dataFiles.get("email").length > 0) ? dataFiles.get("email")[0] : null;
+        String giftCardId = (dataFiles.get("giftCard") != null && dataFiles.get("giftCard").length > 0) ? dataFiles.get("giftCard")[0] : null;
+        String discountCodeId = (dataFiles.get("discountCode") != null && dataFiles.get("discountCode").length > 0) ? dataFiles.get("discountCode")[0] : null;
+        String statusCode = (dataFiles.get("status") != null && dataFiles.get("status").length > 0) ? dataFiles.get("status")[0] : null;
+        
+
+        User user = null;
+        GiftCard giftCard = null;
+        DiscountCode discountCode = null;
+        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode));
+        List<Inventory> inventories = new ArrayList<>();
+
+        if(userId!=null&&!userId.equals("")){
+            user = MongoService.findUserById(userId);
+        }   
+        if(giftCardId!=null&&!giftCardId.equals("")){
+            giftCard = MongoService.findGiftCardById(giftCardId);
+        }
+        if(discountCodeId!=null&&!discountCodeId.equals("")){
+            discountCode = MongoService.findDiscountCodeById(discountCodeId);
+        }
+        if(productIds!=null&& productIds.length >0){
+            inventories = MongoService.findInventoriesByIds(productIds);
+        }
+
+
+        //Validation
+
+        // if(id!=null&&!MongoService.hasInventoryById(id)) {
+        //     flash("inventory","Inventory not in base");
+        //     return redirect(routes.Application.inventory(null));
+        // }
+
+        // if(productId==null||productId.equals("")){
+        //     flash("inventory","Insert A product");
+        //     return redirect(routes.Application.inventory(null));
+        // }
+
+        // if(productId!=null&&!MongoService.hasProductById(productId)){
+        //     flash("inventory","Product does not Exist");
+        //     return redirect(routes.Application.inventory(null));
+        // }
+
+        // if(MongoService.hasInventoryByProductAndSize(productId,productSize)){
+        //     flash("inventory","Inventory with same Size");
+        //     return redirect(routes.Application.inventory(null));
+        // }
+
+        //validation and inventories changes on quantity
+        if(inventories.size()>0){
+            for(int i=0;i<inventories.size();i++){
+                try{
+                    int quantity =  Integer.parseInt(quantities[i].trim());
+                    if(quantity<=0||inventories.get(i).getQuantity()<quantity){
+                        flash("order","Inventory without quantity or quantity <= 0");
+                        return redirect(routes.Application.order(null));
+                    }else{
+                        inventories.get(i).setQuantity(inventories.get(i).getQuantity() -quantity );
+                    }
+                }catch(Exception e){
+                    flash("order","Inventory error "+e.toString());
+                    return redirect(routes.Application.order(null));
+                }
+            }
+        }
+
+
+        double total = Application.CalculateFinalPrice(inventories,discountCode,giftCard);
+
+        //build inventory object
+        Order order = new Order();
+        if(id!=null&&!id.equals("")) {
+            order = MongoService.findOrderById(id);
+            order.setStatus(status);
+            MongoService.saveOrder(order);
+            return redirect(routes.Application.listOrders());
+
+        }
+
+        order.setProducts(inventories);
+        order.setEmail(email);
+        order.setUser(user);
+        order.setTotal(total);
+        order.setGiftCard(giftCard);
+        order.setDiscountCode(discountCode);
+        order.setStatus(status);
+
+
+        //save Inventory change
+        for(int i=0;i<inventories.size();i++){
+            MongoService.saveInventory(inventories.get(i));
+        }
+
+        MongoService.saveOrder(order);
+
+        return redirect(routes.Application.listOrders());
+    } 
+    @RequireCSRFCheck
+    public static Result saveContent(String id){
+
+        Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
+        String title = (dataFiles.asFormUrlEncoded().get("title") != null && dataFiles.asFormUrlEncoded().get("title").length > 0) ? dataFiles.asFormUrlEncoded().get("title")[0] : null;
+        String contentStr = (dataFiles.asFormUrlEncoded().get("content") != null && dataFiles.asFormUrlEncoded().get("content").length > 0) ? dataFiles.asFormUrlEncoded().get("content")[0] : null;
+        String visible = (dataFiles.asFormUrlEncoded().get("visible") != null && dataFiles.asFormUrlEncoded().get("visible").length > 0) ? dataFiles.asFormUrlEncoded().get("visible")[0] : null;
+       
+        String email = (dataFiles.asFormUrlEncoded().get("email") != null && dataFiles.asFormUrlEncoded().get("email").length > 0) ? dataFiles.asFormUrlEncoded().get("email")[0] : null;
+        String facebook = (dataFiles.asFormUrlEncoded().get("facebook") != null && dataFiles.asFormUrlEncoded().get("facebook").length > 0) ? dataFiles.asFormUrlEncoded().get("facebook")[0] : null;
+        String twitter = (dataFiles.asFormUrlEncoded().get("twitter") != null && dataFiles.asFormUrlEncoded().get("twitter").length > 0) ? dataFiles.asFormUrlEncoded().get("twitter")[0] : null;
+        String gPlus = (dataFiles.asFormUrlEncoded().get("gPlus") != null && dataFiles.asFormUrlEncoded().get("gPlus").length > 0) ? dataFiles.asFormUrlEncoded().get("gPlus")[0] : null;
+        String instagram = (dataFiles.asFormUrlEncoded().get("instagram") != null && dataFiles.asFormUrlEncoded().get("instagram").length > 0) ? dataFiles.asFormUrlEncoded().get("instagram")[0] : null;
+
+        
+
+        boolean visibleBool = (visible!=null)?true:false;
+
+        List<Http.MultipartFormData.FilePart> fileImages = dataFiles.getFiles();
+
+        //Validation
+
+        if(id!=null&&!MongoService.hasContentById(id)) {
+            flash("content","Content not in base");
+            return redirect(routes.Application.listContent());
+        }
+
+        //build product object
+        SiteContent content = null;
+        if(id!=null) {
+            content = MongoService.findContentById(id);
+            if(content==null){
+                flash("content","Content not in base");
+                return redirect(routes.Application.listContent());
+            }
+        }
+
+
+        content.setTitle((title != null && !title.equals("")) ? title : content.getTitle());
+        content.setContent((contentStr != null && !contentStr.equals("")) ? contentStr : content.getContent());
+        
+        content.setVisible(visibleBool);
+
+        content.setEmail((email != null && !email.equals("")) ? email : content.getEmail());
+        content.setFacebook((facebook != null && !facebook.equals("")) ? facebook : content.getFacebook());
+        content.setTwitter((twitter != null && !twitter.equals("")) ? twitter : content.getTwitter());
+        content.setGPlus((gPlus != null && !gPlus.equals("")) ? gPlus : content.getGPlus());
+        content.setInstagram((instagram != null && !instagram.equals("")) ? instagram : content.getInstagram());
+        
+
+        String[] imageSubTitles = (dataFiles.asFormUrlEncoded().get("subtitle") != null && dataFiles.asFormUrlEncoded().get("subtitle").length > 0) ? dataFiles.asFormUrlEncoded().get("subtitle") : null;
+        String[] imageUrlRedirect = (dataFiles.asFormUrlEncoded().get("urlRedirect") != null && dataFiles.asFormUrlEncoded().get("urlRedirect").length > 0) ? dataFiles.asFormUrlEncoded().get("urlRedirect") : null;
+
+        List<Image> imagesNew = new ArrayList<>();
+        for(int i = 0 ; i<fileImages.size() ;i++){
+        // for(Http.MultipartFormData.FilePart file : fileImages){
+            Http.MultipartFormData.FilePart file = fileImages.get(i);
+            String  imageName;
+            if (file != null) {
+                Image image = new Image();
+                imageName = file.getFilename();
+                File fileSave = file.getFile();
+                double bytes = fileSave.length();
+                double kilobytes = (bytes / 1024);
+                double megabytes = (kilobytes / 1024);
+
+                image.setSize(megabytes+" mb");
+                image.setName(imageName);
+                image.setImageFile(fileSave);
+                if(imageSubTitles!=null &&imageSubTitles.length > i && imageSubTitles[i]!=null){
+                    image.setSubtitle(imageSubTitles[i]);
+                }
+                if(imageUrlRedirect!=null &&imageUrlRedirect.length > i && imageUrlRedirect[i]!=null){
+                    image.setRedirectUrl(imageUrlRedirect[i]);
+                }
+
+                image.saveFile();
+                imagesNew.add(image);
+            }
+        }
+        if(content.getImages()==null){
+            content.setImages(new ArrayList<>());
+        }
+        content.getImages().addAll(imagesNew);
+        MongoService.saveContent(content);
+
+        return redirect(routes.Application.listContent());
+    }
     @RequireCSRFCheck
     public static Result saveProduct(String id){
 
@@ -142,6 +401,20 @@ public class Application extends Controller {
         String[] tags = (dataFiles.asFormUrlEncoded().get("tags") != null && dataFiles.asFormUrlEncoded().get("tags").length > 0) ? dataFiles.asFormUrlEncoded().get("tags") : null;
         String productType = (dataFiles.asFormUrlEncoded().get("productType") != null && dataFiles.asFormUrlEncoded().get("productType").length > 0) ? dataFiles.asFormUrlEncoded().get("productType")[0] : null;
         String[] collections = (dataFiles.asFormUrlEncoded().get("collections") != null && dataFiles.asFormUrlEncoded().get("collections").length > 0) ? dataFiles.asFormUrlEncoded().get("collections") : null;
+        String color = (dataFiles.asFormUrlEncoded().get("color") != null && dataFiles.asFormUrlEncoded().get("color").length > 0) ? dataFiles.asFormUrlEncoded().get("color")[0] : null;
+
+        String[] localStores = (dataFiles.asFormUrlEncoded().get("localStores") != null && dataFiles.asFormUrlEncoded().get("localStores").length > 0) ? dataFiles.asFormUrlEncoded().get("localStores") : null;
+
+        // String hasDiscount = (dataFiles.asFormUrlEncoded().get("hasDiscount") != null && dataFiles.asFormUrlEncoded().get("hasDiscount").length > 0) ? dataFiles.asFormUrlEncoded().get("hasDiscount")[0] : null;
+        // String discountType = (dataFiles.asFormUrlEncoded().get("discountType") != null && dataFiles.asFormUrlEncoded().get("discountType").length > 0) ? dataFiles.asFormUrlEncoded().get("discountType")[0] : null;
+        // String valueOf = (dataFiles.asFormUrlEncoded().get("valueOf") != null && dataFiles.asFormUrlEncoded().get("valueOf").length > 0) ? dataFiles.asFormUrlEncoded().get("valueOf")[0] : null;
+       
+
+        // boolean hasDiscountBool = (hasDiscount!=null)?true:false;
+        // double valueOfDiscountDouble = Double.parseDouble(valueOf);
+        // Utils.DiscountType typeDiscount = Utils.DiscountType.valueOf(discountType);
+
+
 
         boolean onlineBool = (online!=null)?true:false;
         boolean storeBool = (store!=null)?true:false;
@@ -152,8 +425,10 @@ public class Application extends Controller {
         double priceCompareWithDouble = Double.parseDouble(priceCompareWith);
         double weightDouble = Double.parseDouble(weight);
 
-        List<String> tagsList =  (tags!=null)?Arrays.asList(tags):new ArrayList<>();
+        Set<String> tagsList =  (tags!=null)?new HashSet<>(Arrays.asList(tags)):new HashSet<>();
         Set<String> collectionsList =  (collections!=null)?new HashSet<>(Arrays.asList(collections)):new HashSet<>();
+
+        Set<String> localStoresList =  (localStores!=null)?new HashSet<>(Arrays.asList(localStores)):new HashSet<>();
 
 
         List<Http.MultipartFormData.FilePart> fileImages = dataFiles.getFiles();
@@ -192,6 +467,13 @@ public class Application extends Controller {
         product.setUserTags(tagsList);
         product.setWeight(weightDouble);
         product.setCollectionsSlugs(collectionsList);
+        product.setLocalStoresSlugs(localStoresList);
+        product.setColor(color);
+
+
+        // product.setHasDiscount(hasDiscountBool);
+        // product.setDiscount(valueOfDiscountDouble);
+        // product.setDiscountType(typeDiscount);
 
 
         List<Image> imagesNew = new ArrayList<>();
@@ -229,8 +511,11 @@ public class Application extends Controller {
         String productSize = (dataFiles.get("productSize") != null && dataFiles.get("productSize").length > 0) ? dataFiles.get("productSize")[0] : null;
         String quantity = (dataFiles.get("quantity") != null && dataFiles.get("quantity").length > 0) ? dataFiles.get("quantity")[0] : null;
         String sellInOutOfStock = (dataFiles.get("sellInOutOfStock") != null && dataFiles.get("sellInOutOfStock").length > 0) ? dataFiles.get("sellInOutOfStock")[0] : null;
+        String gender = (dataFiles.get("gender") != null && dataFiles.get("gender").length > 0) ? dataFiles.get("gender")[0] : null;
+
         boolean outOfStockBool = (outOfStock!=null)?true:false;
         boolean sellInOutOfStockBool = (sellInOutOfStock!=null)?true:false;
+
 
         int quantityInt = Integer.parseInt(quantity.trim().replace(".",""));
 
@@ -250,12 +535,19 @@ public class Application extends Controller {
             flash("inventory","Product does not Exist");
             return redirect(routes.Application.inventory(null));
         }
-
-        if(MongoService.hasInventoryByProductAndSize(productId,productSize)){
-            flash("inventory","Inventory with same Size");
+        if(gender!=null&&!gender.equals("")&&!MongoService.hasCollectionByGender(gender)){
+            flash("inventory","Gender dont exists or Gender empty ");
+            return redirect(routes.Application.inventory(null));
+        }
+        if(productSize!=null&&!productSize.equals("")&&!Utils.ProductSizeType.getList().contains(productSize)){
+            flash("inventory","Product Size dont exists or Product Size empty ");
             return redirect(routes.Application.inventory(null));
         }
 
+        if(MongoService.hasInventoryByProductIdSizeAndGender(productId,productSize,gender)){
+            flash("inventory","Inventory Already exists please update");
+            return redirect(routes.Application.inventory(null));
+        }
 
 
         //build inventory object
@@ -271,9 +563,16 @@ public class Application extends Controller {
         inventory.setQuantity(quantityInt);
         inventory.setSize(productSize);
         inventory.setSellInOutOfStock(sellInOutOfStockBool);
+        inventory.setGenderSlug(gender);
 
         //save Inventory
         MongoService.saveInventory(inventory);
+        // Save Inventory Entry
+        InventoryEntry entry = new InventoryEntry();
+        entry.setInventory(inventory);
+        entry.setQuantity(quantityInt);
+        MongoService.saveInventoryEntry(entry);
+
         //product update
         product.getInventories().add(inventory);
         MongoService.saveProduct(product);
@@ -291,8 +590,13 @@ public class Application extends Controller {
         String hasOnLocalStore = (dataFiles.asFormUrlEncoded().get("hasOnLocalStore") != null && dataFiles.asFormUrlEncoded().get("hasOnLocalStore").length > 0) ? dataFiles.asFormUrlEncoded().get("hasOnLocalStore")[0] : null;
         String[] products = (dataFiles.asFormUrlEncoded().get("products") != null && dataFiles.asFormUrlEncoded().get("products").length > 0) ? dataFiles.asFormUrlEncoded().get("products") : null;
 
+        String mainMenu = (dataFiles.asFormUrlEncoded().get("mainMenu") != null && dataFiles.asFormUrlEncoded().get("mainMenu").length > 0) ? dataFiles.asFormUrlEncoded().get("mainMenu")[0] : null;
+        String gender = (dataFiles.asFormUrlEncoded().get("gender") != null && dataFiles.asFormUrlEncoded().get("gender").length > 0) ? dataFiles.asFormUrlEncoded().get("gender")[0] : null;
+
         boolean onlineBool = (visibleOnline!=null)?true:false;
         boolean storeBool = (hasOnLocalStore!=null)?true:false;
+        boolean mainMenuBool = (mainMenu!=null)?true:false;
+        boolean genderBool = (gender!=null)?true:false;
 
         List<String> productsList =  (products!=null)?Arrays.asList(products):new ArrayList<>();
 
@@ -304,12 +608,12 @@ public class Application extends Controller {
 
         if(id!=null&&!MongoService.hasCollectionById(id)) {
             flash("collection","Procut not in base");
-            return redirect(routes.Application.product(null));
+            return redirect(routes.Application.collection(null));
         }
 
         if(title==null||title.equals("")){
             flash("collection","Insert Title at least");
-            return redirect(routes.Application.product(null));
+            return redirect(routes.Application.collection(null));
         }
 
         //build product object
@@ -324,6 +628,9 @@ public class Application extends Controller {
         collection.setDescription(description);
         collection.setOnLineVisible(onlineBool);
         collection.setOnLocalStore(storeBool);
+        collection.setMainMenu(mainMenuBool);
+        collection.setGender(genderBool);
+
 
 
         List<String> collectionsSlug = new ArrayList<>();
@@ -367,6 +674,174 @@ public class Application extends Controller {
         return redirect(routes.Application.listCollections());
     }
     @RequireCSRFCheck
+    public static Result saveTag(String id){
+
+        Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
+        String title = (dataFiles.asFormUrlEncoded().get("title") != null && dataFiles.asFormUrlEncoded().get("title").length > 0) ? dataFiles.asFormUrlEncoded().get("title")[0] : null;
+        String description = (dataFiles.asFormUrlEncoded().get("description") != null && dataFiles.asFormUrlEncoded().get("description").length > 0) ? dataFiles.asFormUrlEncoded().get("description")[0] : null;
+        String visibleOnline = (dataFiles.asFormUrlEncoded().get("visibleOnline") != null && dataFiles.asFormUrlEncoded().get("visibleOnline").length > 0) ? dataFiles.asFormUrlEncoded().get("visibleOnline")[0] : null;
+        String hasOnLocalStore = (dataFiles.asFormUrlEncoded().get("hasOnLocalStore") != null && dataFiles.asFormUrlEncoded().get("hasOnLocalStore").length > 0) ? dataFiles.asFormUrlEncoded().get("hasOnLocalStore")[0] : null;
+        String[] products = (dataFiles.asFormUrlEncoded().get("products") != null && dataFiles.asFormUrlEncoded().get("products").length > 0) ? dataFiles.asFormUrlEncoded().get("products") : null;
+
+        boolean onlineBool = (visibleOnline!=null)?true:false;
+        boolean storeBool = (hasOnLocalStore!=null)?true:false;
+
+        List<String> productsList =  (products!=null)?Arrays.asList(products):new ArrayList<>();
+
+        List<Http.MultipartFormData.FilePart> fileImages = dataFiles.getFiles();
+
+
+
+        //Validation
+
+        if(id!=null&&!MongoService.hasTagById(id)) {
+            flash("tag","Procut not in base");
+            return redirect(routes.Application.tag(null));
+        }
+
+        if(title==null||title.equals("")){
+            flash("tag","Insert Title at least");
+            return redirect(routes.Application.tag(null));
+        }
+
+        //build product object
+        Tag tag = null;
+        if(id!=null) {
+            tag = MongoService.findTagById(id);
+        }
+
+        tag = (tag!=null)?tag:new Tag();
+
+        tag.setTitle((title != null && !title.equals("")) ? title : tag.getTitle());
+        tag.setDescription(description);
+        tag.setOnLineVisible(onlineBool);
+        tag.setOnLocalStore(storeBool);
+
+
+        List<String> tagsSlug = new ArrayList<>();
+        tagsSlug.add(tag.getSlug());
+        final String slugFinal = tag.getSlug();
+
+        List<Product> productsToAddOrRemoveTag = MongoService.findProductByTagSlugOrListId(tagsSlug, productsList);
+        productsToAddOrRemoveTag.stream().forEach(p->{
+            if(productsList.contains(p.getId())){
+                p.getUserTags().add(slugFinal);
+            }else{
+                p.getUserTags().remove(slugFinal);}
+        });
+        MongoService.saveProducts(productsToAddOrRemoveTag);
+        List<Image> imagesNew = new ArrayList<>();
+        for(Http.MultipartFormData.FilePart file : fileImages){
+            String  imageName;
+            if (file != null) {
+                Image image = new Image();
+                imageName = file.getFilename();
+                File fileSave = file.getFile();
+                double bytes = fileSave.length();
+                double kilobytes = (bytes / 1024);
+                double megabytes = (kilobytes / 1024);
+
+                image.setSize(megabytes+" mb");
+                image.setName(imageName);
+                image.setImageFile(fileSave);
+                image.saveFile();
+                imagesNew.add(image);
+            }
+        }
+
+        if(imagesNew.size() > 0&&tag.getImage()!=null) {
+            tag.getImage().deleteFile();
+        }
+        tag.setImage((imagesNew.size() > 0) ? imagesNew.get(0) : tag.getImage());
+
+        MongoService.saveTag(tag);
+
+        return redirect(routes.Application.listTags());
+    }
+    @RequireCSRFCheck
+    public static Result saveLocalStore(String id){
+
+        Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
+        String title = (dataFiles.asFormUrlEncoded().get("title") != null && dataFiles.asFormUrlEncoded().get("title").length > 0) ? dataFiles.asFormUrlEncoded().get("title")[0] : null;
+        String description = (dataFiles.asFormUrlEncoded().get("description") != null && dataFiles.asFormUrlEncoded().get("description").length > 0) ? dataFiles.asFormUrlEncoded().get("description")[0] : null;
+        String visibleOnline = (dataFiles.asFormUrlEncoded().get("visibleOnline") != null && dataFiles.asFormUrlEncoded().get("visibleOnline").length > 0) ? dataFiles.asFormUrlEncoded().get("visibleOnline")[0] : null;
+        String[] products = (dataFiles.asFormUrlEncoded().get("products") != null && dataFiles.asFormUrlEncoded().get("products").length > 0) ? dataFiles.asFormUrlEncoded().get("products") : null;
+
+        boolean onlineBool = (visibleOnline!=null)?true:false;
+
+        List<String> productsList =  (products!=null)?Arrays.asList(products):new ArrayList<>();
+
+        List<Http.MultipartFormData.FilePart> fileImages = dataFiles.getFiles();
+
+
+
+        //Validation
+
+        if(id!=null&&!MongoService.hasLocalStoreById(id)) {
+            flash("localStore","Store is not in base");
+            return redirect(routes.Application.localStore(null));
+        }
+
+        if(title==null||title.equals("")){
+            flash("localStore","Insert Title at least");
+            return redirect(routes.Application.localStore(null));
+        }
+
+        //build product object
+        LocalStore localStore = null;
+        if(id!=null) {
+            localStore = MongoService.findLocalStoreById(id);
+        }
+
+        localStore = (localStore!=null)?localStore:new LocalStore();
+
+        localStore.setTitle((title != null && !title.equals("")) ? title : localStore.getTitle());
+        localStore.setDescription(description);
+        localStore.setOnLineVisible(onlineBool);
+
+
+        List<String> localStoreSlug = new ArrayList<>();
+        localStoreSlug.add(localStore.getSlug());
+        final String slugFinal = localStore.getSlug();
+
+        List<Product> productsToAddOrRemoveLocalStore = MongoService.findProductByLocalStoreSlugOrListId(localStoreSlug, productsList);
+        productsToAddOrRemoveLocalStore.stream().forEach(p->{
+            if(productsList.contains(p.getId())){
+                p.getLocalStoresSlugs().add(slugFinal);
+            }else{
+                p.getLocalStoresSlugs().remove(slugFinal);}
+        });
+        MongoService.saveProducts(productsToAddOrRemoveLocalStore);
+
+        List<Image> imagesNew = new ArrayList<>();
+        for(Http.MultipartFormData.FilePart file : fileImages){
+            String  imageName;
+            if (file != null) {
+                Image image = new Image();
+                imageName = file.getFilename();
+                File fileSave = file.getFile();
+                double bytes = fileSave.length();
+                double kilobytes = (bytes / 1024);
+                double megabytes = (kilobytes / 1024);
+
+                image.setSize(megabytes+" mb");
+                image.setName(imageName);
+                image.setImageFile(fileSave);
+                image.saveFile();
+                imagesNew.add(image);
+            }
+        }
+
+        if(imagesNew.size() > 0&&localStore.getImage()!=null) {
+            localStore.getImage().deleteFile();
+        }
+        localStore.setImage((imagesNew.size() > 0) ? imagesNew.get(0) : localStore.getImage());
+
+        MongoService.saveLocalStore(localStore);
+
+        return redirect(routes.Application.listLocalStores());
+    }
+    @RequireCSRFCheck
     public static Result saveGiftCard(String id){
 
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -391,10 +866,15 @@ public class Application extends Controller {
 
         if(id!=null&&!MongoService.hasGiftCardById(id)) {
             flash("giftCard","Gift Card not in base");
+
             return redirect(routes.Application.giftCard(null));
         }
 
-        if((code==null||code.equals(""))&&(id==null&&!MongoService.hasGiftCardById(code))){
+        if(code==null||code.equals("")){
+            flash("giftCard","Insert a Valid Code");
+            return redirect(routes.Application.giftCard(null));
+        }
+        if(id==null&&MongoService.hasGiftCardById(code)){
             flash("giftCard","Insert a Valid Code");
             return redirect(routes.Application.giftCard(null));
         }
@@ -438,8 +918,8 @@ public class Application extends Controller {
 
         String[] collections = (dataFiles.get("collections") != null && dataFiles.get("collections").length > 0) ? dataFiles.get("collections") : null;
         String[] products = (dataFiles.get("products") != null && dataFiles.get("products").length > 0) ? dataFiles.get("products") : null;
-        List<String> collectionList =  (collections!=null)?Arrays.asList(collections):new ArrayList<>();
-        List<String> productsnList =  (products!=null)?Arrays.asList(products):new ArrayList<>();
+        Set<String> collectionList =  (collections!=null)?new HashSet<>(Arrays.asList(collections)):new HashSet<>();
+        Set<String> productsnList =  (products!=null)?new HashSet<>(Arrays.asList(products)):new HashSet<>();
 
         boolean noLimitsBool = (noLimits!=null)?true:false;
         boolean noDateLimiteBool = (noDateLimite!=null)?true:false;
@@ -449,6 +929,15 @@ public class Application extends Controller {
         Utils.DiscountValidation validation = Utils.DiscountValidation.valueOf(validationType);
         Utils.DiscountPaymentAdjust paymentAdjust = Utils.DiscountPaymentAdjust.valueOf(applyCondition);
         Utils.DiscountType typeDiscount = Utils.DiscountType.valueOf(discountType);
+
+        String onLocalStore = (dataFiles.get("onLocalStore") != null && dataFiles.get("onLocalStore").length > 0) ? dataFiles.get("onLocalStore")[0] : null;
+        String onLineVisible = (dataFiles.get("onLineVisible") != null && dataFiles.get("onLineVisible").length > 0) ? dataFiles.get("onLineVisible")[0] : null;
+
+        boolean onLocalStoreBool = (active!=null)?true:false;
+        boolean onLineVisibleBool = (active!=null)?true:false;
+
+
+
 
         double value = 0;
         try {
@@ -525,32 +1014,35 @@ public class Application extends Controller {
         discount.setOrdersValidation(validation);
         discount.setWhereApply(paymentAdjust);
 
+        discount.setOnLocalStore(onLocalStoreBool);
+        discount.setOnLineVisible(onLineVisibleBool);
+
+
         switch (validation) {
 
             case collections: {
-                discount.setCollectionsId(collectionList);
+                discount.setCollectionsSlug(collectionList);
                 discount.setOverValueOf(0);
-                discount.setProducts(new ArrayList<>());
+                discount.setProductSlugs(new HashSet<>());
                 break;
             }
             case overValue: {
-                discount.setCollectionsId(new ArrayList<>());
+                discount.setCollectionsSlug(new HashSet<>());
                 discount.setOverValueOf(overValueInputDouble);
-                discount.setProducts(new ArrayList<>());
+                discount.setProductSlugs(new HashSet<>());
                 break;
 
             }
             case specificProduct:{
-                discount.setCollectionsId(new ArrayList<>());
+                discount.setCollectionsSlug(new HashSet<>());
                 discount.setOverValueOf(0);
-                discount.setProducts(productsnList);
+                discount.setProductSlugs(productsnList);
                 break;
-
             }
             default:{
-                discount.setCollectionsId(new ArrayList<>());
+                discount.setCollectionsSlug(new HashSet<>());
                 discount.setOverValueOf(0);
-                discount.setProducts(new ArrayList<>());
+                discount.setProductSlugs(new HashSet<>());
                 break;
 
             }
@@ -565,7 +1057,6 @@ public class Application extends Controller {
 
 
         return redirect(routes.Application.listDiscount());
-
     }
     @RequireCSRFCheck
     public static Result saveCostumer(String id){
@@ -677,7 +1168,31 @@ public class Application extends Controller {
         return redirect(routes.Application.listInventory());
     }
     public static Result deleteCollection(String id){
-        return ok();
+
+        Collection collection = MongoService.findCollectionById(id);
+        if(collection!=null){
+            MongoService.deleteCollection(collection);
+            flash("listCollections","Removed with success");
+        }
+        return redirect(routes.Application.listCollections());
+    }
+    public static Result deleteTag(String id){
+
+        Tag tag = MongoService.findTagById(id);
+        if(tag!=null){
+            MongoService.deleteTag(tag);
+            flash("listTags","Removed with success");
+        }
+        return redirect(routes.Application.listTags());
+    }
+    public static Result deleteLocalStore(String id){
+
+        LocalStore localStore = MongoService.findLocalStoreById(id);
+        if(localStore!=null){
+            MongoService.deleteLocalStore(localStore);
+            flash("listLocalStores","Removed with success");
+        }
+        return redirect(routes.Application.listLocalStores());
     }
     public static Result deleteGiftCard(String id){
         GiftCard giftCard = MongoService.findGiftCardById(id);
@@ -722,6 +1237,23 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    public static Result deleteSiteContentImage(String contentId,String imageName){
+        if(contentId!=null && imageName!=null){
+            SiteContent content = MongoService.findContentById(contentId);
+            if(content!=null){
+                try {
+                    Image image = content.getImages().stream().filter(i -> i.getName().equals(imageName)).findFirst().get();
+                    content.getImages().remove(image);
+                    MongoService.saveContent(content);
+                    image.deleteFile();
+                    return ok();
+                }catch (Exception e) {
+                    return internalServerError();
+                }
+            }
+        }
+        return internalServerError();
+    }
     public static Result deleteCollectionImage(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
@@ -746,6 +1278,54 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    public static Result deleteTagImage(){
+        Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
+
+        String tagId = (dataFiles.get("tagId") != null && dataFiles.get("tagId").length > 0) ? dataFiles.get("tagId")[0] : null;
+        String imageName = (dataFiles.get("imageName") != null && dataFiles.get("imageName").length > 0) ? dataFiles.get("imageName")[0] : null;
+
+
+        if(tagId!=null && imageName!=null){
+            Tag tag = MongoService.findTagById(tagId);
+            if(tag!=null){
+                try {
+                    Image image = tag.getImage();
+                    image.deleteFile();
+                    tag.setImage(null);
+                    MongoService.saveTag(tag);
+
+                    return ok();
+                }catch (Exception e) {
+                    return internalServerError();
+                }
+            }
+        }
+        return internalServerError();
+    }
+    public static Result deleteLocalStoreImage(){
+        Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
+
+        String localStoreId = (dataFiles.get("localStoreId") != null && dataFiles.get("localStoreId").length > 0) ? dataFiles.get("localStoreId")[0] : null;
+        String imageName = (dataFiles.get("imageName") != null && dataFiles.get("imageName").length > 0) ? dataFiles.get("imageName")[0] : null;
+
+
+        if(localStoreId!=null && imageName!=null){
+            LocalStore localStore = MongoService.findLocalStoreById(localStoreId);
+            if(localStore!=null){
+                try {
+                    Image image = localStore.getImage();
+                    image.deleteFile();
+                    localStore.setImage(null);
+                    MongoService.saveLocalStore(localStore);
+
+                    return ok();
+                }catch (Exception e) {
+                    return internalServerError();
+                }
+            }
+        }
+        return internalServerError();
+    }
 
     public static Result updateInventoryQuantity(String id,String quantity){
         if(id!=null && quantity!=null){
@@ -754,6 +1334,11 @@ public class Application extends Controller {
                 try {
                     inventory.setQuantity(Integer.parseInt(quantity.trim()));
                     MongoService.saveInventory(inventory);
+                    // Save Inventory Entry
+                    InventoryEntry entry = new InventoryEntry();
+                    entry.setInventory(inventory);
+                    entry.setQuantity(Integer.parseInt(quantity.trim()));
+                    MongoService.saveInventoryEntry(entry);
                     return ok();
                 }catch (Exception e) {
                     return internalServerError();

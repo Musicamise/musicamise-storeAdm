@@ -35,27 +35,29 @@
                       <tr>
                         <th>SKU</th>
                         <th>Product Slug</th>
+                        <th>Product Size</th>
+                        <th>Product Gender</th>
                         <th>Quantity</th>
                         <th>Product Price</th>
-                        <th>Product type</th>
                         <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                 @for(inventory<-inventories){
                       <tr>
-                        <td>@inventory.getSku</td>
-                        <td>@inventory.getProduct.getSlug
-
-                        <span class="label label-success" style="font-size: 100%; font-weight: 200;">@inventory.getSize</span>
-
+                        <td id="@inventory.getSku">@inventory.getSku</td>
+                        <td>@inventory.getProduct.getSlug</td>
+                        <td> 
+                            <span class="label label-success" style="font-size: 100%; font-weight: 200;">@inventory.getSize</span>
+                        </td>
+                        <td> 
+                            <span class="label label-warning" style="font-size: 100%; font-weight: 200;">@inventory.getGenderSlug</span>
                         </td>
                         <td>
                             <input type="text" style="width:30px;" id="quantity@inventory.getSku" class="quantity" name="quantity" value="@inventory.getQuantity" placeholder="Quantity">
                             <button type="button" onclick="showUpdateModal('@inventory.getSku')" class="btn btn-primary btn-flat">UpDate</button>
                             </td>
                         <td>@inventory.getProduct.getPrice</td>
-                        <td>@inventory.getProduct.getType</td>
                         <td>
                             <a href="@routes.Application.inventory(inventory.getSku())"><i class="fa fa-file-text-o"></i> Edit</a>
                             <span> | </span>
@@ -68,9 +70,11 @@
                       <tr>
                         <th>SKU</th>
                         <th>Product Slug</th>
+                        <th>Product Size</th>
+                        <th>Product Gender</th>
                         <th>Quantity</th>
                         <th>Product Price</th>
-                        <th>Product type</th>
+                        <th>Action</th>
                       </tr>
                     </tfoot>
                   </table>
@@ -106,7 +110,7 @@
                 <h4 class="modal-title">Update Quantity</h4>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to up date this inventory? </p>
+                <p>Are you sure you want to up date this inventory? <span id="modalSpanUpdate"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
@@ -137,6 +141,7 @@
 
     function showUpdateModal(id){
         $("#updateButton").attr('onclick', 'updateQuantity("'+id+'")');
+        $("#modalSpanUpdate").html($("#"+id).html())
         $("#modalUpdateQuantity").modal();
     }
 

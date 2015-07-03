@@ -54,12 +54,18 @@ public class Product {
     private boolean storeVisible;
     private boolean sendMail;
 
+    // private boolean hasDiscount;
+    // private double discount;
+    // private Utils.DiscountType discountType;
+
 
     //Organization
     private String type;
-    private List<String> userTags;
+    private Set<String> userTags;
     private Set<String> collectionsSlugs;
 
+
+    private Set<String> localStoresSlugs;
 
 
     @DBRef(lazy = true)
@@ -67,12 +73,35 @@ public class Product {
 
 
     public Product(){
-        this.userTags = new ArrayList<>();
+        this.userTags = new HashSet<>();
+        this.localStoresSlugs = new HashSet<>();
         this.images = new ArrayList<>();
         this.collectionsSlugs = new HashSet<>();
         this.inventories = new HashSet<>();
-
     }
+
+    // public boolean isHasDiscount() {
+    //     return hasDiscount;
+    // }
+
+    // public void setHasDiscount(boolean hasDiscount) {
+    //     this.hasDiscount = hasDiscount;
+    // }
+    
+    // public double getDiscount() {
+    //     return discount;
+    // }
+    // public void setDiscount(double discount) {
+    //     this.discount = discount;
+    // }
+
+    // public Utils.DiscountType getDiscountType() {
+    //     return discountType;
+    // }
+    // public void setDiscountType(Utils.DiscountType discountType) {
+    //     this.discountType = discountType;
+    // }
+
 
     @Override
     public boolean equals(Object o) {
@@ -195,9 +224,8 @@ public class Product {
         String slug = NONLATIN.matcher(normalized).replaceAll("");
         slug =  slug.toLowerCase(Locale.ENGLISH);
         int count = MongoService.countProductWithSlug(slug);
-        this.slug = slug+(count>=0?"":count);
+        this.slug = slug+(count>0?(count+1):"");
 
-        this.slug = slug;
     }
 
     public String getColor() {
@@ -240,11 +268,19 @@ public class Product {
         this.type = type;
     }
 
-    public List<String> getUserTags() {
+    public Set<String> getUserTags() {
         return userTags;
     }
 
-    public void setUserTags(List<String> userTags) {
+    public void setUserTags(Set<String> userTags) {
         this.userTags = userTags;
+    }
+
+    public Set<String> getLocalStoresSlugs() {
+        return localStoresSlugs;
+    }
+
+    public void setLocalStoresSlugs(Set<String> localStoresSlugs) {
+        this.localStoresSlugs = localStoresSlugs;
     }
 }

@@ -77,6 +77,47 @@
             <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
                 <span class="sr-only">Toggle navigation</span>
             </a>
+          <div class="navbar-custom-menu">
+            <ul class="nav navbar-nav">
+                 <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                  <img src="@routes.Assets.at("dist/img/user2-160x160.jpg")" class="user-image" alt="User Image"/>
+                  <span class="hidden-xs">Alexander Pierce</span>
+                </a>
+                <ul class="dropdown-menu">
+                  <!-- User image -->
+                  <li class="user-header">
+                    <img src="@routes.Assets.at("dist/img/user2-160x160.jpg")" class="img-circle" alt="User Image" />
+                    <p>
+                      Alexander Pierce - Web Developer
+                      <small>Member since Nov. 2012</small>
+                    </p>
+                  </li>
+                  <!-- Menu Body -->
+                  <li class="user-body">
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Followers</a>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Sales</a>
+                    </div>
+                    <div class="col-xs-4 text-center">
+                      <a href="#">Friends</a>
+                    </div>
+                  </li>
+                  <!-- Menu Footer-->
+                  <li class="user-footer">
+                    <div class="pull-left">
+                      <a href="#" class="btn btn-default btn-flat">Profile</a>
+                    </div>
+                    <div class="pull-right">
+                      <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+            
         </nav>
     </header>
     <!-- Left side column. contains the logo and sidebar -->
@@ -107,9 +148,14 @@
             <!-- sidebar menu: : style can be found in sidebar.less -->
             <ul class="sidebar-menu">
                 <li class="header">MAIN NAVIGATION</li>
+                 <li id="li-contents">
+                    <a href="@routes.Application.listContent">
+                        <i class="fa   fa-database"></i> <span>Site Contents</span> <small class="label pull-right bg-green"></small>
+                    </a>
+                </li>
                 <li id="li-orders">
                     <a href="@routes.Application.listOrders">
-                        <i class="fa  fa-bar-chart"></i> <span>Orders Chart</span> <small class="label pull-right bg-green"></small>
+                        <i class="fa  fa-dashboard"></i> <span>Orders Chart</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
                 <li class="treeview">
@@ -120,12 +166,18 @@
                         <li id="li-product" ><a href="@routes.Application.listProduct"><i class="fa fa-tags"></i> Product List</a></li>
                         <li id="li-inventory"><a href="@routes.Application.listInventory"><i class="fa  fa-sitemap"></i> Inventory</a></li>
                         <li id="li-collections"><a href="@routes.Application.listCollections"><i class="fa  fa-folder-open"></i> Colletions</a></li>
+                        <li id="li-tags"><a href="@routes.Application.listTags"><i class="fa   fa-ticket"></i> Tags</a></li>
                         <li id="li-giftcard"><a href="@routes.Application.listGiftCard"><i class="fa  fa-gift"></i> Gift Card</a></li>
                     </ul>
                 </li>
                 <li id="li-discount" >
                     <a href="@routes.Application.listDiscount">
                         <i class="fa fa-qrcode"></i> <span>Discount</span> <small class="label pull-right bg-green"></small>
+                    </a>
+                </li>
+                <li id="li-localStore" >
+                    <a href="@routes.Application.listLocalStores">
+                        <i class="fa  fa-home"></i> <span>Local Store</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
                 <li id="li-costumer">
@@ -135,7 +187,7 @@
                 </li>
                 <li id="li-orders">
                     <a href="@routes.Application.listOrders">
-                        <i class="fa fa-desktop"></i> <span>Orders Table</span> <small class="label pull-right bg-green"></small>
+                        <i class="fa fa-reorder"></i> <span>Orders Table</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
             </ul>
@@ -220,6 +272,8 @@
 <script src="@routes.Assets.at("plugins/multifile-master/jquery.MultiFile.js")" type="text/javascript" language="javascript"></script>
 <!-- Mask money-->
 <script src="@routes.Assets.at("plugins/maskmoney/jquery.maskMoney.min.js")" type="text/javascript" language="javascript"></script>
+<!-- Color picker-->
+<script src="@routes.Assets.at("plugins/rudimentarColorPicker/sgbeal-colorpicker.jquery.js")" type="text/javascript" language="javascript"></script>
 
 <!-- CK Editor -->
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js"></script>

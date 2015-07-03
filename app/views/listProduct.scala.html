@@ -35,7 +35,9 @@
                         <th>Slug</th>
                         <th>Title</th>
                         <th>Price</th>
+                        <th>Collections</th>
                         <th>Tags</th>
+                        <th>Local Store</th>
                         <th>type</th>
                         <th>Action</th>
                       </tr>
@@ -45,9 +47,17 @@
                       <tr>
                         <td >@product.getSlug()</td>
                         <td id="@product.getId">@product.getTitle()</td>
-                        <td>@product.getPrice()</td>
+                        <td>@if(product.getPriceCompareWith!=null &&product.getPriceCompareWith>0){<span style='text-decoration: line-through;'>@product.getPriceCompareWith</span> - }@product.getPrice()</td>
+                          <td>@for( collectionSlug <- product.getCollectionsSlugs()){
+                              <span class="badge bg-blue">@collectionSlug</span>
+                              }
+                          </td>
                           <td>@for( tag <- product.getUserTags()){
                               <span class="badge bg-green">@tag</span>
+                              }
+                          </td>
+                          <td>@for( localStoreSlug <- product.getLocalStoresSlugs()){
+                              <span class="badge bg-gray">@localStoreSlug</span>
                               }
                           </td>
                           <td>@product.getType()</td>
@@ -65,7 +75,9 @@
                           <th>Slug</th>
                           <th>Title</th>
                           <th>Price</th>
+                          <th>Collections</th>
                           <th>Tags</th>
+                          <th>Local Store</th>
                           <th>type</th>
                           <th>Action</th>
                       </tr>
