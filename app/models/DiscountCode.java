@@ -72,6 +72,10 @@ public class DiscountCode {
         this.collectionsSlug = new HashSet<>();
     }
 
+    public String toString(){
+        return this.code+"-Active:"+this.active+"-"+this.type+"-"+this.valueOf+"-"+this.whereApply+"-"+this.ordersValidation;
+    }
+
     public boolean isOnLocalStore() {
         return onLocalStore;
     }
@@ -228,5 +232,20 @@ public class DiscountCode {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public boolean stillOnDate(){
+        Date date = new Date();
+        if(startDate!=null&&endDate!=null){
+            return date.after(startDate) && date.before(endDate);
+        }
+        return false;
+    }
+    public boolean stillHaveTimeToSpare(){
+        Date date = new Date();
+        if(startDate!=null&&endDate!=null){
+            return date.after(startDate) && date.before(endDate);
+        }
+        return false;
     }
 }

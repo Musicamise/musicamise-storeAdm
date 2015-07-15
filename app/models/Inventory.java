@@ -49,6 +49,16 @@ public class Inventory {
         this.product = new Product();
     }
 
+    public Inventory(Inventory inventory){
+        this.sku = inventory.getSku();
+        this.product = inventory.getProduct();
+        this.quantity = inventory.getQuantity();
+        this.size = inventory.getSize();
+        this.genderSlug = inventory.getGenderSlug();
+        this.orderOutOfStock = inventory.isOrderOutOfStock();
+        this.sellInOutOfStock = inventory.isSellInOutOfStock();
+    }
+
     public boolean isSellInOutOfStock() {
         return sellInOutOfStock;
     }

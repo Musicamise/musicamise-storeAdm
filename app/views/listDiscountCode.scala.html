@@ -35,6 +35,7 @@
                         <th>Date Range</th>
                         <th>Times Used</th>
                         <th>Times Left</th>
+                        <th>Visibility</th>
                         <th>Type Discount</th>
                         <th>Value on Descount</th>
                         <th>where apply</th>
@@ -53,6 +54,17 @@
                         </td>
                         <td>
                             @if(discount.isNoTimesLimits){No limits on times left}else{ @discount.getTimesLeft}
+                        </td>
+                        <td>
+                          @if(discount.isActive){               
+                            <span class="badge bg-blue">Active</span>
+                          }
+                          @if(discount.isOnLocalStore){               
+                            <span class="badge bg-red">Local Store</span>
+                          }
+                          @if(discount.isOnLineVisible){               
+                            <span class="badge bg-green">Online Visible</span>
+                          }
                         </td>
                         <td>
                             @discount.getType
@@ -94,6 +106,7 @@
                           <th>Created Date</th>
                           <th>Times Used</th>
                           <th>Times Left</th>
+                          <th>Visibility</th>
                           <th>Type Discount</th>
                           <th>Value on Descount</th>
                           <th>where apply</th>

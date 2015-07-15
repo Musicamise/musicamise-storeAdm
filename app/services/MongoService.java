@@ -1,4 +1,5 @@
 package services;
+import org.bson.types.ObjectId;
 import play.Logger;
 
 import bootstrap.DS;
@@ -145,6 +146,10 @@ public class MongoService {
         return DS.mop.find(new Query(where("idCompra").is(code)), Order.class);
     }
 
+    public static boolean hasOrderById(String id){
+        return   DS.mop.exists(new Query(where("_id").is(id)), Order.class);
+    }
+
     public static Product findProductByTitle(String textContent) {
         Product product = DS.mop.findOne(new Query(where("title").is(textContent)),Product.class);
         return product;
@@ -183,9 +188,13 @@ public class MongoService {
         return DS.mop.findAll(Inventory.class);
     }
 
-    public static List<Inventory> findInventoriesByIds(String[] ids) {
+    public static List<Inventory> findInventoriesByIds(List<String> ids) {
+        List<ObjectId> idList = new ArrayList<>();
+        for(String id:ids){
+            idList.add(new ObjectId(id));
+        }
         Query query = new Query();
-        query.addCriteria(Criteria.where("_id").elemMatch(Criteria.where(null).in(ids)));
+        query.addCriteria(Criteria.where("_id").in(idList));
 
         return DS.mop.find(query,Inventory.class);
     }
@@ -206,6 +215,11 @@ public class MongoService {
 
     public static void saveInventory(Inventory inventory) {
         DS.mop.save(inventory);
+    }
+    public static void saveInventories(List<Inventory> inventories) {
+        for(Inventory inventory :inventories){
+            MongoService.saveInventory(inventory);
+        }
     }
 
     public static void saveInventoryEntry(InventoryEntry inventoryEntry) {
@@ -251,6 +265,13 @@ public class MongoService {
                             Criteria.where("ordersValidation").is(Utils.DiscountValidation.all.name())
                             ));
         Logger.debug(query.toString());
+        return DS.mop.find(query,DiscountCode.class);
+    }
+
+    public static List<DiscountCode> findDiscountCodesByActive() {
+        Query query = new Query();
+        query.addCriteria( Criteria.where("active").is(true)
+                            );
         return DS.mop.find(query,DiscountCode.class);
     }
 

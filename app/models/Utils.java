@@ -85,7 +85,7 @@ public class Utils {
         all("Todos produtos"),
         overValue("Valor acima"),
         collections("Coleções"),
-        specificProduct("Apenas um produto");
+        specificProduct("Apenas uns produto");
         String content;
         private DiscountValidation(String name){
             this.content = name;

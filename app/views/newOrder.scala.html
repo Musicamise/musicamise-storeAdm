@@ -27,16 +27,16 @@
                     <div id ="productsContainer" class="box-body">
                         <div class="form-group">
                             <label >Product </label>
-                             <select name="product" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                             <select name="product"  data-placeholder="Chose the product" style="width: 350px; display: none;"  class="product chosen-select-width" tabindex="-1">
                               <option value=""></option>
                               @for(inventorie<- inventories){
-                              <option  value="@inventorie.getSku" >@inventorie.getProduct.getTitle / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>
+                              <option  value="@inventorie.getSku" price="@inventorie.getProduct.getPrice" >@inventorie.getProduct.getTitle /R$ @inventorie.getProduct.getPrice /  @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>
                               }
                             </select>
                             <input type="text" style="width:70px;" class="quantity" name="quantity" value="" placeholder="Quantity">
                         </div>
                     </div>
-                     <button type="button" onClick="addProduct();" class="btn btn-secondary">Add New Product</button>
+                     <button id="addProductButton" type="button" onClick="addProduct();" class="btn btn-secondary">Add New Product</button>
 
                     <div class="form-group">
                         <label >User</label>
@@ -65,8 +65,8 @@
 
                     <div class="form-group">
                         <label >DiscountCode</label>
-                        <select name="discountCode" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                              <option value=""></option>
+                        <select name="discountCode" id="discountCode" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value="none">none</option>
                               @for(discountCode<- discountCodes){
                               <option  value="@discountCode.getCode" >@discountCode.toString</option>
                               }
@@ -75,7 +75,7 @@
 
                     <div class="form-group">
                         <label >Total</label>
-                        <input name="total" id="total" disabled="" type="text" class="form-control"  placeholder="Total Value" > 
+                        <input name="total" id="total" disabled="" type="text" class="price form-control"  placeholder="Total Value" value="" > 
                     </div>
 
                     <div class="form-group">
@@ -110,16 +110,69 @@
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
 
 <script type="text/javascript">
+
+    function updatePrice(){
+        if(this.parentNode.getElementsByClassName("quantity").item()){
+          var quantityValue = this.parentNode.getElementsByClassName("quantity").item().value;
+          if(quantityValue===""){
+            this.parentNode.getElementsByClassName("quantity").item().value = 1;
+          }
+        }
+
+        var product = [];
+        $('.product option:selected').each(function(){
+              var quantity = $(this.parentElement.parentElement).find('.quantity').val();
+              product.push(this.value+"-"+quantity);
+        });
+
+
+         var discountCodeId = $("#discountCode").chosen().val();
+        $.ajax({
+          method: "POST",
+          url: "@routes.Application.calculatePrice()",
+          data: { product:product, discountCodeId: discountCodeId }
+        }).success(function( data ) {
+              $("#total").val(data);
+              $(".price").maskMoney('mask');
+
+        }).error(function(msg){
+              alert(msg.responseText);
+        });
+
+         var productAlready = [];
+          $('.product option:selected').each(function(){
+                productAlready.push(this.value);
+          });
+
+        if(inventoriesJS.length === productAlready.length){
+          $("#addProductButton").hide();
+          $("#addProductButton").attr('disabled',true);
+
+        }else{
+          $("#addProductButton").attr('disabled',false);
+        }
+    }
+
      $(document).ready(function() {
-             $("li" ).removeClass("active");
-            $("#li-orders" ).addClass("active");
+
+
+        $("li" ).removeClass("active");
+        $("#li-orders" ).addClass("active");
+        $("#addProductButton").attr('disabled',true);
+
+        var total = 0;
+        $('.product').chosen().change(updatePrice);
+        $('#discountCode').chosen().change(updatePrice);
+    
+        $('.quantity').change(updatePrice);
+
         });
 
         $(function() {
-            $(".price").maskMoney({prefix:' ', thousands:'.', decimal:',', affixesStay: true});
+            $(".price").maskMoney({prefix:'R$ ', thousands:'.', decimal:',', affixesStay: true});
 
             $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
-                var spinner = $( ".quantity" ).spinner();
+              var spinner = $( ".quantity" ).spinner();
 
             for (var selector in config) {
               $(selector).chosen(config[selector]);
@@ -127,19 +180,42 @@
 
         });
 
+
+      var inventoriesJS = {};
+
+
     function addProduct(){
+      @for(inventorie<- inventories){
+        inventoriesJS['@inventorie.getSku']="<option  value='@inventorie.getSku' price='@inventorie.getProduct.getPrice' >@inventorie.getProduct.getTitle/R$ @inventorie.getProduct.getPrice  / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>";
+      }
+      var productAlready = [];
+      $('.product option:selected').each(function(){
+            productAlready.push(this.value);
+      });
 
       var productContainer = "<div class='form-group'>\
                           <label >Product </label>\
-                          <select name='product' data-placeholder='Chose the product' style='width: 350px; display: none;'   class='chosen-select-width' tabindex='-1'>\
+                          <select name='product' data-placeholder='Chose the product' style='width: 350px; display: none;'   class='product chosen-select-width' tabindex='-1'>\
                               <option value=''></option>";
-           @for(inventorie<- inventories){ 
-            productContainer+= "<option  value='@inventorie.getSku' >@inventorie.getProduct.getTitle / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>"
-           }                     
+            
+      Object.keys(inventoriesJS).forEach(function(key){
+          console.log(key)
+          if(($.inArray(key, productAlready))<0){
+              productContainer+= inventoriesJS[key];
+          }
+      }); 
+                                
 
       productContainer += "</select>\
                           <input type='text' style='width:70px;' id='quantity' class='quantity' name='quantity' value='' placeholder='Quantity'>\
-                      </div>";
+                          </div>";
+
+
+
+        $('.product option').attr('disabled',true); 
+        $('.product option:selected').attr('disabled',false);
+        $('.product').prop('disabled', false).trigger("chosen:updated");
+
         $("#productsContainer").append(productContainer);
         $('.quantity').maskMoney({prefix:' ', thousands:'.', decimal:',',precision:0, affixesStay: true});
         var spinner = $( ".quantity" ).spinner();
@@ -147,6 +223,14 @@
         for (var selector in config) {
           $(selector).chosen(config[selector]);
         }
+
+        $('.product').chosen().change(updatePrice);
+
+        $('.quantity').change(updatePrice);
+        
+ 
+        $("#addProductButton").attr('disabled',true);
+
     }
  
 </script>

@@ -20,6 +20,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.JsonNode;
+import play.libs.Json;
+import play.Logger;
+import java.text.DecimalFormat;
 
 public class Application extends Controller {
 
@@ -28,11 +32,20 @@ public class Application extends Controller {
      * */
 
     @AddCSRFToken
+    public static Result dashboard(){
+        return ok(dashboard.render());
+    }
+
+    @AddCSRFToken
     public static Result content(String id){
         SiteContent contentObject = MongoService.findContentById(id);
         contentObject = (contentObject!=null?contentObject:new SiteContent());
         return ok(newContent.render(contentObject));
     }
+
+    
+
+    
 
     @AddCSRFToken
     public static Result product(String id){
@@ -187,10 +200,157 @@ public class Application extends Controller {
     /**
      * save or Edit From Form TODO
      * */
-    public static double CalculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode, GiftCard giftCard){
+    public static double calculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode, GiftCard giftCard){
+        double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
+ 
+        if(discountCode!=null){
 
-        return 0.0;
+            switch(discountCode.getWhereApply()){
+                case oncePerOrder:
+                    if(discountIsApplicable(inventories,discountCode)){
+                        switch(discountCode.getType()){
+                            case value:
+                                total = total-discountCode.getValueOf();
+                            break;
+                            case percent:
+                                total = total*(1-(discountCode.getValueOf()/100));
+                            break;
+                        }
+                    }
+                    break;
+                case toEveryProduct:
+                    total = 0;
+                    for(Inventory inventory: inventories){
+                        double value = inventory.getProduct().getPrice()*inventory.getQuantity();
+                        List<Inventory> newListInverntory = new ArrayList<>();
+                        newListInverntory.add(inventory);
+                        if(discountIsApplicable(newListInverntory,discountCode)){
+                            switch(discountCode.getType()){
+                                case value:
+                                    value = value-discountCode.getValueOf();
+                                break;
+                                case percent:
+                                    value = value*(1-(discountCode.getValueOf()/100));
+                                break;
+                            }
+                        }
+                        total += value;
+                    }
+                    
+                    break;
+            }
+        }
+        return total;
     }
+
+    public static boolean discountIsApplicable(List<Inventory> inventories,DiscountCode discountCode){
+        double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
+        Set<String> colelctionsSlug = new HashSet<>();
+        Set<String> productsSlug = new HashSet<>();
+        boolean collectionActive = false;
+        boolean productActive = false;
+
+        for(Inventory i:inventories){
+            colelctionsSlug.addAll(i.getProduct().getCollectionsSlugs());
+            productsSlug.add(i.getProduct().getSlug());
+        }
+
+        if(discountCode.getCollectionsSlug()!=null){
+
+            for(String collectionsSlug : discountCode.getCollectionsSlug()){
+                if(colelctionsSlug.contains(collectionsSlug)){
+                    collectionActive = true;
+                }
+            }
+
+        }
+
+        if(discountCode.getProductSlugs()!=null){
+            for(String productSlug : discountCode.getProductSlugs()){
+                if(productsSlug.contains(productSlug)){
+                    productActive = true;
+                }
+            }
+        }
+
+        boolean applicable = false;
+        if(discountCode.isActive()){
+            if(discountCode.stillOnDate()||discountCode.isNoDateLimits()){
+                if(discountCode.isNoTimesLimits()||discountCode.getTimesLeft()>0){
+                    switch (discountCode.getOrdersValidation()) {
+                        case all:
+                            applicable = true;
+                            break;
+                        case overValue:
+                            applicable = (discountCode.getOverValueOf()<=total);
+                            break;
+                        case collections:
+                            applicable =  collectionActive;
+                            break;
+                        case specificProduct:
+                            applicable = productActive;
+                            break;
+                    }
+                }
+            }
+        }
+        return applicable;
+    }
+    
+
+    public static Result calculatePrice(){
+        Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
+        String[] productIdsAndQuantity = (dataFiles.get("product[]") != null && dataFiles.get("product[]").length > 0) ? dataFiles.get("product[]")  : null;
+        String discountCodeId = (dataFiles.get("discountCodeId") != null && dataFiles.get("discountCodeId").length > 0) ? dataFiles.get("discountCodeId")[0] : null;
+        List<String> productIds =  new ArrayList<>();
+        for(int i = 0;i<productIdsAndQuantity.length;i++){
+                productIds.add(productIdsAndQuantity[i].split("-")[0]);
+        }
+        List<String> productIdsAndQuantityList = Arrays.asList(productIdsAndQuantity);
+
+        DiscountCode discountCode = null;
+        List<Inventory> inventories = new ArrayList<>();
+
+        if(discountCodeId!=null&&!discountCodeId.equals("")){
+            discountCode = MongoService.findDiscountCodeById(discountCodeId);
+        }
+        if(productIds!=null&& productIds.size() >0) {
+            inventories = MongoService.findInventoriesByIds(productIds);
+        }
+        if(inventories.size()>0){
+            for(int i=0;i<inventories.size();i++){
+                try{
+                    final Inventory inventory = inventories.get(i);
+                    int quantity =  Integer.parseInt(productIdsAndQuantityList.stream().filter(product -> product.contains(inventory.getSku())).findFirst().get().split("-")[1]);
+                    if(quantity<=0||inventory.getQuantity()<quantity){
+                        Logger.debug("quantity = "+quantity);
+                        Logger.debug("inventories quantity = "+inventory.getQuantity());
+                        Logger.debug("inventories sku = "+inventory.getSku());
+
+                        return internalServerError("Out of quantity");
+                    }else{
+                        inventories.get(i).setQuantity(quantity);
+                    }
+                }catch(Exception e){
+
+                    return internalServerError("error");
+                }
+            }
+        }
+        double total = Application.calculateFinalPrice(inventories,discountCode,null);
+        DecimalFormat format = new DecimalFormat("0.00");
+        String formatted = format.format(total);
+        return ok(Json.toJson(formatted));
+    }
+
+
+    public static Result getDiscounteCodeApplicable(String sku){
+        Product product = MongoService.findInventoryById(sku).getProduct();
+        List<DiscountCode> discountCodes = MongoService.findDiscountCodeByProduct(product);
+        JsonNode json = Json.toJson(discountCodes);
+        return ok(json);
+    }
+
     @RequireCSRFCheck
     public static Result saveOrder(String id){
 
@@ -221,43 +381,59 @@ public class Application extends Controller {
         if(discountCodeId!=null&&!discountCodeId.equals("")){
             discountCode = MongoService.findDiscountCodeById(discountCodeId);
         }
-        if(productIds!=null&& productIds.length >0){
-            inventories = MongoService.findInventoriesByIds(productIds);
-        }
 
+        //build inventory object
+        Order order = new Order();
+
+        //save order already in base
+        if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)) {
+            order = MongoService.findOrderById(id);
+            order.setStatus(status);
+            MongoService.saveOrder(order);
+            return redirect(routes.Application.listOrders());
+        }
 
         //Validation
 
-        // if(id!=null&&!MongoService.hasInventoryById(id)) {
-        //     flash("inventory","Inventory not in base");
-        //     return redirect(routes.Application.inventory(null));
-        // }
+        if(id!=null&&!id.equals("")&&!MongoService.hasOrderById(id)) {
+            flash("listOrders","Order not in base");
+            return redirect(routes.Application.listOrders());
+        }
 
-        // if(productId==null||productId.equals("")){
-        //     flash("inventory","Insert A product");
-        //     return redirect(routes.Application.inventory(null));
-        // }
+        if(productIds==null||(productIds!=null&&productIds.length<=0)){
+            flash("order","Insert A product");
+            return redirect(routes.Application.order(null));
+        }
 
-        // if(productId!=null&&!MongoService.hasProductById(productId)){
-        //     flash("inventory","Product does not Exist");
-        //     return redirect(routes.Application.inventory(null));
-        // }
+        if(email==null||(email!=null&&email.equals(""))){
+            flash("order","Insert a user or email");
+            return redirect(routes.Application.order(null));
+        }
+        if(user==null&&(email==null||(email!=null&&email.equals("")))){
+            flash("order","Insert a user or email");
+            return redirect(routes.Application.order(null));   
+        }
 
-        // if(MongoService.hasInventoryByProductAndSize(productId,productSize)){
-        //     flash("inventory","Inventory with same Size");
-        //     return redirect(routes.Application.inventory(null));
-        // }
-
+  
+      
         //validation and inventories changes on quantity
-        if(inventories.size()>0){
-            for(int i=0;i<inventories.size();i++){
+        if(productIds.length>0){
+            for(int i=0;i<productIds.length;i++){
                 try{
+                    Inventory inventory = MongoService.findInventoryById(productIds[i]);
                     int quantity =  Integer.parseInt(quantities[i].trim());
-                    if(quantity<=0||inventories.get(i).getQuantity()<quantity){
+                    if(quantity<=0||inventory.getQuantity()<quantity){
                         flash("order","Inventory without quantity or quantity <= 0");
                         return redirect(routes.Application.order(null));
                     }else{
-                        inventories.get(i).setQuantity(inventories.get(i).getQuantity() -quantity );
+                        inventory.setQuantity(inventory.getQuantity() -quantity );
+                        inventories.add(inventory);
+
+                        Inventory inventoryOrder = new Inventory(inventory);
+                        inventoryOrder.setQuantity(quantity);
+                        
+                        order.getProducts().add(inventoryOrder);
+
                     }
                 }catch(Exception e){
                     flash("order","Inventory error "+e.toString());
@@ -267,19 +443,10 @@ public class Application extends Controller {
         }
 
 
-        double total = Application.CalculateFinalPrice(inventories,discountCode,giftCard);
+        double total = Application.calculateFinalPrice(inventories,discountCode,giftCard);
 
-        //build inventory object
-        Order order = new Order();
-        if(id!=null&&!id.equals("")) {
-            order = MongoService.findOrderById(id);
-            order.setStatus(status);
-            MongoService.saveOrder(order);
-            return redirect(routes.Application.listOrders());
+        
 
-        }
-
-        order.setProducts(inventories);
         order.setEmail(email);
         order.setUser(user);
         order.setTotal(total);
@@ -289,9 +456,7 @@ public class Application extends Controller {
 
 
         //save Inventory change
-        for(int i=0;i<inventories.size();i++){
-            MongoService.saveInventory(inventories.get(i));
-        }
+        MongoService.saveInventories(inventories);
 
         MongoService.saveOrder(order);
 
@@ -528,25 +693,25 @@ public class Application extends Controller {
 
         if(productId==null||productId.equals("")){
             flash("inventory","Insert A product");
-            return redirect(routes.Application.inventory(null));
+            return redirect(routes.Application.inventory(id));
         }
 
         if(productId!=null&&!MongoService.hasProductById(productId)){
             flash("inventory","Product does not Exist");
-            return redirect(routes.Application.inventory(null));
+            return redirect(routes.Application.inventory(id));
         }
         if(gender!=null&&!gender.equals("")&&!MongoService.hasCollectionByGender(gender)){
             flash("inventory","Gender dont exists or Gender empty ");
-            return redirect(routes.Application.inventory(null));
+            return redirect(routes.Application.inventory(id));
         }
         if(productSize!=null&&!productSize.equals("")&&!Utils.ProductSizeType.getList().contains(productSize)){
             flash("inventory","Product Size dont exists or Product Size empty ");
-            return redirect(routes.Application.inventory(null));
+            return redirect(routes.Application.inventory(id));
         }
 
-        if(MongoService.hasInventoryByProductIdSizeAndGender(productId,productSize,gender)){
+        if(id==null&&MongoService.hasInventoryByProductIdSizeAndGender(productId,productSize,gender)){
             flash("inventory","Inventory Already exists please update");
-            return redirect(routes.Application.inventory(null));
+            return redirect(routes.Application.inventory(id));
         }
 
 
@@ -560,6 +725,7 @@ public class Application extends Controller {
         inventory = (inventory!=null)?inventory:new Inventory();
         inventory.setOrderOutOfStock(outOfStockBool);
         inventory.setProduct(product);
+        int oldQuantity = inventory.getQuantity();
         inventory.setQuantity(quantityInt);
         inventory.setSize(productSize);
         inventory.setSellInOutOfStock(sellInOutOfStockBool);
@@ -568,17 +734,25 @@ public class Application extends Controller {
         //save Inventory
         MongoService.saveInventory(inventory);
         // Save Inventory Entry
-        InventoryEntry entry = new InventoryEntry();
-        entry.setInventory(inventory);
-        entry.setQuantity(quantityInt);
-        MongoService.saveInventoryEntry(entry);
+        
+        boolean updatedQuantity = ((oldQuantity - quantityInt)==0)?false:true;
+
+        if(updatedQuantity){
+            InventoryEntry entry = new InventoryEntry();
+            entry.setInventory(inventory);
+            if(id!=null){
+                entry.setQuantity(quantityInt - oldQuantity);
+            }else{
+                entry.setQuantity(quantityInt);
+            }
+            MongoService.saveInventoryEntry(entry);
+        }
 
         //product update
         product.getInventories().add(inventory);
         MongoService.saveProduct(product);
 
-
-        return redirect(routes.Application.listInventory());
+        return redirect(routes.Application.inventory(id));
     }
     @RequireCSRFCheck
     public static Result saveCollection(String id){
@@ -933,8 +1107,8 @@ public class Application extends Controller {
         String onLocalStore = (dataFiles.get("onLocalStore") != null && dataFiles.get("onLocalStore").length > 0) ? dataFiles.get("onLocalStore")[0] : null;
         String onLineVisible = (dataFiles.get("onLineVisible") != null && dataFiles.get("onLineVisible").length > 0) ? dataFiles.get("onLineVisible")[0] : null;
 
-        boolean onLocalStoreBool = (active!=null)?true:false;
-        boolean onLineVisibleBool = (active!=null)?true:false;
+        boolean onLocalStoreBool = (onLocalStore!=null)?true:false;
+        boolean onLineVisibleBool = (onLineVisible!=null)?true:false;
 
 
 
@@ -1332,13 +1506,24 @@ public class Application extends Controller {
             Inventory inventory = MongoService.findInventoryById(id);
             if(inventory!=null){
                 try {
-                    inventory.setQuantity(Integer.parseInt(quantity.trim()));
-                    MongoService.saveInventory(inventory);
-                    // Save Inventory Entry
-                    InventoryEntry entry = new InventoryEntry();
-                    entry.setInventory(inventory);
-                    entry.setQuantity(Integer.parseInt(quantity.trim()));
-                    MongoService.saveInventoryEntry(entry);
+                    int oldQuantity = inventory.getQuantity();
+                    int quantityInt = Integer.parseInt(quantity.trim());
+
+                    boolean updatedQuantity = ((oldQuantity - quantityInt)==0)?false:true;
+        
+                    if(updatedQuantity){
+                        InventoryEntry entry = new InventoryEntry();
+                        entry.setInventory(inventory);
+                        entry.setQuantity(quantityInt - oldQuantity);
+
+                        // Save Inventory
+                        inventory.setQuantity(quantityInt);
+                        MongoService.saveInventory(inventory);
+                        // Save Inventory Entry
+                        MongoService.saveInventoryEntry(entry);
+                    }
+
+
                     return ok();
                 }catch (Exception e) {
                     return internalServerError();

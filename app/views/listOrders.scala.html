@@ -34,31 +34,35 @@
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Status</th>
+                        <th>Detail</th>
                       </tr>
                     </thead>
                     <tbody>
                     @for(order<-orders){
-                    //list
                       <tr>
-                        <td>Tse</td>
-                        <td>Internet
-                          Explorer 4.0</td>
-                        <td>Win 95+</td>
-                        <td> 4</td>
-                        <td>X</td>
-                          <td>
-                              <a href="@routes.Application.order(order.getId())"><i class="fa fa-file-text-o"></i> Detalhes</a>
-                            </td>
+                        <td>@order.getId</td>
+                        <td>@order.getCreatedDate</td>
+                        <td>@if(order.getUser!=null){order.getUser.getFullName}else{
+                          <span class="label label-warning" style="font-size: 100%; font-weight: 200;">No User</span>}
+                        </td>
+                        <td>@if(order.getUser!=null){@order.getUser.getEmail}else {@if((order.getEmail!=null)&&(!order.getEmail.equals(""))){@order.getEmail}else{
+                           <span class="label label-warning" style="font-size: 100%; font-weight: 200;">No Email</span>
+                        }}</td>
+                        <td>@order.getStatus.name</td>
+                        <td>
+                            <a href="@routes.Application.order(order.getId())"><i class="fa fa-file-text-o"></i> Detalhes</a>
+                        </td>
                       </tr>
                     }
                     </tbody>
                     <tfoot>
                       <tr>
                         <th>ID</th>
-                        <th>Email</th>
+                        <th>Created Date</th>
                         <th>Full Name</th>
-                        <th>Date</th>
+                        <th>Email</th>
                         <th>Status</th>
+                        <th>Detail</th>
                       </tr>
                     </tfoot>
                   </table>

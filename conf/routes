@@ -4,10 +4,14 @@
 
 # Home page
 
+GET     /                           controllers.Application.dashboard()
+
+
 GET     /orders                           controllers.Application.listOrders()
 GET     /order                          controllers.Application.order(id :String ?= null)
 POST     /order/newOrEdit                              controllers.Application.saveOrder(id :String )
-
+GET     /getDiscounteCodeApplicable                           controllers.Application.getDiscounteCodeApplicable(sku :String ?=null)
+POST     /calculatePrice                           controllers.Application.calculatePrice()
 
 GET     /collection                          controllers.Application.listCollections()
 GET     /collection/newOrEdit                                  controllers.Application.collection(id :String ?= null)
@@ -51,7 +55,7 @@ GET     /giftcard/delete                               controllers.Application.d
 
 
 
-GET     /                                   controllers.Application.listProduct()
+GET     /product                                   controllers.Application.listProduct()
 GET     /product/newOrEdit                                 controllers.Application.product(id :String ?= null)
 POST     /product/newOrEdit/saveProduct                               controllers.Application.saveProduct(id :String ?= null)
 GET     /product/delete                               controllers.Application.deleteProduct(id :String ?= null)

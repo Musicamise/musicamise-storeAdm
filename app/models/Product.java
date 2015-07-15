@@ -22,6 +22,7 @@ import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.Locale;
 
 /**
  * Created by Alvaro on 29/03/2015.
@@ -37,6 +38,7 @@ public class Product {
     private  double price;
     private  double priceCompareWith;
 
+    private String priceFormatted;
     private List<Image> images;
 
     private String slug;
@@ -193,6 +195,15 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
+        this.priceFormatted = this.getFormatedPrice();
+    }
+
+    public String getPriceFormatted() {
+        return priceFormatted;
+    }
+
+    public void setPriceFormatted(String priceFormatted) {
+        this.priceFormatted = priceFormatted;
     }
 
     public double getPriceCompareWith() {
@@ -283,4 +294,14 @@ public class Product {
     public void setLocalStoresSlugs(Set<String> localStoresSlugs) {
         this.localStoresSlugs = localStoresSlugs;
     }
+    public String getFormatedPrice(){
+        Locale locale = new Locale ("pt", "BR");
+        Locale.setDefault(locale);
+
+        DecimalFormat formatter =
+                (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
+
+        return formatter.format(getPrice());
+    }
+
 }
