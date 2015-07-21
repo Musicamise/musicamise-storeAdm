@@ -39,6 +39,8 @@ public class Product {
     private  double priceCompareWith;
 
     private String priceFormatted;
+    private String priceOldFormatted;
+
     private List<Image> images;
 
     private String slug;
@@ -195,7 +197,7 @@ public class Product {
 
     public void setPrice(double price) {
         this.price = price;
-        this.priceFormatted = this.getFormatedPrice();
+        this.priceFormatted = this.getFormatedPrice(this.price);
     }
 
     public String getPriceFormatted() {
@@ -206,12 +208,22 @@ public class Product {
         this.priceFormatted = priceFormatted;
     }
 
+    public String getPriceOldFormatted() {
+        return priceOldFormatted;
+    }
+
+    public void setPriceOldFormatted(String priceOldFormatted) {
+        this.priceOldFormatted = priceOldFormatted;
+    }
+
     public double getPriceCompareWith() {
         return priceCompareWith;
     }
 
     public void setPriceCompareWith(double priceCompareWith) {
         this.priceCompareWith = priceCompareWith;
+        this.priceOldFormatted = this.getFormatedPrice(this.priceCompareWith);
+
     }
 
     public List<Image> getImages() {
@@ -294,14 +306,14 @@ public class Product {
     public void setLocalStoresSlugs(Set<String> localStoresSlugs) {
         this.localStoresSlugs = localStoresSlugs;
     }
-    public String getFormatedPrice(){
+    public String getFormatedPrice(double price){
         Locale locale = new Locale ("pt", "BR");
         Locale.setDefault(locale);
 
         DecimalFormat formatter =
                 (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
 
-        return formatter.format(getPrice());
+        return formatter.format(price);
     }
 
 }

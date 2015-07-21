@@ -1,5 +1,11 @@
 package services;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
+import org.joda.time.DateTime;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import play.Logger;
 
 import bootstrap.DS;
@@ -8,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -498,6 +505,177 @@ public class MongoService {
         return DS.mop.exists(new Query(where("_id").is(id.name())), SiteContent.class);
     }
 
+
+
+
+    //dashboard
+
+
+    //  var reduce = function(inventoryKey, quantities) {
+    //                           return Array.sum(quantities);
+    //                       };
+
+    // var outTable = {out:'teste1'}
+
+    // db.order.mapReduce(mapQuantity,reduce,outTable);
+
+       public static MapReduceResults<ValueObject> getOrdersInventoryByQuantity(boolean thisMonth, Utils.DashBoardQueryType type){
+        String collection = "order";
+        Query query = new Query();
+        if(thisMonth){
+            DateTime now = new DateTime();
+            query.addCriteria(where("createdDate").gte(now.minusMonths(1)).lte(now));
+        }
+        String map ;
+        switch (type){
+            case gender: map = "function() {\n" +
+                    "     for(var i = 0;i<this.products.length;i++){\n" +
+                    "         emit( this.products[i].genderSlug , this.products[i].quantity );\n" +
+                    "     }\n" +
+                    "};";
+                break;
+            case inventoryId: map = "function() {\n" +
+                    "     for(var i = 0;i<this.products.length;i++){\n" +
+                    "         emit( this.products[i]._id , this.products[i].quantity ); \n" +
+                    "     }\n" +
+                    "};";
+                break;
+            case size: map = "function() {\n" +
+                    "     for(var i = 0;i<this.products.length;i++){\n" +
+                    "         emit( this.products[i].size , this.products[i].quantity );\n" +
+                    "     }\n" +
+                    "};";
+                break;
+            default: map = "function() {\n" +
+                    "     for(var i = 0;i<this.products.length;i++){\n" +
+                    "         emit( this.products[i]._id , this.products[i].quantity ); // quantity\n" +
+                    "     }\n" +
+                    "};";
+                break;
+        }
+
+
+        String reduce = "function(inventoryKey, quantities) {\n" +
+                "    return Array.sum(quantities);\n" +
+                "};";
+
+        MapReduceResults<ValueObject> results =  DS.mop.mapReduce(query,collection,map, reduce,ValueObject.class);
+        return results;
+    }
+
+    private static List<Order> getOrdersInventoryByDate(DateTime startDate,DateTime endDate){
+        Query query = new Query();
+        if(startDate!=null&&endDate!=null){
+            query.addCriteria(where("createdDate").gte(startDate).lte(endDate));
+        }else if(startDate==null&&endDate!=null){
+            query.addCriteria(where("createdDate").lte(endDate));
+
+        }else if(startDate!=null&&endDate==null){
+            query.addCriteria(where("createdDate").gte(startDate));
+        }
+        List<Order> results =  DS.mop.find(query,Order.class);
+        return results;
+    }
+
+    public static void getDashboard(DateTime startDate, DateTime endDate,AggregationResults<DBObject> aggResultsProducts,AggregationResults<DBObject> aggResultsSize,
+        AggregationResults<DBObject> aggResultsGender,AggregationResults<DBObject> aggResultsEntry,AggregationResults<DBObject> aggResultsOrder,
+        AggregationResults<DBObject> aggResultsOrderPrice,List<Order> ordersByDate){
+
+
+        //Products sold
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+        obj.append("gender","$products.genderSlug");
+        obj.append("size","$products.size");
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.product").push(obj).as("data")
+        );
+        aggResultsProducts = DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+          agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.size").push(obj).as("data")
+        );
+        aggResultsSize = DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+        //Products sold by gender
+        obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+        agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.genderSlug").push(obj).as("data")
+        );
+        aggResultsGender = DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+        //General Entry
+        obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$quantity");
+        agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.group("$inventory").push(obj).as("data").sum("$quantity").as("total")
+        );
+        aggResultsEntry = DS.mop.aggregate(agg,InventoryEntry.class, DBObject.class);
+
+        //General Orders
+
+        obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+
+        agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("$products"),
+                Aggregation.group("$products.sku").push(obj).as("data").sum("$products.quantity").as("total")
+        );
+        aggResultsOrder = DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+
+        obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("total","$total");
+        obj.append("products","$products");
+
+        agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.group("$id").push(obj).as("data")
+        );
+
+        aggResultsOrderPrice = DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+        Query query = new Query();
+        query.addCriteria(Criteria.where("createdDate").gte(startDate).lte(endDate));
+        ordersByDate = DS.mop.find(query,Order.class);
+
+    }
+
+    public static AggregationResults<DBObject> getDashboardProducts(DateTime startDate, DateTime endDate){
+
+
+        //Products sold
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+        obj.append("gender","$products.genderSlug");
+        obj.append("size","$products.size");
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.product").push(obj).as("data")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+    }
 
 
 

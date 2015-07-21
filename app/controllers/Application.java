@@ -1,7 +1,13 @@
 package controllers;
 
+import com.mongodb.DBObject;
+import com.mongodb.BasicDBList;
+
 import models.*;
 import models.Collection;
+import org.joda.time.DateTime;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import play.*;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
@@ -29,11 +35,26 @@ public class Application extends Controller {
 
     /**
      * Create
-     * */
+     * 
+     */
+
+
 
     @AddCSRFToken
     public static Result dashboard(){
-        return ok(dashboard.render());
+        DateTime startDate = new DateTime();
+        DateTime endDate = new DateTime();
+        AggregationResults<DBObject> aggResultsProducts = null;
+        AggregationResults<DBObject> aggResultsSize = null;
+        AggregationResults<DBObject> aggResultsGender = null;
+        AggregationResults<DBObject> aggResultsEntry = null;
+        AggregationResults<DBObject> aggResultsOrder = null;
+        AggregationResults<DBObject> aggResultsOrderPrice = null;
+        List<Order> ordersByDate  = null;
+        aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        List<DBObject> products = aggResultsProducts.getMappedResults();
+        BasicDBList data = (BasicDBList)products.get(0).get("data");
+        return ok(dashboardTrue.render(null));
     }
 
     @AddCSRFToken

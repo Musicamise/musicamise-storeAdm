@@ -1,0 +1,37 @@
+> db.order.aggregate([{$unwind:"$products"},{$group:{_id:{$dayOfMonth:"$createdDate"},products:{$push:"$products"}}}]).pretty()
+
+> db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:{$dayOfMonth:"$createdDate"},products:{$push:"$products"}}}]).pretty()
+
+//all products by day
+> db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:{$dayOfMonth:"$createdDate"},products:{$push:"$products"},quantity:{$sum:"$products.quantity"}}}]).pretty()
+
+//all products by month
+> db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:{$month:"$createdDate"},products:{$push:"$products"},quantity:{$sum:"$products.quantity"}}}]).pretty()
+
+//all products by year
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:{$month:"$createdDate"},products:{$push:"$products"},quantity:{$sum:"$products.quantity"}}}]).pretty()
+
+
+//all products by size
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products.size",date:{$push:"$createdDate"},quantity:{$push:"$products.quantity"}}}]).pretty()
+
+//all products by gender
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products.genderSlug",date:{$push:"$createdDate"},quantity:{$push:"$products.quantity"}}}]).pretty()
+
+//product inventory
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products._id",date:{$push:"$createdDate"},quantity:{$push:"$products.quantity"}}}]).pretty()
+
+//product by gender
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products.product",date:{$push:"$createdDate"},gender:{$push:"$products.genderSlug"},quantity:{$push:"$products.quantity"}}}]).pretty()
+
+//product by size
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products.product",date:{$push:"$createdDate"},size:{$push:"$products.size"},quantity:{$push:"$products.quantity"}}}]).pretty()
+
+
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products.product",data:{$push:{date:"$createdDate",quantity:"$products.quantity",gender:"$products.genderSlug",size:"$products.size"}}}}]).pretty()
+
+
+//general
+db.inventoryEntry.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$group:{_id:"$inventory",data:{$push:{date:"$createdDate",quantity:"$quantity"}},total:{$sum:"$quantity"}}}]).pretty()
+
+db.order.aggregate([{$match:{"createdDate":{$gte: ISODate("2015-06-01T00:00:00Z")}}},{$unwind:"$products"},{$group:{_id:"$products._id",data:{$push:{date:"$createdDate",quantity:"$products.quantity"}},total:{$sum:"$products.quantity"}}}]).pretty()

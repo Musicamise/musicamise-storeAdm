@@ -166,6 +166,12 @@ public class Utils {
         aboutUsPage,
     }
 
+    public enum DashBoardQueryType {
+        gender,
+        size,
+        inventoryId,
+    }
+
 
 
   
