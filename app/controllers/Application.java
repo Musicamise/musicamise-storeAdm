@@ -62,9 +62,9 @@ public class Application extends Controller {
         AggregationResults<DBObject> aggResultsOrder = null;
         AggregationResults<DBObject> aggResultsOrderPrice = null;
         List<Order> ordersByDate  = null;
-        aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
-        List<DBObject> products = aggResultsProducts.getMappedResults();
-        BasicDBList data = (BasicDBList)products.get(0).get("data");
+        // aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        // List<DBObject> products = aggResultsProducts.getMappedResults();
+        // BasicDBList data = (BasicDBList)products.get(0).get("data");
         return ok(dashboardTrue.render(null));
     }
 
