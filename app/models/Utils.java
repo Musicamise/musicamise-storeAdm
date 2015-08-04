@@ -44,6 +44,7 @@ public class Utils {
         moletom("Moletom"),
         body("Body"),
         lenco("Lenço"),
+        acessorio("Acessório"),
         poster("Poster"),
         obra_de_arte("Obra de Arte");
 
@@ -135,6 +136,16 @@ public class Utils {
                 tags.add(tag.name());
             }
             return tags;
+        }
+    }
+
+    public enum GenderUser{
+        masculino("Masculino"),
+        feminino("Feminino");
+
+        public String title;
+        private GenderUser(String title){
+            this.title = title;
         }
     }
 

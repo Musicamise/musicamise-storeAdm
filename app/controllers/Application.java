@@ -37,10 +37,21 @@ public class Application extends Controller {
      * Create
      * 
      */
+    @AddCSRFToken
+    public static Result login() {
+        String message = flash("signin-admin");
 
-
+        return ok(views.html.login.render(message));
+    }
+    
+    @Security.Authenticated(Secured.class)
+    public static Result logout() {
+        session().clear();
+        return redirect(routes.Application.dashboard());
+    }
 
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result dashboard(){
         DateTime startDate = new DateTime();
         DateTime endDate = new DateTime();
@@ -58,17 +69,16 @@ public class Application extends Controller {
     }
 
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result content(String id){
         SiteContent contentObject = MongoService.findContentById(id);
         contentObject = (contentObject!=null?contentObject:new SiteContent());
         return ok(newContent.render(contentObject));
     }
 
-    
-
-    
 
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result product(String id){
         Product product = MongoService.findProductById(id);
         product= (product!=null?product:new Product());
@@ -79,6 +89,7 @@ public class Application extends Controller {
         return ok(newProduct.render(product,collections,tags,localStores,discounts));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result inventory(String id){
         Inventory inventory = MongoService.findInventoryById(id);
         inventory= (inventory!=null?inventory:new Inventory());
@@ -87,6 +98,7 @@ public class Application extends Controller {
         return ok(newInventory.render(inventory,products,genders));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result costumer(String id){
         User user = MongoService.findUserById(id);
         user= (user!=null?user:new User());
@@ -94,6 +106,7 @@ public class Application extends Controller {
         return ok(newCostumer.render(user,userTags));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result collection(String id){
         Collection collection = MongoService.findCollectionById(id);
         collection= (collection!=null?collection:new Collection());
@@ -106,6 +119,7 @@ public class Application extends Controller {
         return ok(newCollection.render(collection,productsByCollections,products));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result tag(String id){
         Tag tag = MongoService.findTagById(id);
         tag= (tag!=null?tag:new Tag());
@@ -119,6 +133,7 @@ public class Application extends Controller {
     }
 
      @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result localStore(String id){
         LocalStore localStore = MongoService.findLocalStoreById(id);
         localStore= (localStore!=null?localStore:new LocalStore());
@@ -132,6 +147,7 @@ public class Application extends Controller {
     }
 
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result discountCode(String id){
         DiscountCode discountCode = MongoService.findDiscountCodeById(id);
         discountCode= (discountCode!=null?discountCode:new DiscountCode());
@@ -141,6 +157,7 @@ public class Application extends Controller {
         return ok(newDiscountCode.render(discountCode,collections,products));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result giftCard(String id){
         GiftCard giftCard = MongoService.findGiftCardById(id);
         giftCard= (giftCard!=null?giftCard:new GiftCard());
@@ -149,6 +166,7 @@ public class Application extends Controller {
         return ok(newGiftCode.render(giftCard,users));
     }
     @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result order(String id){
         Order order = MongoService.findOrderById(id);
         if(order!=null){
@@ -169,49 +187,59 @@ public class Application extends Controller {
     /**
      * List
      * */
+    @Security.Authenticated(Secured.class)
     public static Result listContent() {
         List<SiteContent> contents = MongoService.getAllContents();
         return ok(listContent.render(contents));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listProduct() {
         List<Product> products = MongoService.getAllProducts();
         return ok(listProduct.render(products));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listInventory() {
         List<Inventory> inventories = MongoService.getAllInventories();
 
         return ok(listInventory.render(inventories));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listCollections() {
         List<Collection> collections = MongoService.getAllCollections();
 
         return ok(listCollections.render(collections));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listTags() {
         List<Tag> tags = MongoService.getAllTags();
 
         return ok(listTags.render(tags));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result listLocalStores() {
         List<LocalStore> localStores = MongoService.getAllLocalStores();
 
         return ok(listLocalStores.render(localStores));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result listGiftCard() {
         List<GiftCard> giftCards = MongoService.getAllGiftCards();
         return ok(listGiftCard.render(giftCards));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listDiscount() {
         List<DiscountCode> discounts = MongoService.getAllDiscountCodes();
 
         return ok(listDiscountCode.render(discounts));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listCostumers() {
         List<User> users = MongoService.getAllUsers();
         return ok(listCostumer.render(users));
     }
+    @Security.Authenticated(Secured.class)
     public static Result listOrders() {
         List<Order> orders = MongoService.getAllOrders();
         return ok(listOrders.render(orders));
@@ -229,7 +257,7 @@ public class Application extends Controller {
             switch(discountCode.getWhereApply()){
                 case oncePerOrder:
                     if(discountIsApplicable(inventories,discountCode)){
-                        switch(discountCode.getType()){
+                        switch(discountCode.getTypeForPay()){
                             case value:
                                 total = total-discountCode.getValueOf();
                             break;
@@ -246,7 +274,7 @@ public class Application extends Controller {
                         List<Inventory> newListInverntory = new ArrayList<>();
                         newListInverntory.add(inventory);
                         if(discountIsApplicable(newListInverntory,discountCode)){
-                            switch(discountCode.getType()){
+                            switch(discountCode.getTypeForPay()){
                                 case value:
                                     value = value-discountCode.getValueOf();
                                 break;
@@ -319,6 +347,7 @@ public class Application extends Controller {
     }
     
 
+    @Security.Authenticated(Secured.class)
     public static Result calculatePrice(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
         String[] productIdsAndQuantity = (dataFiles.get("product[]") != null && dataFiles.get("product[]").length > 0) ? dataFiles.get("product[]")  : null;
@@ -365,6 +394,7 @@ public class Application extends Controller {
     }
 
 
+    @Security.Authenticated(Secured.class)
     public static Result getDiscounteCodeApplicable(String sku){
         Product product = MongoService.findInventoryById(sku).getProduct();
         List<DiscountCode> discountCodes = MongoService.findDiscountCodeByProduct(product);
@@ -373,6 +403,7 @@ public class Application extends Controller {
     }
 
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveOrder(String id){
 
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -409,7 +440,9 @@ public class Application extends Controller {
         //save order already in base
         if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)) {
             order = MongoService.findOrderById(id);
-            order.setStatus(status);
+            StatusOrder statusOrder = new StatusOrder();
+            statusOrder.setStatus(status);
+            order.getStatus().add(statusOrder);
             MongoService.saveOrder(order);
             return redirect(routes.Application.listOrders());
         }
@@ -473,7 +506,10 @@ public class Application extends Controller {
         order.setTotal(total);
         order.setGiftCard(giftCard);
         order.setDiscountCode(discountCode);
-        order.setStatus(status);
+
+        StatusOrder statusOrder = new StatusOrder();
+        statusOrder.setStatus(status);
+        order.getStatus().add(statusOrder);
 
 
         //save Inventory change
@@ -484,6 +520,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listOrders());
     } 
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveContent(String id){
 
         Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -535,6 +572,7 @@ public class Application extends Controller {
 
         String[] imageSubTitles = (dataFiles.asFormUrlEncoded().get("subtitle") != null && dataFiles.asFormUrlEncoded().get("subtitle").length > 0) ? dataFiles.asFormUrlEncoded().get("subtitle") : null;
         String[] imageUrlRedirect = (dataFiles.asFormUrlEncoded().get("urlRedirect") != null && dataFiles.asFormUrlEncoded().get("urlRedirect").length > 0) ? dataFiles.asFormUrlEncoded().get("urlRedirect") : null;
+        String[] promotion = (dataFiles.asFormUrlEncoded().get("promotion") != null && dataFiles.asFormUrlEncoded().get("promotion").length > 0) ? dataFiles.asFormUrlEncoded().get("promotion") : null;
 
         List<Image> imagesNew = new ArrayList<>();
         for(int i = 0 ; i<fileImages.size() ;i++){
@@ -552,6 +590,8 @@ public class Application extends Controller {
                 image.setSize(megabytes+" mb");
                 image.setName(imageName);
                 image.setImageFile(fileSave);
+                if(promotion.length > i)
+                    image.setPromotion(promotion[i]!=null);
                 if(imageSubTitles!=null &&imageSubTitles.length > i && imageSubTitles[i]!=null){
                     image.setSubtitle(imageSubTitles[i]);
                 }
@@ -572,6 +612,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listContent());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveProduct(String id){
 
         Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -687,6 +728,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listProduct());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveInventory(String id){
 
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -776,6 +818,7 @@ public class Application extends Controller {
         return redirect(routes.Application.inventory(id));
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveCollection(String id){
 
         Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -869,6 +912,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listCollections());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveTag(String id){
 
         Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -954,6 +998,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listTags());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveLocalStore(String id){
 
         Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -1037,6 +1082,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listLocalStores());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveGiftCard(String id){
 
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
@@ -1094,6 +1140,7 @@ public class Application extends Controller {
         return redirect(routes.Application.listGiftCard());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveDiscountCode(String id){
 
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
@@ -1195,7 +1242,7 @@ public class Application extends Controller {
         discount = (discount!=null)?discount:new DiscountCode();
         discount.setCode((discount.getCode() == null) ? code : discount.getCode());
 
-        discount.setType(typeDiscount);
+        discount.setTypeForPay(typeDiscount);
         discount.setValueOf(value);
         discount.setActive(activeBool);
 
@@ -1254,11 +1301,12 @@ public class Application extends Controller {
         return redirect(routes.Application.listDiscount());
     }
     @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
     public static Result saveCostumer(String id){
 
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
-
+        String fullname = (dataFiles.get("fullname") != null && dataFiles.get("fullname").length > 0) ? dataFiles.get("fullname")[0] : null;
         String firstname = (dataFiles.get("firstname") != null && dataFiles.get("firstname").length > 0) ? dataFiles.get("firstname")[0] : null;
         String lastname = (dataFiles.get("lastname") != null && dataFiles.get("lastname").length > 0) ? dataFiles.get("lastname")[0] : null;
         String email = (dataFiles.get("email") != null && dataFiles.get("email").length > 0) ? dataFiles.get("email")[0] : null;
@@ -1270,47 +1318,44 @@ public class Application extends Controller {
 
         //Validation
 
-        if(id!=null&&!MongoService.hasUserByEmail(id)) {
+        if(id!=null&&!MongoService.hasUserById(id)) {
             flash("costumer","User not in base");
-            return redirect(routes.Application.costumer(null));
+            return redirect(routes.Application.costumer(id!=null?id:null));
         }
 
-        if(firstname==null||firstname.equals("")){
-            flash("costumer","Insert First name");
-            return redirect(routes.Application.costumer(null));
+        if((fullname==null||fullname.equals(""))&&(firstname==null||firstname.equals(""))){
+            flash("costumer","Insert First name or Full name");
+            return redirect(routes.Application.costumer(id!=null?id:null));
         }
         if(email==null||email.equals("")||!isValidEmailAddress(email)){
             flash("costumer","Isert Email correctly");
-            return redirect(routes.Application.costumer(null));
+            return redirect(routes.Application.costumer(id!=null?id:null));
         }
         if (id==null&&MongoService.hasUserByEmail(email)){
             flash("costumer","Email already in use");
-            return redirect(routes.Application.costumer(null));
+            return redirect(routes.Application.costumer(id!=null?id:null));
         }
-        if (id!=null&&!(id.equals(email))&&MongoService.hasUserByEmail(email)){
-            flash("costumer","Changing the Email with other already in use");
-
-            return redirect(routes.Application.costumer(id));
-        }
+        // if (id!=null&&!(id.equals(email))&&MongoService.hasUserByEmail(email)){
+        //     flash("costumer","Changing the Email with other already in use");
+        //     return redirect(routes.Application.costumer(id));
+        // }
 
         //build object User
         User  user = null;
 
         if(id==null){
             user = new User(firstname,email,generatePassword());
-            user.setLastName(lastname);
-            user.setMkt(mktAcceptBool);
-            user.setNotes(notes);
-            user.setTags(tagsList);
         }else{
-            user = MongoService.findUserByEmail(id);
-            user.setFirstName((firstname != null && !firstname.equals("")) ? firstname : user.getFirstName());
-            user.setLastName((lastname != null && !lastname.equals("")) ? lastname : user.getLastName());
-            user.setEmail((email != null && !email.equals("")) ? email : user.getEmail());
-            user.setMkt(mktAcceptBool);
-            user.setNotes((notes != null && !notes.equals("")) ? notes : user.getNotes());
-            user.setTags(tagsList);
+            user = MongoService.findUserById(id);
         }
+
+        user.setFullName((fullname != null && !fullname.equals("")) ? fullname : user.getFullName());
+        user.setFirstName((firstname != null && !firstname.equals("")) ? firstname : user.getFirstName());
+        user.setLastName((lastname != null && !lastname.equals("")) ? lastname : user.getLastName());
+        // user.setEmail((email != null && !email.equals("")) ? email : user.getEmail());
+        user.setMarketingEmail(mktAcceptBool);
+        user.setNotes((notes != null && !notes.equals("")) ? notes : user.getNotes());
+        user.setTags(tagsList);
 
         int count = dataFiles.get("address") != null ? dataFiles.get("address").length : 0;
         List<Address> addressesList = new ArrayList<>();
@@ -1346,6 +1391,7 @@ public class Application extends Controller {
      * save From List TODO
      * */
 
+    @Security.Authenticated(Secured.class)
     public static Result deleteProduct(String id){
         Product product = MongoService.findProductById(id);
         if(product!=null){
@@ -1354,6 +1400,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listProduct());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteInventory(String id){
         Inventory inventory = MongoService.findInventoryById(id);
         if(inventory!=null){
@@ -1362,6 +1409,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listInventory());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteCollection(String id){
 
         Collection collection = MongoService.findCollectionById(id);
@@ -1371,6 +1419,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listCollections());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteTag(String id){
 
         Tag tag = MongoService.findTagById(id);
@@ -1380,6 +1429,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listTags());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteLocalStore(String id){
 
         LocalStore localStore = MongoService.findLocalStoreById(id);
@@ -1389,6 +1439,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listLocalStores());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteGiftCard(String id){
         GiftCard giftCard = MongoService.findGiftCardById(id);
         if(giftCard!=null){
@@ -1397,6 +1448,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listGiftCard());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteDiscountCode(String id){
         DiscountCode discountCode = MongoService.findDiscountCodeById(id);
         if(discountCode!=null){
@@ -1405,6 +1457,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.listDiscount());
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteCostumer(String id){
         User user = MongoService.findUserByEmail(id);
         if(user!=null){
@@ -1415,6 +1468,7 @@ public class Application extends Controller {
 
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result deleteProductImage(String productId,String imageName){
         if(productId!=null && imageName!=null){
             Product product = MongoService.findProductById(productId);
@@ -1432,6 +1486,7 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteSiteContentImage(String contentId,String imageName){
         if(contentId!=null && imageName!=null){
             SiteContent content = MongoService.findContentById(contentId);
@@ -1449,6 +1504,7 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteCollectionImage(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
@@ -1473,6 +1529,7 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteTagImage(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
@@ -1497,6 +1554,7 @@ public class Application extends Controller {
         }
         return internalServerError();
     }
+    @Security.Authenticated(Secured.class)
     public static Result deleteLocalStoreImage(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
@@ -1522,6 +1580,7 @@ public class Application extends Controller {
         return internalServerError();
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result updateInventoryQuantity(String id,String quantity){
         if(id!=null && quantity!=null){
             Inventory inventory = MongoService.findInventoryById(id);
@@ -1573,5 +1632,7 @@ public class Application extends Controller {
     public static String generateCode(){
         return "";
     }
+
+
 
 }

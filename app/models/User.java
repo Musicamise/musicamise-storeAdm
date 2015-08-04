@@ -3,12 +3,17 @@ package models;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.data.annotation.Id;
+
+
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 /**
  * Created by Alvaro on 18/03/2015.
@@ -19,17 +24,26 @@ public class User {
     @Id
     private String id;
 
+    @Indexed(unique = true)
     private String email;
 
     private String password;
+    private String salt;
+
     private String firstName;
     private String lastName;
+    private String fullName;
+    private String displayName;
 
-    private boolean mkt;
+    // private GenderUser gender;
+    private String gender;
+
+    private boolean marketingEmail;
     private boolean manager;
     private boolean active;
 
     private String notes;
+
     private List<String> tags;
 
     private List<Address> address;
@@ -39,9 +53,20 @@ public class User {
 
     private String fbId;
 
-    private List<Product> wishList;
+    //products slugs
+    private List<String> wishList;
 
     private List<UserInteration> userInterations;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date createdDate = new Date();
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date updatedDate = new Date();
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Date resetPasswordExpires = new Date();
+    
 
     public User(){
         this.address = new ArrayList<>();
@@ -61,6 +86,52 @@ public class User {
         }
     }
 
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
+    }
+
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
+
+
+    public Date getResetPasswordExpires() {
+        return resetPasswordExpires;
+    }
+
+    public void setResetPasswordExpires(Date resetPasswordExpires) {
+        this.resetPasswordExpires = resetPasswordExpires;
+    }
+
+    
+
+    public Date getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Date updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+
     public String getFirstCity(){
         if(getAddress()!=null&&getAddress().size()>0){
             return getAddress().get(0).getCity();
@@ -73,7 +144,11 @@ public class User {
     }
 
     public String getFullName(){
-        return this.firstName+" "+ this.lastName;
+        return this.fullName;
+    }
+
+    public void setFullName(String fullName){
+        this.fullName = fullName;
     }
 
     public void setPassWord(String pass) {
@@ -118,12 +193,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public boolean isMkt() {
-        return mkt;
+    public boolean isMarketingEmail() {
+        return marketingEmail;
     }
 
-    public void setMkt(boolean mkt) {
-        this.mkt = mkt;
+    public void setMarketingEmail(boolean marketingEmail) {
+        this.marketingEmail = marketingEmail;
     }
 
     public boolean isManager() {
@@ -148,6 +223,14 @@ public class User {
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public List<String> getTags() {

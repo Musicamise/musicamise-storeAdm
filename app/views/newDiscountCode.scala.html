@@ -91,7 +91,7 @@
                             <label >Discount type:</label>
                             <select id="discountType" name="discountType"  class="form-control">
                                 @for(tag<- Utils.DiscountType.getList()){
-                                <option @if(discount.getType!=null&&tag.equals(discount.getType.name())) {selected=""} value="@tag" >@tag</option>
+                                <option @if(discount.getTypeForPay!=null&&tag.equals(discount.getTypeForPay.name())) {selected=""} value="@tag" >@tag</option>
                                 }
                             </select>
                         </div>

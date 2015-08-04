@@ -48,8 +48,11 @@ public class MongoService {
         return users;
     }
     public static boolean saveUser(User user){
-
-        DS.mop.save(user);
+        try{
+           DS.mop.save(user);
+        }catch(Exception e){
+            return false;
+        }
         return true;
     }
 
@@ -63,6 +66,12 @@ public class MongoService {
     public static boolean hasUserByEmail(String email) {
 
         return   DS.mop.exists(new Query(where("email").is(email)), User.class);
+
+    }
+
+    public static boolean hasUserById(String id) {
+
+        return   DS.mop.exists(new Query(where("_id").is(id)), User.class);
 
     }
 

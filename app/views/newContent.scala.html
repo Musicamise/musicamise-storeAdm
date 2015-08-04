@@ -104,9 +104,15 @@
                               <label >Url Redirect</label>
                               <input type="text" class="form-control" name="urlRedirect" value="" placeholder="Enter Url Redirect">
                         </div> 
+                        
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" class="minimal"  name="promotion"  value="promotion" onclick="disableAddNewImage();" /> Promotion
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <button type="button" onClick="addNewImage();" class="btn btn-secondary">Add New Image</button>
+                <button type="button" id="addNewImageButton" onClick="addNewImage();" class="btn btn-secondary">Add New Image</button>
                 <br/><br/><br/><br/>
                     @if(content.getImages!=null && content.getImages.size>0){
                         <div class="box box-success">
@@ -118,7 +124,7 @@
                                 <ul class="mailbox-attachments clearfix">
                                 @for( image <- content.getImages){
                                 <!-- checkbox -->
-                                <li id = "li-@image.getName">
+                                <li id = "li-@image.getName.replace(".","")">
                                     <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
                                     <div class="mailbox-attachment-info">
                                         <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
@@ -126,6 +132,10 @@
                                         <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getRedirectUrl</a>
                                         <span class="mailbox-attachment-size">
                                                    @image.getSize
+
+                                        @if(image.isPromotion){
+                                           <span class="badge bg-green">Promotion</span>
+                                        }       
                                         <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
                                         </span>
                                     </div>
@@ -212,13 +222,18 @@
             url: "@routes.Application.deleteSiteContentImage()",
             data:{'contentId':id,'imageName':imageName},
         }).success(function() {
-            $("#li-"+imageName).remove();
+            $("#li-"+imageName.split(".").join("")).remove();
         }).error(function() {
             alert("Erro on delete!")
         });
         $(".close").click();
     }
-
+    function disableAddNewImage(){
+        if($("#addNewImageButton").is(":visible"))
+            $("#addNewImageButton").hide();
+        else
+            $("#addNewImageButton").show();
+    }
 
 
 </script>

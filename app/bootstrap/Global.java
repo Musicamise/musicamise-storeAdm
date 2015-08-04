@@ -34,7 +34,7 @@ public class Global extends GlobalSettings {
         //test.setTitle("Teste title alvaro@silvino.me");
         //test.setContent("alvaro");
         //test.setType(Utils.Content.ABOUT);
-        //createUser();
+        createUser();
 
         //ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringMongoConfig1.class);
         //MongoOperations mongoOperation = (MongoOperations)ctx.getBean("mongoTemplate");
@@ -42,10 +42,11 @@ public class Global extends GlobalSettings {
         Logger.info("Application has started");
     }
     public static void createUser(){
-        User user = new User("Admin", "pedro.almeida@revistafirstdown.com.br", "admin");
-        //user.setManager(true);
-        MongoService.saveUser(user);
+        // User user = new User("Admin", "administrador@musicamise.com.br", "admin");
+        // user.setManager(true);
+        // MongoService.saveUser(user);
     }
+
 
     public void onStop(Application app) {
         Logger.info("Application shutdown...");

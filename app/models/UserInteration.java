@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class UserInteration {
 
-
     private String value;
 
     private double points;

@@ -36,22 +36,26 @@
 
                        <h3>Customer overview</h3>
                         <br/><p class="text-red">@flash.get("costumer")</p>
+                        <div class="form-group">
+                        <label for="exampleInputEmail1">Full Name</label>
+                        <input type="text" class="form-control" name="fullname" value="@user.getFullName" placeholder="Enter Full Name">
+                      </div>
                       <div class="form-group">
                         <label for="exampleInputEmail1">First Name</label>
-                        <input type="text" class="form-control" name="firstname" value="@user.getFirstName" placeholder="Enter email">
+                        <input type="text" class="form-control" name="firstname" value="@user.getFirstName" placeholder="Enter First Name">
                       </div>
                       <div class="form-group">
                         <label for="exampleInputEmail1">Last Name</label>
-                        <input type="text" class="form-control" name="lastname" value="@user.getLastName" placeholder="Enter email">
+                        <input type="text" class="form-control" name="lastname" value="@user.getLastName" placeholder="Enter Last Name">
                       </div>
                       <div class="form-group">
-                        <label for="exampleInputEmail1">Email address</label>
-                        <input type="email" class="form-control" name="email" value="@user.getEmail" placeholder="Enter email">
+                        <label for="exampleInputEmail1">Email address @if(user.getEmail!=null){Can't change Email}</label>
+                        <input type="email"  class="form-control" name="email" value="@user.getEmail" placeholder="Enter email">
                       </div>
                       <div class="form-group">
                           <div class="checkbox">
                             <label>
-                              <input name="mktAccept" type="checkbox" @if(user.isMkt){checked}>
+                              <input name="mktAccept" type="checkbox" @if(user.isMarketingEmail){checked}>
                               Customer accepts marketing
                             </label>
                           </div>

@@ -41,7 +41,7 @@ public class DiscountCode {
 
     private boolean noTimesLimits;
 
-    private Utils.DiscountType type;
+    private Utils.DiscountType typeForPay;
 
     private double valueOf;
 
@@ -67,15 +67,24 @@ public class DiscountCode {
     private Set<String> productSlugs ;
     private Set<String> collectionsSlug ;
 
+    private String description ;
+
     public DiscountCode(){
         this.productSlugs = new HashSet<>();
         this.collectionsSlug = new HashSet<>();
     }
 
     public String toString(){
-        return this.code+"-Active:"+this.active+"-"+this.type+"-"+this.valueOf+"-"+this.whereApply+"-"+this.ordersValidation;
+        return this.code+"-Active:"+this.active+"-"+this.typeForPay+"-"+this.valueOf+"-"+this.whereApply+"-"+this.ordersValidation;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
     public boolean isOnLocalStore() {
         return onLocalStore;
     }
@@ -83,6 +92,7 @@ public class DiscountCode {
     public void setOnLocalStore(boolean onLocalStore) {
         this.onLocalStore = onLocalStore;
     }
+
 
     public boolean isOnLineVisible() {
         return onLineVisible;
@@ -134,12 +144,12 @@ public class DiscountCode {
         this.collectionsSlug = collectionsSlug;
     }
 
-    public Utils.DiscountType getType() {
-        return type;
+    public Utils.DiscountType getTypeForPay() {
+        return typeForPay;
     }
 
-    public void setType(Utils.DiscountType type) {
-        this.type = type;
+    public void setTypeForPay(Utils.DiscountType typeForPay) {
+        this.typeForPay = typeForPay;
     }
 
     public Utils.DiscountValidation getOrdersValidation() {

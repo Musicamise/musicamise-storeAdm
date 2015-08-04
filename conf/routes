@@ -6,6 +6,10 @@
 
 GET     /                           controllers.Application.dashboard()
 
+GET            /signin                           controllers.Application.login()
+POST           /signin                           controllers.Authentication.authenticate()
+GET            /logout                       controllers.Application.logout()
+
 
 GET     /orders                           controllers.Application.listOrders()
 GET     /order                          controllers.Application.order(id :String ?= null)

@@ -44,6 +44,28 @@ public class Inventory {
 
     private boolean sellInOutOfStock;
 
+    private double priceWithQuantity;
+
+    private String priceWithQuantityFormatted;
+
+
+
+    public double getPriceWithQuantity() {
+        return priceWithQuantity;
+    }
+
+    public void setPriceWithQuantity(double priceWithQuantity) {
+        this.priceWithQuantity = priceWithQuantity;
+    }
+
+
+    public String getPriceWithQuantityFormatted() {
+        return priceWithQuantityFormatted;
+    }
+
+    public void setPriceWithQuantityFormatted(String priceWithQuantityFormatted) {
+        this.priceWithQuantityFormatted = priceWithQuantityFormatted;
+    }
 
     public Inventory(){
         this.product = new Product();

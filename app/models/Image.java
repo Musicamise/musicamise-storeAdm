@@ -29,7 +29,9 @@ public class Image {
 
     private  String name;
     private boolean frontImage;
+    private boolean promotion;
 
+    
     private String size;
 
     private String url;
@@ -55,6 +57,12 @@ public class Image {
             PutObjectRequest putObjectRequest = new PutObjectRequest(S3Plugin.s3Bucket, name, imageFile);
             putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead); // public for all
             S3Plugin.amazonS3.putObject(putObjectRequest); // upload file
+            try{
+
+                this.setUrl(getUrl().toString());
+            }catch(Exception e){
+
+            }
 
         }
     }
@@ -109,7 +117,8 @@ public class Image {
     public void setName(String name){
         String nowhitespace = WHITESPACE.matcher(name).replaceAll("-");
         String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
-        String slug = NONLATIN.matcher(normalized).replaceAll("");
+        // String slug = NONLATIN.matcher(normalized).replaceAll("");
+        String slug = nowhitespace;
         slug =  slug.toLowerCase(Locale.ENGLISH);
         this.name = slug;
 
@@ -121,6 +130,14 @@ public class Image {
 
     public void setFrontImage(boolean frontImage) {
         this.frontImage = frontImage;
+    }
+
+    public boolean isPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(boolean promotion) {
+        this.promotion = promotion;
     }
 
     public File getImageFile() {
