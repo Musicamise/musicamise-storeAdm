@@ -37,7 +37,7 @@ public class LocalStore {
 
     private  String description;
 
-    private Image image;
+    private List<Image> images;
 
     private boolean onLineVisible;
 
@@ -82,11 +82,11 @@ public class LocalStore {
         this.description = description;
     }
 
-    public Image getImage() {
+    public List<Image> getImages() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImages(List<Image> image) {
         this.image = image;
     }
 
