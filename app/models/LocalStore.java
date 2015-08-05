@@ -83,11 +83,11 @@ public class LocalStore {
     }
 
     public List<Image> getImages() {
-        return image;
+        return images;
     }
 
-    public void setImages(List<Image> image) {
-        this.image = image;
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     public boolean isOnLineVisible() {
