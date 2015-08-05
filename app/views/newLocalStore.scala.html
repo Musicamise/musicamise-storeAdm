@@ -70,19 +70,21 @@
                       <p class="help-block">Image banner</p>
 
                     </div>
-                      @if(localStore.getImage!=null){
+                      @if(localStore.getImages!=null){
+                        @for(image<- localStore.getImages){
                           <ul class="mailbox-attachments clearfix">
-                              <li id = "li-@localStore.getImage.getName">
-                                  <span class="mailbox-attachment-icon has-img"><img width="20%" src="@localStore.getImage.getUrl()" alt="@localStore.getImage.getName"></span>
+                              <li id = "li-@image.getName">
+                                  <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
                                   <div class="mailbox-attachment-info">
-                                      <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @localStore.getImage.getName</a>
+                                      <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @limage.getName</a>
                                             <span class="mailbox-attachment-size">
-                                               @localStore.getImage.getSize
-                                              <a href="javascript:void(0);"  onclick="showDeleteModal('@localStore.getImage.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                               @image.getSize
+                                              <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
                                             </span>
                                   </div>
                               </li>
                           </ul>
+                        }
                       }
 
 
