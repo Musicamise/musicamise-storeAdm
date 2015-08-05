@@ -41,7 +41,9 @@ public class LocalStore {
 
     private boolean onLineVisible;
 
-    
+    public LocalStore(){
+        this.images = new ArrayList<Image>();
+    }
 
     public String getSlug() {
         return slug;

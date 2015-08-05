@@ -1072,10 +1072,10 @@ public class Application extends Controller {
             }
         }
 
-        if(imagesNew.size() > 0&&localStore.getImage()!=null) {
-            localStore.getImage().deleteFile();
+        if(imagesNew.size() > 0&&localStore.getImages()!=null) {
+//            localStore.getImages().deleteFile();
+            localStore.setImages(imagesNew);
         }
-        localStore.setImage((imagesNew.size() > 0) ? imagesNew.get(0) : localStore.getImage());
 
         MongoService.saveLocalStore(localStore);
 
@@ -1566,9 +1566,9 @@ public class Application extends Controller {
             LocalStore localStore = MongoService.findLocalStoreById(localStoreId);
             if(localStore!=null){
                 try {
-                    Image image = localStore.getImage();
-                    image.deleteFile();
-                    localStore.setImage(null);
+//                    Image image = localStore.getImages();
+//                    image.deleteFile();
+//                    localStore.setImages(null);
                     MongoService.saveLocalStore(localStore);
 
                     return ok();
