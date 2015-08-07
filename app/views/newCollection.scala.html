@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listCollections"><i class="fa fa-dashboard"></i> Collection List</a></li>
+        <li><a href="@routes.CollectionsController.listCollections"><i class="fa fa-dashboard"></i> Collection List</a></li>
         <li class="active">Collection</li>
     </ol>
 </section>
@@ -26,8 +26,8 @@
                 </div><!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" enctype="multipart/form-data" method="POST" @if(collection!=null){
-                                                          action="@routes.Application.saveCollection(collection.getId())"
-                                                          } else  {action="@routes.Application.saveCollection()"}
+                                                          action="@routes.CollectionsController.saveCollection(collection.getId())"
+                                                          } else  {action="@routes.CollectionsController.saveCollection()"}
                         >
                   @CSRF.formField
 
@@ -158,7 +158,7 @@
 
         $.ajax({
             method:'POST',
-            url: "@routes.Application.deleteCollectionImage()",
+            url: "@routes.CollectionsController.deleteCollectionImage()",
             data:{'collectionId':id,'imageName':imageName},
         }).success(function() {
             $("#li-"+imageName).remove();

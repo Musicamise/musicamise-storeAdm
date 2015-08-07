@@ -3,6 +3,7 @@
 # ~~~~
 
 # Home page
+OPTIONS        /*all                             controllers.Application.preflight(all:String)
 
 GET     /                           controllers.Application.dashboard()
 
@@ -10,32 +11,35 @@ GET            /signin                           controllers.Application.login()
 POST           /signin                           controllers.Authentication.authenticate()
 GET            /logout                       controllers.Application.logout()
 
-
-GET     /orders                           controllers.Application.listOrders()
-GET     /order                          controllers.Application.order(id :String ?= null)
-POST     /order/newOrEdit                              controllers.Application.saveOrder(id :String )
-GET     /getDiscounteCodeApplicable                           controllers.Application.getDiscounteCodeApplicable(sku :String ?=null)
-POST     /calculatePrice                           controllers.Application.calculatePrice()
-
-GET     /collection                          controllers.Application.listCollections()
-GET     /collection/newOrEdit                                  controllers.Application.collection(id :String ?= null)
-POST     /collection/newOrEdit/saveCollection                              controllers.Application.saveCollection(id :String ?= null)
-GET     /collection/delete                               controllers.Application.deleteCollection(id :String ?= null)
-POST     /collection/image/delete/                                controllers.Application.deleteCollectionImage()
+GET            /updatecompra                     controllers.Application.updatecompra()
+POST           /updatecompra                     controllers.Application.updatecompra()
 
 
-GET     /tag                          controllers.Application.listTags()
-GET     /tag/newOrEdit                                  controllers.Application.tag(id :String ?= null)
-POST     /tag/newOrEdit/saveTag                              controllers.Application.saveTag(id :String ?= null)
-GET     /tag/delete                               controllers.Application.deleteTag(id :String ?= null)
-POST     /tag/image/delete/                                controllers.Application.deleteTagImage()
+GET     /orders                           controllers.OrderController.listOrders()
+GET     /order                          controllers.OrderController.order(id :String ?= null)
+POST     /order/newOrEdit                              controllers.OrderController.saveOrder(id :String )
+GET     /getDiscounteCodeApplicable                           controllers.OrderController.getDiscounteCodeApplicable(sku :String ?=null)
+POST     /calculatePrice                           controllers.OrderController.calculatePrice()
+
+GET     /collection                          controllers.CollectionsController.listCollections()
+GET     /collection/newOrEdit                                  controllers.CollectionsController.collection(id :String ?= null)
+POST     /collection/newOrEdit/saveCollection                              controllers.CollectionsController.saveCollection(id :String ?= null)
+GET     /collection/delete                               controllers.CollectionsController.deleteCollection(id :String ?= null)
+POST     /collection/image/delete/                                controllers.CollectionsController.deleteCollectionImage()
 
 
-GET     /localStore                          controllers.Application.listLocalStores()
-GET     /localStore/newOrEdit                                  controllers.Application.localStore(id :String ?= null)
-POST     /localStore/newOrEdit/saveLocalStore                              controllers.Application.saveLocalStore(id :String ?= null)
-GET     /localStore/delete                               controllers.Application.deleteLocalStore(id :String ?= null)
-POST     /localStore/image/delete/                                controllers.Application.deleteLocalStoreImage()
+GET     /tag                          controllers.TagController.listTags()
+GET     /tag/newOrEdit                                  controllers.TagController.tag(id :String ?= null)
+POST     /tag/newOrEdit/saveTag                              controllers.TagController.saveTag(id :String ?= null)
+GET     /tag/delete                               controllers.TagController.deleteTag(id :String ?= null)
+POST     /tag/image/delete/                                controllers.TagController.deleteTagImage()
+
+
+GET     /localStore                          controllers.LocalStoreController.listLocalStores()
+GET     /localStore/newOrEdit                                  controllers.LocalStoreController.localStore(id :String ?= null)
+POST     /localStore/newOrEdit/saveLocalStore                              controllers.LocalStoreController.saveLocalStore(id :String ?= null)
+GET     /localStore/delete                               controllers.LocalStoreController.deleteLocalStore(id :String ?= null)
+POST     /localStore/image/delete/                                controllers.LocalStoreController.deleteLocalStoreImage()
 
 
 
@@ -46,40 +50,39 @@ GET     /content/image/delete/                                controllers.Applic
 
 
 
-GET     /discountCode                           controllers.Application.listDiscount()
-GET     /discountCode/newOrEdit                           controllers.Application.discountCode(id :String ?= null)
-POST     /discountCode/newOrEdit/saveDiscountCode                               controllers.Application.saveDiscountCode(id :String ?= null)
-GET     /discountCode/delete                               controllers.Application.deleteDiscountCode(id :String ?= null)
+GET     /discountCode                           controllers.DiscountCodeController.listDiscount()
+GET     /discountCode/newOrEdit                           controllers.DiscountCodeController.discountCode(id :String ?= null)
+POST     /discountCode/newOrEdit/saveDiscountCode                               controllers.DiscountCodeController.saveDiscountCode(id :String ?= null)
+GET     /discountCode/delete                               controllers.DiscountCodeController.deleteDiscountCode(id :String ?= null)
 
 
-GET     /giftcard                           controllers.Application.listGiftCard()
-GET     /giftcard/newOrEdit                           controllers.Application.giftCard(id :String ?= null)
-POST     /giftcard/newOrEdit/saveProduct                               controllers.Application.saveGiftCard(id :String ?= null)
-GET     /giftcard/delete                               controllers.Application.deleteGiftCard(id :String ?= null)
-
-
-
-GET     /product                                   controllers.Application.listProduct()
-GET     /product/newOrEdit                                 controllers.Application.product(id :String ?= null)
-POST     /product/newOrEdit/saveProduct                               controllers.Application.saveProduct(id :String ?= null)
-GET     /product/delete                               controllers.Application.deleteProduct(id :String ?= null)
-GET     /product/image/delete/                                controllers.Application.deleteProductImage(productId: String ?= null,imageName :String ?= null)
-
-GET     /costumer                           controllers.Application.listCostumers()
-GET     /costumer/newOrEdit                            controllers.Application.costumer(id :String ?= null)
-POST     /costumer/newOrEdit/saveCostumer                               controllers.Application.saveCostumer(id :String ?= null)
-GET     /costumer/delete                               controllers.Application.deleteCostumer(id :String ?= null)
-
-GET     /inventory                           controllers.Application.listInventory()
-GET     /inventory/newOrEdit                                 controllers.Application.inventory(id :String ?= null)
-POST     /inventory/newOrEdit/saveInventory                               controllers.Application.saveInventory(id :String ?= null)
-GET     /inventory/delete                               controllers.Application.deleteInventory(id :String ?= null)
-GET     /inventory/updateQuantity                               controllers.Application.updateInventoryQuantity(id :String ?= null,quantity :String ?=null)
+GET     /giftcard                           controllers.GiftCardController.listGiftCard()
+GET     /giftcard/newOrEdit                           controllers.GiftCardController.giftCard(id :String ?= null)
+POST     /giftcard/newOrEdit/saveProduct                               controllers.GiftCardController.saveGiftCard(id :String ?= null)
+GET     /giftcard/delete                               controllers.GiftCardController.deleteGiftCard(id :String ?= null)
 
 
 
+GET     /product                                   controllers.ProductController.listProduct()
+GET     /product/newOrEdit                                 controllers.ProductController.product(id :String ?= null)
+POST     /product/newOrEdit/saveProduct                               controllers.ProductController.saveProduct(id :String ?= null)
+GET     /product/delete                               controllers.ProductController.deleteProduct(id :String ?= null)
+GET     /product/image/delete/                                controllers.ProductController.deleteProductImage(productId: String ?= null,imageName :String ?= null)
 
-GET     /orders                           controllers.Application.listOrders()
+GET     /costumer                           controllers.CostumerController.listCostumers()
+GET     /costumer/newOrEdit                            controllers.CostumerController.costumer(id :String ?= null)
+POST     /costumer/newOrEdit/saveCostumer                               controllers.CostumerController.saveCostumer(id :String ?= null)
+GET     /costumer/delete                               controllers.CostumerController.deleteCostumer(id :String ?= null)
+
+GET     /inventory                           controllers.InventoryController.listInventory()
+GET     /inventory/newOrEdit                                 controllers.InventoryController.inventory(id :String ?= null)
+POST     /inventory/newOrEdit/saveInventory                               controllers.InventoryController.saveInventory(id :String ?= null)
+GET     /inventory/delete                               controllers.InventoryController.deleteInventory(id :String ?= null)
+GET     /inventory/updateQuantity                               controllers.InventoryController.updateInventoryQuantity(id :String ?= null,quantity :String ?=null)
+
+
+
+
 
 
 

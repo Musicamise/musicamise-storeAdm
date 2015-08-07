@@ -1,8 +1,12 @@
 package models;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 /**
  * Created by Alvaro on 19/03/2015.
  */
+@Document
 public class Address {
 
     private int id;
@@ -15,7 +19,10 @@ public class Address {
     private String bairro;
     private String complemento;
     private String country;
-    
+
+    public Address(){
+
+    }
     public int getId() {
         return id;
     }

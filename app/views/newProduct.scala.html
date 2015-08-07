@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listProduct"><i class="fa fa-dashboard"></i> Product List</a></li>
+        <li><a href="@routes.ProductController.listProduct"><i class="fa fa-dashboard"></i> Product List</a></li>
         <li class="active">Product</li>
     </ol>
 </section>
@@ -17,8 +17,8 @@
           <!-- Small boxes (Stat box) -->
             <div class="row">
                 <form  name="myForm" id="myForm" enctype="multipart/form-data" method="POST" @if(product!=null){
-                    action="@routes.Application.saveProduct(product.getId())"
-                    } else  {action="@routes.Application.saveProduct()"}
+                    action="@routes.ProductController.saveProduct(product.getId())"
+                    } else  {action="@routes.ProductController.saveProduct()"}
                 role="form">
                 @CSRF.formField
 
@@ -381,7 +381,7 @@
 
         $.ajax({
             method:'GET',
-            url: "@routes.Application.deleteProductImage()",
+            url: "@routes.ProductController.deleteProductImage()",
             data:{'productId':id,'imageName':imageName},
         }).success(function() {
             $("#li-"+imageName).remove();

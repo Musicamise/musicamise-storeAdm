@@ -26,7 +26,7 @@
 
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.inventory()"> <button type="button" class="btn btn-primary">Add Inventory</button>
+                        <a href="@routes.InventoryController.inventory()"> <button type="button" class="btn btn-primary">Add Inventory</button>
                             </a>
                     </div>                </div><!-- /.box-header -->
                 <div class="box-body">  
@@ -59,7 +59,7 @@
                             </td>
                         <td>@inventory.getProduct.getPrice</td>
                         <td>
-                            <a href="@routes.Application.inventory(inventory.getSku())"><i class="fa fa-file-text-o"></i> Edit</a>
+                            <a href="@routes.InventoryController.inventory(inventory.getSku())"><i class="fa fa-file-text-o"></i> Edit</a>
                             <span> | </span>
                             <a href="javascript:void(0)" onclick="showDeleteModal('@inventory.getSku()')"><i class="fa fa-trash-o"></i> Delete</a>
                         </td>
@@ -149,7 +149,7 @@
         quantity = $("#quantity"+id).val();
         $.ajax({
             method:'GET',
-            url: "@routes.Application.updateInventoryQuantity()",
+            url: "@routes.InventoryController.updateInventoryQuantity()",
             data:{'id':id,'quantity':quantity},
         }).success(function() {
             $("#messageUpdate").html("Update!")
@@ -168,7 +168,7 @@
 
     function deleteInventory(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteInventory()"+query;
+        window.location = "@routes.InventoryController.deleteInventory()"+query;
     }
 </script>
     }

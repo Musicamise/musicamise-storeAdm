@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listGiftCard"><i class="fa fa-dashboard"></i> GiftCard List</a></li>
+        <li><a href="@routes.GiftCardController.listGiftCard"><i class="fa fa-dashboard"></i> GiftCard List</a></li>
         <li class="active">GiftCard</li>
     </ol>
 </section>
@@ -27,8 +27,8 @@
                 </div><!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" id="myForm" method="POST" @if(giftCard!=null){
-                action="@routes.Application.saveGiftCard(giftCard.getCode())"
-                } else  {action="@routes.Application.saveGiftCard(null)"}
+                action="@routes.GiftCardController.saveGiftCard(giftCard.getCode())"
+                } else  {action="@routes.GiftCardController.saveGiftCard(null)"}
                 >
                 <div class="box-body">
                     @CSRF.formField

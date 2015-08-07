@@ -17,7 +17,7 @@
 
                 <div class="box-body">
                 @if(order.getId==null){
-                    <form role="form" id="myForm" method="POST" action="@routes.Application.saveOrder(null)"
+                    <form role="form" id="myForm" method="POST" action="@routes.OrderController.saveOrder(null)"
                     >
                 }
                 <div class="box-body">
@@ -129,7 +129,7 @@
          var discountCodeId = $("#discountCode").chosen().val();
         $.ajax({
           method: "POST",
-          url: "@routes.Application.calculatePrice()",
+          url: "@routes.OrderController.calculatePrice()",
           data: { product:product, discountCodeId: discountCodeId }
         }).success(function( data ) {
               $("#total").val(data);

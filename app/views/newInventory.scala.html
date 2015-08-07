@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listInventory"><i class="fa fa-dashboard"></i> Inventory List</a></li>
+        <li><a href="@routes.InventoryController.listInventory"><i class="fa fa-dashboard"></i> Inventory List</a></li>
         <li class="active">Inventory</li>
     </ol>
 </section>
@@ -28,8 +28,8 @@
                 </div><!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" method="POST" @if(inventory!=null){
-                  action="@routes.Application.saveInventory(inventory.getSku())"
-                  } else  {action="@routes.Application.saveInventory()"}
+                  action="@routes.InventoryController.saveInventory(inventory.getSku())"
+                  } else  {action="@routes.InventoryController.saveInventory()"}
                   >
                   @CSRF.formField
 

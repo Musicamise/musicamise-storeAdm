@@ -23,7 +23,7 @@
                         <br/><p class="text-green">@flash.get("listDiscount")</p>
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.discountCode()"> <button type="button" class="btn btn-primary">Add Discount</button>
+                        <a href="@routes.DiscountCodeController.discountCode()"> <button type="button" class="btn btn-primary">Add Discount</button>
                             </a>
                     </div>                </div><!-- /.box-header -->
                 <div class="box-body">  
@@ -93,7 +93,7 @@
                         }
                         </td>
                         <td>
-                            <a href="@routes.Application.discountCode(discount.getCode())"><i class="fa fa-file-text-o"></i> Edit</a>
+                            <a href="@routes.DiscountCodeController.discountCode(discount.getCode())"><i class="fa fa-file-text-o"></i> Edit</a>
                             <span> | </span>
                             <a href="javascript:void(0)" onclick="showDeleteModal('@discount.getCode()')"><i class="fa fa-trash-o"></i> Delete</a>
                         </td>
@@ -155,7 +155,7 @@
 
     function deleteDiscountCode(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteDiscountCode()"+query;
+        window.location = "@routes.DiscountCodeController.deleteDiscountCode()"+query;
     }
 </script>
 }

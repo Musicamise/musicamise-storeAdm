@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listLocalStores"><i class="fa fa-dashboard"></i> Local Store List</a></li>
+        <li><a href="@routes.LocalStoreController.listLocalStores"><i class="fa fa-dashboard"></i> Local Store List</a></li>
         <li class="active">Local Store</li>
     </ol>
 </section>
@@ -26,8 +26,8 @@
                 </div><!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" enctype="multipart/form-data" method="POST" @if(localStore!=null){
-                                                          action="@routes.Application.saveLocalStore(localStore.getId())"
-                                                          } else  {action="@routes.Application.saveLocalStore()"}
+                                                          action="@routes.LocalStoreController.saveLocalStore(localStore.getId())"
+                                                          } else  {action="@routes.LocalStoreController.saveLocalStore()"}
                         >
                   @CSRF.formField
 
@@ -139,7 +139,7 @@
 
         $.ajax({
             method:'POST',
-            url: "@routes.Application.deleteLocalStoreImage()",
+            url: "@routes.LocalStoreController.deleteLocalStoreImage()",
             data:{'localStoreId':id,'imageName':imageName},
         }).success(function() {
             $("#li-"+imageName).remove();

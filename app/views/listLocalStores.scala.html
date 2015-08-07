@@ -26,7 +26,7 @@
 
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.localStore()"> <button type="button" class="btn btn-primary">Add Local Store</button>
+                        <a href="@routes.LocalStoreController.localStore()"> <button type="button" class="btn btn-primary">Add Local Store</button>
                             </a>
                     </div>                
                 </div><!-- /.box-header -->
@@ -52,7 +52,7 @@
                             }
                         </td>
                         <td>
-                            <a href="@routes.Application.localStore(localStore.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
+                            <a href="@routes.LocalStoreController.localStore(localStore.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
                           <span> | </span>
                             <a href="javascript:void(0)" onclick="showDeleteModal('@localStore.getId()')"><i class="fa fa-trash-o"></i> Delete</a>
                         </td>
@@ -108,7 +108,7 @@
 
     function deleteLocalStore(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteLocalStore()"+query;
+        window.location = "@routes.LocalStoreController.deleteLocalStore()"+query;
     }
 </script>
 }

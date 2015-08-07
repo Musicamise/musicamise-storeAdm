@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listOrders"><i class="fa fa-dashboard"></i> Order List</a></li>
+        <li><a href="@routes.OrderController.listOrders"><i class="fa fa-dashboard"></i> Order List</a></li>
         <li class="active">Order</li>
     </ol>
 </section>
@@ -30,7 +30,7 @@
                 <!-- form start -->
 
                 <div class="box-body">
-                  <form role="form" id="myForm" method="POST" action="@routes.Application.saveOrder(order.getId)"
+                  <form role="form" id="myForm" method="POST" action="@routes.OrderController.saveOrder(order.getId)"
                     >
                 <div class="box-body">
                     @CSRF.formField

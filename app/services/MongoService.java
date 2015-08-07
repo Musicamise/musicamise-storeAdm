@@ -12,6 +12,7 @@ import bootstrap.DS;
 import models.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -153,6 +154,14 @@ public class MongoService {
     public static void saveOrder(Order order) {
         DS.mop.save(order);
     }
+    public static void upDateOrder(String reference,StatusOrder statusOrder,String idCompraPageseguro) {
+        Query query = new Query(where("_id").is(reference));
+        Update update = new Update();
+        update.addToSet("status",statusOrder);
+        update.set("idCompraPageseguro",idCompraPageseguro);
+        DS.mop.updateFirst(query,update,"order");
+
+    }
 
     public static Product findProductById(String id) {
         return DS.mop.findById(id,Product.class);
@@ -178,8 +187,7 @@ public class MongoService {
     }
 
     public static Order findOrderById(String id) {
-        Order order = DS.mop.findById(id,Order.class);
-        return order;
+        return DS.mop.findById(id,Order.class);
     }
 
     public static int countProductWithSlug(String slug) {

@@ -31,6 +31,11 @@ public class StatusOrder {
     public StatusOrder(){
     }
 
+    public StatusOrder(String status){
+    }
+    public StatusOrder(Utils.StatusCompra statusCompra){
+        this.status = statusCompra;
+    }
     public Utils.StatusCompra getStatus() {
         return status;
     }

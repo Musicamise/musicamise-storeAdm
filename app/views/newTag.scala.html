@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listTags"><i class="fa fa-dashboard"></i> Tag List</a></li>
+        <li><a href="@routes.TagController.listTags"><i class="fa fa-dashboard"></i> Tag List</a></li>
         <li class="active">Tag</li>
     </ol>
 </section>
@@ -26,8 +26,8 @@
                 </div><!-- /.box-header -->
                 <!-- form start -->
                 <form role="form" enctype="multipart/form-data" method="POST" @if(tag!=null){
-                                                          action="@routes.Application.saveTag(tag.getId())"
-                                                          } else  {action="@routes.Application.saveTag()"}
+                                                          action="@routes.TagController.saveTag(tag.getId())"
+                                                          } else  {action="@routes.TagController.saveTag()"}
                         >
                   @CSRF.formField
 
@@ -144,7 +144,7 @@
 
         $.ajax({
             method:'POST',
-            url: "@routes.Application.deleteTagImage()",
+            url: "@routes.TagController.deleteTagImage()",
             data:{'tagId':id,'imageName':imageName},
         }).success(function() {
             $("#li-"+imageName).remove();

@@ -18,10 +18,12 @@ import static play.mvc.Results.*;
 
 public class Global extends GlobalSettings {
 
-     @Override
-    public <T extends EssentialFilter> Class<T>[] filters() {
-        return new Class[]{CSRFFilter.class};
-    }
+    //  @Override
+    // public <T extends EssentialFilter> Class<T>[] filters() {
+    //     Logger.debug("filter CSRF");
+    //     Logger.debug(this.toString());
+    //     return new Class[]{CSRFFilter.class};
+    // }
 
     public void onStart(Application app) {
          DS.init();
@@ -71,25 +73,25 @@ public class Global extends GlobalSettings {
     }
 
     // For CORS
-    private class ActionWrapper extends Action.Simple {
-        public ActionWrapper(Action<?> action) {
-            this.delegate = action;
-        }
+    // private class ActionWrapper extends Action.Simple {
+    //     public ActionWrapper(Action<?> action) {
+    //         this.delegate = action;
+    //     }
 
-        @Override
-        public Promise<Result> call(Http.Context ctx) throws java.lang.Throwable {
-            Promise<Result> result = this.delegate.call(ctx);
-            Http.Response response = ctx.response();
-            response.setHeader("Access-Control-Allow-Origin", "*");
-            return result;
-        }
-    }
+    //     @Override
+    //     public Promise<Result> call(Http.Context ctx) throws java.lang.Throwable {
+    //         Promise<Result> result = this.delegate.call(ctx);
+    //         Http.Response response = ctx.response();
+    //         response.setHeader("Access-Control-Allow-Origin", "*");
+    //         return result;
+    //     }
+    // }
 
-    @Override
-    public Action<?> onRequest(Http.Request request,
-                               java.lang.reflect.Method actionMethod) {
-        return new ActionWrapper(super.onRequest(request, actionMethod));
-    }
+    // @Override
+    // public Action<?> onRequest(Http.Request request,
+    //                            java.lang.reflect.Method actionMethod) {
+    //     return new ActionWrapper(super.onRequest(request, actionMethod));
+    // }
 
 
 

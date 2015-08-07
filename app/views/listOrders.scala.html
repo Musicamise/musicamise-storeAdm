@@ -22,7 +22,7 @@
                         <br/><p class="text-green">@flash.get("listOrders")</p>
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.order()"><button type="button" class="btn btn-primary">Add Order</button></a>
+                        <a href="@routes.OrderController.order()"><button type="button" class="btn btn-primary">Add Order</button></a>
                     </div>
                 </div><!-- /.box-header -->
                 <div class="box-body">  
@@ -50,7 +50,7 @@
                         }}</td>
                         <td>@order.getStatus.toString()</td>
                         <td>
-                            <a href="@routes.Application.order(order.getId())"><i class="fa fa-file-text-o"></i> Detalhes</a>
+                            <a href="@routes.OrderController.order(order.getId())"><i class="fa fa-file-text-o"></i> Detalhes</a>
                         </td>
                       </tr>
                     }

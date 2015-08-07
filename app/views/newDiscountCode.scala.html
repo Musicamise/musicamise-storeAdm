@@ -8,7 +8,7 @@
         <small>Panel</small>
     </h1>
     <ol class="breadcrumb">
-        <li><a href="@routes.Application.listDiscount"><i class="fa fa-dashboard"></i> Discount Codes List</a></li>
+        <li><a href="@routes.DiscountCodeController.listDiscount"><i class="fa fa-dashboard"></i> Discount Codes List</a></li>
         <li class="active">Discount Code</li>
     </ol>
 </section>
@@ -18,8 +18,8 @@
             <div class="row">
             <!-- left column -->
             <form role="form" id="myForm" method="POST" @if(discount!=null){
-                action="@routes.Application.saveDiscountCode(discount.getCode())"
-                } else  {action="@routes.Application.saveDiscountCode(null)"}
+                action="@routes.DiscountCodeController.saveDiscountCode(discount.getCode())"
+                } else  {action="@routes.DiscountCodeController.saveDiscountCode(null)"}
                 >
                 @CSRF.formField
 

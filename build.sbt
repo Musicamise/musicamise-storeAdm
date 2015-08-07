@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.springframework" % "spring-core" % "4.1.5.RELEASE",
   "org.springframework" % "spring-context" % "4.1.5.RELEASE",
   "org.springframework.data" % "spring-data-mongodb" % "1.6.2.RELEASE",
+  "org.apache.poi" % "poi-ooxml" % "3.10-FINAL",
   "javax.mail" % "mail" % "1.4.7",
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.amazonaws" % "aws-java-sdk" % "1.3.11",

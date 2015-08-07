@@ -25,7 +25,7 @@
 
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.giftCard()"> <button type="button" class="btn btn-primary">Add Gift Card</button>
+                        <a href="@routes.GiftCardController.giftCard()"> <button type="button" class="btn btn-primary">Add Gift Card</button>
                             </a>
                     </div>                </div><!-- /.box-header -->
                 <div class="box-body">  
@@ -54,7 +54,7 @@
                             }
                         </td>
                           <td>
-                              <a href="@routes.Application.giftCard(gift.getCode())"><i class="fa fa-file-text-o"></i> Edit</a>
+                              <a href="@routes.GiftCardController.giftCard(gift.getCode())"><i class="fa fa-file-text-o"></i> Edit</a>
                               <span> | </span>
                               <a href="javascript:void(0)" onclick="showDeleteModal('@gift.getCode()')"><i class="fa fa-trash-o"></i> Delete</a>
                           </td>
@@ -114,7 +114,7 @@
 
     function deleteProduct(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteGiftCard()"+query;
+        window.location = "@routes.GiftCardController.deleteGiftCard()"+query;
     }
 </script>
 }

@@ -26,7 +26,7 @@
 
                     </div>
                     <div class="col-xs-4">
-                        <a href="@routes.Application.costumer()"> <button type="button" class="btn btn-primary">Add Costumer</button>
+                        <a href="@routes.CostumerController.costumer()"> <button type="button" class="btn btn-primary">Add Costumer</button>
                             </a>
                     </div>                </div><!-- /.box-header -->
                 <div class="box-body">  
@@ -53,7 +53,7 @@
                         <td>@user.getFirstCity()</td>
                         <td>@user.getFirstAddress()</td>
                         <td>
-                            <a href="@routes.Application.costumer(user.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
+                            <a href="@routes.CostumerController.costumer(user.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
                           <span> | </span>
                             <a href="javascript:void(0)" onclick="showDeleteModal('@user.getId()')"><i class="fa fa-trash-o"></i> Delete</a>
                         </td>
@@ -111,7 +111,7 @@
 
     function deleteCostumer(id){
         var query = "?id="+id
-        window.location = "@routes.Application.deleteCostumer()"+query;
+        window.location = "@routes.CostumerController.deleteCostumer()"+query;
     }
 </script>
 }

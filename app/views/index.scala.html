@@ -159,30 +159,30 @@
                         <i class="fa fa-cart-arrow-down"></i> <span>Products</span> <i class="fa fa-angle-left pull-right"></i>
                     </a>
                     <ul class="treeview-menu">
-                        <li id="li-product" ><a href="@routes.Application.listProduct"><i class="fa fa-tags"></i> Product List</a></li>
-                        <li id="li-inventory"><a href="@routes.Application.listInventory"><i class="fa  fa-sitemap"></i> Inventory</a></li>
-                        <li id="li-collections"><a href="@routes.Application.listCollections"><i class="fa  fa-folder-open"></i> Colletions</a></li>
-                        <li id="li-tags"><a href="@routes.Application.listTags"><i class="fa   fa-ticket"></i> Tags</a></li>
-                        <li id="li-giftcard"><a href="@routes.Application.listGiftCard"><i class="fa  fa-gift"></i> Gift Card</a></li>
+                        <li id="li-product" ><a href="@routes.ProductController.listProduct"><i class="fa fa-tags"></i> Product List</a></li>
+                        <li id="li-inventory"><a href="@routes.InventoryController.listInventory"><i class="fa  fa-sitemap"></i> Inventory</a></li>
+                        <li id="li-collections"><a href="@routes.CollectionsController.listCollections"><i class="fa  fa-folder-open"></i> Colletions</a></li>
+                        <li id="li-tags"><a href="@routes.TagController.listTags"><i class="fa   fa-ticket"></i> Tags</a></li>
+                        <li id="li-giftcard"><a href="@routes.GiftCardController.listGiftCard"><i class="fa  fa-gift"></i> Gift Card</a></li>
                     </ul>
                 </li>
                 <li id="li-discount" >
-                    <a href="@routes.Application.listDiscount">
+                    <a href="@routes.DiscountCodeController.listDiscount">
                         <i class="fa fa-qrcode"></i> <span>Discount</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
                 <li id="li-localStore" >
-                    <a href="@routes.Application.listLocalStores">
+                    <a href="@routes.LocalStoreController.listLocalStores">
                         <i class="fa  fa-home"></i> <span>Local Store</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
                 <li id="li-costumer">
-                    <a href="@routes.Application.listCostumers">
+                    <a href="@routes.CostumerController.listCostumers">
                         <i class="fa  fa-users"></i> <span>Costumers</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
                 <li id="li-orders">
-                    <a href="@routes.Application.listOrders">
+                    <a href="@routes.OrderController.listOrders">
                         <i class="fa fa-reorder"></i> <span>Orders Table</span> <small class="label pull-right bg-green"></small>
                     </a>
                 </li>
