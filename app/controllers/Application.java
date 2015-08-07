@@ -289,9 +289,12 @@ public class Application extends Controller {
                 Logger.debug(order.getStatus().toString());
                 StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt("3")));
                 MongoService.upDateOrder(reference,newStatus,code);
+                //todo send email if PAGO ou CANCELADO
+                
             }else{
                 return notFound();
             }
+
 
         }
 

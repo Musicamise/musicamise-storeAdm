@@ -1,18 +1,15 @@
 package bootstrap; /**
  * Created by Alvaro on 18/03/2015.
  */
+import akka.actor.ActorRef;
+import akka.actor.Props;
 import models.*;
 import play.*;
+import play.libs.Akka;
+import play.libs.F.*;
 import play.mvc.*;
 import play.mvc.Http.*;
-import play.libs.F.*;
 import services.MongoService;
-import services.SendEmail;
-
-import javax.mail.MessagingException;
-import java.util.List;
-import play.api.mvc.EssentialFilter;
-import play.filters.csrf.CSRFFilter;
 
 import static play.mvc.Results.*;
 
@@ -26,11 +23,12 @@ public class Global extends GlobalSettings {
     // }
 
     public void onStart(Application app) {
-         DS.init();
-         MongoService.createInitialColletions();
-         MongoService.createInitialTags();
-         MongoService.createInitialContent();
-
+        DS.init();
+        MongoService.createInitialColletions();
+        MongoService.createInitialTags();
+        MongoService.createInitialContent();
+        ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+        myActor.tell("teste",null);
         //MongoHandler.getInstance(null);
         //models.Content test = new models.Content();
         //test.setTitle("Teste title alvaro@silvino.me");
