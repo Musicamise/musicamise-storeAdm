@@ -1,5 +1,8 @@
 package controllers;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import bootstrap.MailSenderActor;
 import com.mongodb.DBObject;
 import com.mongodb.BasicDBList;
 
@@ -8,9 +11,15 @@ import models.Collection;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import play.*;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
+import play.libs.Akka;
+import play.libs.ws.WS;
+import play.libs.ws.WSRequestHolder;
+import play.libs.ws.WSResponse;
 import play.mvc.*;
 
 import services.MongoService;
@@ -34,7 +43,7 @@ import java.text.DecimalFormat;
 public class OrderController extends Controller {
 
 
-	 @AddCSRFToken
+    @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result order(String id){
         Order order = MongoService.findOrderById(id);
@@ -58,10 +67,10 @@ public class OrderController extends Controller {
         return ok(listOrders.render(orders));
     }
 
-      @RequireCSRFCheck
+    @RequireCSRFCheck
     @Security.Authenticated(Secured.class)
-    public static Result saveOrder(String id){
-
+    public static Result saveOrder(){
+        //TODO
         //Http.MultipartFormData dataFiles = request().body().asMultipartFormData();
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
@@ -72,14 +81,17 @@ public class OrderController extends Controller {
         String giftCardId = (dataFiles.get("giftCard") != null && dataFiles.get("giftCard").length > 0) ? dataFiles.get("giftCard")[0] : null;
         String discountCodeId = (dataFiles.get("discountCode") != null && dataFiles.get("discountCode").length > 0) ? dataFiles.get("discountCode")[0] : null;
         String statusCode = (dataFiles.get("status") != null && dataFiles.get("status").length > 0) ? dataFiles.get("status")[0] : null;
+        String shippingCost = (dataFiles.get("shippingCost") != null && dataFiles.get("shippingCost").length > 0) ? dataFiles.get("shippingCost")[0] : null;
+        String notes = (dataFiles.get("notes") != null && dataFiles.get("notes").length > 0) ? dataFiles.get("notes")[0] : null;
+        String manualDiscount = (dataFiles.get("manualDiscount") != null && dataFiles.get("manualDiscount").length > 0) ? dataFiles.get("manualDiscount")[0] : null;
 
 
         User user = null;
         GiftCard giftCard = null;
         DiscountCode discountCode = null;
-        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode));
+        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode.equals("")?"0":statusCode));
         List<Inventory> inventories = new ArrayList<>();
-
+        List<InventoryEntry> inventoryEntries = new ArrayList<>();
         if(userId!=null&&!userId.equals("")){
             user = MongoService.findUserById(userId);
         }
@@ -93,21 +105,12 @@ public class OrderController extends Controller {
         //build inventory object
         Order order = new Order();
 
-        //save order already in base
-        if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)) {
-            order = MongoService.findOrderById(id);
-            StatusOrder statusOrder = new StatusOrder();
-            statusOrder.setStatus(status);
-            order.getStatus().add(statusOrder);
-            MongoService.saveOrder(order);
-            return redirect(routes.OrderController.listOrders());
-        }
+
 
         //Validation
-
-        if(id!=null&&!id.equals("")&&!MongoService.hasOrderById(id)) {
-            flash("listOrders","Order not in base");
-            return redirect(routes.OrderController.listOrders());
+        if(status==null) {
+            flash("order","Coloque um status na Venda");
+            return redirect(routes.OrderController.order(null));
         }
 
         if(productIds==null||(productIds!=null&&productIds.length<=0)){
@@ -115,33 +118,27 @@ public class OrderController extends Controller {
             return redirect(routes.OrderController.order(null));
         }
 
-        if(email==null||(email!=null&&email.equals(""))){
+        if(user==null&&email!=null&&email.equals("")){
             flash("order","Insert a user or email");
             return redirect(routes.OrderController.order(null));
         }
-        if(user==null&&(email==null||(email!=null&&email.equals("")))){
-            flash("order","Insert a user or email");
-            return redirect(routes.OrderController.order(null));   
-        }
 
-  
-      
+
+
         //validation and inventories changes on quantity
         if(productIds.length>0){
             for(int i=0;i<productIds.length;i++){
                 try{
                     Inventory inventory = MongoService.findInventoryById(productIds[i]);
                     int quantity =  Integer.parseInt(quantities[i].trim());
-                    if(quantity<=0||inventory.getQuantity()<quantity){
-                        flash("order","Inventory without quantity or quantity <= 0");
+                    if(quantity<=0||inventory.getQuantity()<quantity&&!inventory.isSellInOutOfStock()){
+                        flash("order","Inventory without quantity or quantity <= 0  or set to sellInOutOfStock");
                         return redirect(routes.OrderController.order(null));
                     }else{
-                        inventory.setQuantity(inventory.getQuantity() -quantity );
-                        inventories.add(inventory);
 
                         Inventory inventoryOrder = new Inventory(inventory);
                         inventoryOrder.setQuantity(quantity);
-                        
+                        inventoryOrder.setPriceWithQuantity(inventoryOrder.getProduct().getPrice()*quantity);
                         order.getProducts().add(inventoryOrder);
 
                     }
@@ -151,33 +148,71 @@ public class OrderController extends Controller {
                 }
             }
         }
+        double shippingValue = 0 ;
+        double giftCardValue = 0 ;
+        double manualDiscountValue = 0;
+        if(shippingCost!=null&&!shippingCost.equals(""))
+            shippingValue = Double.parseDouble(shippingCost);
+        if(manualDiscount!=null&&!manualDiscount.equals(""))
+            manualDiscountValue = Double.parseDouble(manualDiscount);
 
-
-        double total = OrderController.calculateFinalPrice(inventories,discountCode,giftCard);
-
+        if(giftCard!=null)
+            giftCardValue = giftCard.getPrice();
         
+        double totalWithDiscount = OrderController.calculateFinalPrice(order.getProducts(),discountCode);
+        double totalValueItems = OrderController.calculateValueItems(order.getProducts());
+        double discountValue = (discountCode==null)?manualDiscountValue:(totalWithDiscount - totalValueItems);
+        double total = totalValueItems + shippingValue - discountValue;
 
-        order.setEmail(email);
+        order.setEmail(email!=null&&!email.equals("")?email:user.getEmail());
         order.setUser(user);
+        order.setTotalShipping(shippingValue);
+        order.setTotalValueItems(totalValueItems);
+        order.setGiftCardValue(giftCardValue);
+        order.setTotalDiscount(discountValue);
         order.setTotal(total);
         order.setGiftCard(giftCard);
         order.setDiscountCode(discountCode);
+        order.setNotes(notes);
 
         StatusOrder statusOrder = new StatusOrder();
         statusOrder.setStatus(status);
         order.getStatus().add(statusOrder);
 
-
         //save Inventory change
-        MongoService.saveInventories(inventories);
-
         MongoService.saveOrder(order);
+        updateInventoryWithStatus(statusOrder,order);
 
         return redirect(routes.OrderController.listOrders());
-    } 
+    }
 
+    @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
+    public static Result updateOrderDetails(String id){
+        Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
 
-     @Security.Authenticated(Secured.class)
+        //build inventory object
+        Order order = new Order();
+        String statusCode = (dataFiles.get("status") != null && dataFiles.get("status").length > 0) ? dataFiles.get("status")[0] : null;
+        String notes = (dataFiles.get("notes") != null && dataFiles.get("notes").length > 0) ? dataFiles.get("notes")[0] : null;
+        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode.equals("")?"0":statusCode));
+
+        //save order already in base
+        if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)&&status!=null) {
+            order = MongoService.findOrderById(id);
+            StatusOrder newStatus = new StatusOrder();
+            newStatus.setStatus(status);
+            order.setNotes(notes);
+            updateInventoryWithStatus(newStatus,order);
+            MongoService.upDateOrder(order.getId(),newStatus,notes);
+            return redirect(routes.OrderController.listOrders());
+        }else{
+            flash("listOrders","Venda não encontrada");
+            return redirect(routes.OrderController.listOrders());
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result getDiscounteCodeApplicable(String sku){
         Product product = MongoService.findInventoryById(sku).getProduct();
         List<DiscountCode> discountCodes = MongoService.findDiscountCodeByProduct(product);
@@ -185,14 +220,14 @@ public class OrderController extends Controller {
         return ok(json);
     }
 
-     @Security.Authenticated(Secured.class)
+    @Security.Authenticated(Secured.class)
     public static Result calculatePrice(){
         Map<String, String[]> dataFiles = request().body().asFormUrlEncoded();
         String[] productIdsAndQuantity = (dataFiles.get("product[]") != null && dataFiles.get("product[]").length > 0) ? dataFiles.get("product[]")  : null;
         String discountCodeId = (dataFiles.get("discountCodeId") != null && dataFiles.get("discountCodeId").length > 0) ? dataFiles.get("discountCodeId")[0] : null;
         List<String> productIds =  new ArrayList<>();
         for(int i = 0;i<productIdsAndQuantity.length;i++){
-                productIds.add(productIdsAndQuantity[i].split("-")[0]);
+            productIds.add(productIdsAndQuantity[i].split("-")[0]);
         }
         List<String> productIdsAndQuantityList = Arrays.asList(productIdsAndQuantity);
 
@@ -225,15 +260,24 @@ public class OrderController extends Controller {
                 }
             }
         }
-        double total = OrderController.calculateFinalPrice(inventories,discountCode,null);
+        double totalItens = OrderController.calculateValueItems(inventories);
+        double total = OrderController.calculateFinalPrice(inventories,discountCode);
+        double totalDiscount = total - totalItens;
+
         DecimalFormat format = new DecimalFormat("0.00");
-        String formatted = format.format(total);
-        return ok(Json.toJson(formatted));
+        String formattedTotal = format.format(total);
+        String formattedDiscount = format.format(totalDiscount);
+        
+        return ok(Json.newObject().put("total",formattedTotal).put("totalDiscount",formattedDiscount));
     }
 
-    public static double calculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode, GiftCard giftCard){
+    public static double calculateValueItems(List<Inventory> inventories){
         double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
- 
+        return total;
+    }
+    public static double calculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode){
+        double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
+
         if(discountCode!=null){
 
             switch(discountCode.getWhereApply()){
@@ -242,10 +286,10 @@ public class OrderController extends Controller {
                         switch(discountCode.getTypeForPay()){
                             case value:
                                 total = total-discountCode.getValueOf();
-                            break;
+                                break;
                             case percent:
                                 total = total*(1-(discountCode.getValueOf()/100));
-                            break;
+                                break;
                         }
                     }
                     break;
@@ -259,15 +303,15 @@ public class OrderController extends Controller {
                             switch(discountCode.getTypeForPay()){
                                 case value:
                                     value = value-discountCode.getValueOf();
-                                break;
+                                    break;
                                 case percent:
                                     value = value*(1-(discountCode.getValueOf()/100));
-                                break;
+                                    break;
                             }
                         }
                         total += value;
                     }
-                    
+
                     break;
             }
         }
@@ -327,6 +371,373 @@ public class OrderController extends Controller {
         }
         return applicable;
     }
-    
+
+    @Security.Authenticated(Secured.class)
+    public static Result sendEmailWithCurrentStatus(String orderId){
+        sendEmailWIthStatusOrder(orderId);
+        return ok("true");
+    }
+    @Security.Authenticated(Secured.class)
+    public static Result updateOrders(String all){
+        if(all!=null&&!all.equals(""))
+            updateAllOrders(all!=null&&!all.equals(""));
+        else{
+            return internalServerError();
+        }
+        return ok("true");
+    }
+    @Security.Authenticated(Secured.class)
+    public static Result updateOrder(String orderId){
+        if(orderId!=null&&!orderId.equals(""))
+            updateSingleOrder(orderId);
+        else{
+            return internalServerError();
+        }
+        return ok("true");
+    }
+
+    public static Result updatecompra()  {
+
+        if(request().hasHeader("Origin")&&!request().getHeader("Origin").contains("pagseguro")){
+            Logger.debug("hit");
+            return badRequest();
+        }
+        Map<String, String[]> data = request().body().asFormUrlEncoded();
+        if(data!=null){
+
+            String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
+            String emailPagseguro = null;
+            String token = null;
+            if(System.getenv("pagseguro.email")!=null){
+                emailPagseguro = System.getenv("pagseguro.email");
+            }else{
+                emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
+            }
+            if(System.getenv("pagseguro.token")!=null){
+                token = System.getenv("pagseguro.token");
+            }else{
+                token =  Play.application().configuration().getString("pagseguro.token");
+            }
+
+            String notificationCode = (data.get("notificationCode") != null && data.get("notificationCode").length > 0) ? data.get("notificationCode")[0] : "";
+
+            String notificationType = (data.get("notificationType") != null && data.get("notificationType").length > 0) ? data.get("notificationType")[0] : "";
+
+            WSRequestHolder holder = WS.url(urlWs + notificationCode);
+
+            WSResponse response =   holder.setQueryParameter("email", emailPagseguro)
+                    .setQueryParameter("token", token)
+                    .get()
+                    .get(10000);
+
+            Document respostaDoc = response.asXml();
+            Order order = bindXMLWithPagseguroObject(null,respostaDoc);
+            NodeList referenceTag = respostaDoc.getElementsByTagName("reference");
+            NodeList statusTag = respostaDoc.getElementsByTagName("status");
+            String reference = referenceTag.item(0).getTextContent();
+            String status = statusTag.item(0).getTextContent();
+            if(order!=null){
+
+                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                MongoService.upDateOrder(reference,newStatus);
+
+                updateInventoryWithStatus(newStatus,order);
+
+                // send email if PAGO ou CANCELADO
+                ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+                myActor.tell(reference,null);
+            }else{
+                return notFound();
+            }
+
+        }
+
+        return ok();
+    }
+
+    public static void updateAllOrders(boolean all) {
+        List<Order> orders;
+        if (!all) {
+            List<Order>  ordersAll = MongoService.getAllOrders();
+            orders = ordersAll.stream().filter(o -> o.getLastStatus()!=null&&!o.getLastStatus().getStatus().equals(Utils.StatusCompra.PAGO))
+                    .collect(Collectors.toList());
+        } else {
+            orders  = MongoService.getAllOrders();
+        }
+        String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
+        String emailPagseguro = null;
+        String token = null;
+        if (System.getenv("pagseguro.email") != null) {
+            emailPagseguro = System.getenv("pagseguro.email");
+        } else {
+            emailPagseguro = Play.application().configuration().getString("pagseguro.email");
+        }
+        if (System.getenv("pagseguro.token") != null) {
+            token = System.getenv("pagseguro.token");
+        } else {
+            token = Play.application().configuration().getString("pagseguro.token");
+        }
+        for (Order order : orders) {
+            WSRequestHolder holder = WS.url(urlWs);
+
+            WSResponse responseWithReference = holder.setQueryParameter("email", emailPagseguro)
+                    .setQueryParameter("token", token)
+                    .setQueryParameter("reference", order.getId())
+                    .get()
+                    .get(10000);
+
+            Document respostaReferenceDoc = responseWithReference.asXml();
+            if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
+                String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
+
+                holder = WS.url(urlWs+code);
+
+                WSResponse response = holder.setQueryParameter("email", emailPagseguro)
+                        .setQueryParameter("token", token)
+                        .get()
+                        .get(10000);
+
+                Document respostaDoc = response.asXml();
+                bindXMLWithPagseguroObject(order,respostaDoc);
+                NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                String status = statusTag.item(0).getTextContent();
+                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                if (order.getLastStatus()==null||
+                    order.getLastStatus()!=null &&
+                    !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
+
+                    MongoService.upDateOrder(order.getId(), newStatus);
+                    updateInventoryWithStatus(newStatus,order);
+                    
+                }
+            }
+
+        }
+    }
+
+    public static void updateSingleOrder(String orderId) {
+        Order order = MongoService.findOrderById(orderId);
+        
+        String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
+        String emailPagseguro = null;
+        String token = null;
+        if (System.getenv("pagseguro.email") != null) {
+            emailPagseguro = System.getenv("pagseguro.email");
+        } else {
+            emailPagseguro = Play.application().configuration().getString("pagseguro.email");
+        }
+        if (System.getenv("pagseguro.token") != null) {
+            token = System.getenv("pagseguro.token");
+        } else {
+            token = Play.application().configuration().getString("pagseguro.token");
+        }
+        if(order!=null) {
+            WSRequestHolder holder = WS.url(urlWs);
+
+            WSResponse responseWithReference = holder.setQueryParameter("email", emailPagseguro)
+                    .setQueryParameter("token", token)
+                    .setQueryParameter("reference", order.getId())
+                    .get()
+                    .get(10000);
+
+            Document respostaReferenceDoc = responseWithReference.asXml();
+            if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
+                String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
+
+                holder = WS.url(urlWs+code);
+
+                WSResponse response = holder.setQueryParameter("email", emailPagseguro)
+                        .setQueryParameter("token", token)
+                        .get()
+                        .get(10000);
+
+                Document respostaDoc = response.asXml();
+                bindXMLWithPagseguroObject(order,respostaDoc);
+                NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                String status = statusTag.item(0).getTextContent();
+                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                 if (order.getLastStatus()==null||
+                    order.getLastStatus()!=null &&
+                    !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
+
+                    MongoService.upDateOrder(order.getId(), newStatus);
+                    updateInventoryWithStatus(newStatus,order);
+                }
+            }
+        }
+    }
+    public static void sendEmailWIthStatusOrder(String orderId) {
+        if(orderId!=null&&!orderId.equals("")){
+            // send email if PAGO ou CANCELADO
+            ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+            myActor.tell(orderId,null);
+        }
+    }
+
+    public static Order bindXMLWithPagseguroObject(Order order,Document respostaDoc){
+        NodeList dateTag = respostaDoc.getElementsByTagName("date");
+        NodeList codeTag = respostaDoc.getElementsByTagName("code");
+        NodeList referenceTag = respostaDoc.getElementsByTagName("reference");
+        NodeList typeTag = respostaDoc.getElementsByTagName("type");
+        NodeList statusTag = respostaDoc.getElementsByTagName("status");
+        NodeList cancellationSourceTag = respostaDoc.getElementsByTagName("cancellationSource");
+        NodeList lastEventDateTag = respostaDoc.getElementsByTagName("lastEventDate");
+        NodeList paymentMethodTag = respostaDoc.getElementsByTagName("paymentMethod");
+
+
+        NodeList grossAmountTag = respostaDoc.getElementsByTagName("grossAmount");
+        NodeList discountAmountTag = respostaDoc.getElementsByTagName("discountAmount");
+        NodeList netAmountTag = respostaDoc.getElementsByTagName("netAmount");
+        NodeList escrowEndDateTag = respostaDoc.getElementsByTagName("escrowEndDate");
+        NodeList extraAmountTag = respostaDoc.getElementsByTagName("extraAmount");
+        NodeList installmentCountTag = respostaDoc.getElementsByTagName("installmentCount");
+        NodeList creditorFeesTag = respostaDoc.getElementsByTagName("creditorFees");
+        NodeList installmentFeeAmountTag = respostaDoc.getElementsByTagName("installmentFeeAmount");
+        NodeList operationalFeeAmountTag = respostaDoc.getElementsByTagName("operationalFeeAmount");
+        NodeList intermediationRateAmountTag = respostaDoc.getElementsByTagName("intermediationRateAmount");
+        NodeList intermediationFeeAmountTag = respostaDoc.getElementsByTagName("intermediationFeeAmount");
+
+        NodeList senderTag = respostaDoc.getElementsByTagName("sender");
+
+        String dateString = dateTag.item(0).getTextContent();
+        DateTime date = new DateTime(dateString);
+
+
+        String code = codeTag.item(0).getTextContent();
+        String reference = referenceTag.item(0).getTextContent();
+        String type = typeTag.item(0).getTextContent();
+        String status = statusTag.item(0).getTextContent();
+
+        String cancellationSource = cancellationSourceTag.getLength()>0?cancellationSourceTag.item(0).getTextContent():"";
+        String lastEventDateString = lastEventDateTag.getLength()>0?lastEventDateTag.item(0).getTextContent():"";
+        DateTime lastEventDate = new DateTime(lastEventDateString);
+
+        String paymentMethodTag_type =  paymentMethodTag.getLength()>0? paymentMethodTag.item(0).getFirstChild().getTextContent():"";
+        String paymentMethodTag_code =  paymentMethodTag.getLength()>0? paymentMethodTag.item(0).getLastChild().getTextContent():"";
+
+        String grossAmount = grossAmountTag.getLength()>0?grossAmountTag.item(0).getTextContent():"";
+        String discountAmount = discountAmountTag.getLength()>0?discountAmountTag.item(0).getTextContent():"";
+        String netAmount = netAmountTag.getLength()>0?netAmountTag.item(0).getTextContent():"";
+        String escrowEndDateString = escrowEndDateTag.getLength()>0?escrowEndDateTag.item(0).getTextContent():"";
+        DateTime escrowEndDate = new DateTime(escrowEndDateString);
+
+        String extraAmount = extraAmountTag.getLength()>0?extraAmountTag.item(0).getTextContent():"";
+        String installmentCount = installmentCountTag.getLength()>0?installmentCountTag.item(0).getTextContent():"";
+        String installmentFeeAmount = installmentFeeAmountTag.getLength()>0?installmentFeeAmountTag.item(0).getTextContent():"";
+        String operationalFeeAmount = operationalFeeAmountTag.getLength()>0?operationalFeeAmountTag.item(0).getTextContent():"";
+        String intermediationRateAmount = intermediationRateAmountTag.getLength()>0?intermediationRateAmountTag.item(0).getTextContent():"";
+        String intermediationFeeAmount = intermediationFeeAmountTag.getLength()>0?intermediationFeeAmountTag.item(0).getTextContent():"";
+
+        String sender_name = null;
+        String sender_email = null;
+        String sender_areaCode = null;
+        String sender_number = null;
+
+        if(senderTag.getLength()>0){
+            sender_name = senderTag.item(0).getChildNodes().getLength()>0?senderTag.item(0).getChildNodes().item(0).getTextContent():"";
+            sender_email = senderTag.item(0).getChildNodes().getLength()>1?senderTag.item(0).getChildNodes().item(1).getTextContent():"";
+            sender_areaCode = senderTag.item(0).getChildNodes().getLength()>2?senderTag.item(0).getChildNodes().item(2).getFirstChild().getTextContent():"";
+            sender_number =senderTag.item(0).getChildNodes().getLength()>2?senderTag.item(0).getChildNodes().item(2).getLastChild().getTextContent():"";
+        }
+
+        if(order==null){
+            order = MongoService.findOrderById(reference);
+        }
+        Order.PagSeguroInfo pagSeguroInfo =  order.new PagSeguroInfo();
+        pagSeguroInfo.setCode(code);
+        pagSeguroInfo.setType(Utils.PagseguroTypeCompra.getTypeByCode(Integer.parseInt(type)).name());
+        pagSeguroInfo.setCancellationSource(cancellationSource);
+        pagSeguroInfo.setDate(date.toDate());
+        pagSeguroInfo.setDiscountAmount(discountAmount);
+        pagSeguroInfo.setEscrowEndDate(escrowEndDate.toDate());
+        pagSeguroInfo.setExtraAmount(extraAmount);
+        pagSeguroInfo.setGrossAmount(grossAmount);
+        pagSeguroInfo.setInstallmentCount(installmentCount);
+        pagSeguroInfo.setInstallmentFeeAmount(installmentFeeAmount);
+        pagSeguroInfo.setIntermediationFeeAmount(intermediationFeeAmount);
+        pagSeguroInfo.setIntermediationRateAmount(intermediationRateAmount);
+        pagSeguroInfo.setLastEventDate(lastEventDate.toDate());
+        pagSeguroInfo.setNetAmount(netAmount);
+        pagSeguroInfo.setOperationalFeeAmount(operationalFeeAmount);
+        pagSeguroInfo.setPaymentMethodCode(Utils.PagseguroPagamentoCodeCompra.getCompraByCode(Integer.parseInt(paymentMethodTag_code)).name());
+        pagSeguroInfo.setPaymentMethodType(Utils.PagseguroPagamentoTypeCompra.getTypeByCode(Integer.parseInt(paymentMethodTag_type)).name());
+        pagSeguroInfo.setSenderAreaCode(sender_areaCode);
+        pagSeguroInfo.setSenderEmail(sender_email);
+        pagSeguroInfo.setSenderName(sender_name);
+        pagSeguroInfo.setSenderNumber(sender_number);
+        //save
+        if(order.getPagSeguroInfo()==null)
+            MongoService.upDateOrder(reference, pagSeguroInfo);
+
+        order.setPagSeguroInfo(pagSeguroInfo);
+
+        return order;
+    }
+
+
+     public static void updateInventoryWithStatus(StatusOrder newStatus,Order order){
+
+        switch (newStatus.getStatus()){
+            case AGUARDANDO:
+                break;
+            case EMANALISE:
+                break;
+            case PAGO:
+                if (order.isAbleToUpdateInventory(newStatus)) {
+                    updateInventory(order,false);
+                }
+                break;
+            case DISPONIVEL:
+                break;
+            case EMDISPUTA:
+                break;
+            case DEVOLVIDA:
+                if (order.isAbleToUpdateInventory(newStatus)) {
+                    updateInventory(order,true);
+                }
+                break;
+            case CANCELADO:
+                if (order.isAbleToUpdateInventory(newStatus)) {
+                    updateInventory(order,true);
+                }
+                break;
+        }
+     }
+
+
+    public static void updateInventory(Order order,boolean devolvida){
+
+        for(Inventory vendido :order.getProducts()){
+
+            Inventory inventoryDB = MongoService.findInventoryById(vendido.getSku());
+            if(inventoryDB!=null){
+                try {
+                    int multi = devolvida?1:-1;
+
+                    int oldQuantity = inventoryDB.getQuantity();
+                    int quantityVendida = vendido.getQuantity();
+                    InventoryEntry entry = new InventoryEntry();
+
+                    entry.setInventory(inventoryDB);
+                    entry.setQuantity(multi*quantityVendida);
+                    entry.setOrderId(order.getId());
+
+                    // Save Inventory
+                    inventoryDB.setQuantity(oldQuantity+multi*quantityVendida);
+                    MongoService.saveInventory(inventoryDB);
+                    // Save Inventory Entry
+                    MongoService.saveInventoryEntry(entry);
+                }catch (Exception e) {
+                }
+            }
+        }
+
+    }
+
+    public static String generateCode(){
+        return "";
+    }
+
+
 
 }

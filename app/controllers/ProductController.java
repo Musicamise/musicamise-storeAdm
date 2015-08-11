@@ -72,6 +72,7 @@ public class ProductController extends Controller {
         String[] collections = (dataFiles.asFormUrlEncoded().get("collections") != null && dataFiles.asFormUrlEncoded().get("collections").length > 0) ? dataFiles.asFormUrlEncoded().get("collections") : null;
         String color = (dataFiles.asFormUrlEncoded().get("color") != null && dataFiles.asFormUrlEncoded().get("color").length > 0) ? dataFiles.asFormUrlEncoded().get("color")[0] : null;
 
+
         String[] localStores = (dataFiles.asFormUrlEncoded().get("localStores") != null && dataFiles.asFormUrlEncoded().get("localStores").length > 0) ? dataFiles.asFormUrlEncoded().get("localStores") : null;
 
         // String hasDiscount = (dataFiles.asFormUrlEncoded().get("hasDiscount") != null && dataFiles.asFormUrlEncoded().get("hasDiscount").length > 0) ? dataFiles.asFormUrlEncoded().get("hasDiscount")[0] : null;
@@ -119,6 +120,7 @@ public class ProductController extends Controller {
         //build product object
         Product product = null;
         if(id!=null) {
+
             product = MongoService.findProductById(id);
         }
 
@@ -144,6 +146,10 @@ public class ProductController extends Controller {
         // product.setDiscount(valueOfDiscountDouble);
         // product.setDiscountType(typeDiscount);
 
+        for(Image image:product.getImages()){
+            String frontImage = (dataFiles.asFormUrlEncoded().get("frontImage"+image.getName()) != null && dataFiles.asFormUrlEncoded().get("frontImage"+image.getName()).length > 0) ? dataFiles.asFormUrlEncoded().get("frontImage"+image.getName())[0] : null;
+            image.setFrontImage(frontImage!=null);
+        }
 
         List<Image> imagesNew = new ArrayList<>();
         for(Http.MultipartFormData.FilePart file : fileImages){

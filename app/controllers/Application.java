@@ -1,5 +1,8 @@
 package controllers;
 
+import akka.actor.ActorRef;
+import akka.actor.Props;
+import bootstrap.MailSenderActor;
 import com.mongodb.DBObject;
 import com.mongodb.BasicDBList;
 
@@ -14,6 +17,7 @@ import org.w3c.dom.NodeList;
 import play.*;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
+import play.libs.Akka;
 import play.libs.ws.WS;
 import play.libs.ws.WSRequestHolder;
 import play.libs.ws.WSResponse;
@@ -51,7 +55,7 @@ public class Application extends Controller {
 
     /**
      * Create
-     * 
+     *
      */
     @AddCSRFToken
     public static Result login() {
@@ -59,7 +63,7 @@ public class Application extends Controller {
 
         return ok(views.html.login.render(message));
     }
-    
+
     @Security.Authenticated(Secured.class)
     public static Result logout() {
         session().clear();
@@ -69,6 +73,7 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result dashboard(){
+        //TODO
         DateTime startDate = new DateTime();
         DateTime endDate = new DateTime();
         AggregationResults<DBObject> aggResultsProducts = null;
@@ -105,7 +110,7 @@ public class Application extends Controller {
      * Save
      * */
 
-  
+
     @RequireCSRFCheck
     @Security.Authenticated(Secured.class)
     public static Result saveContent(String id){
@@ -114,14 +119,14 @@ public class Application extends Controller {
         String title = (dataFiles.asFormUrlEncoded().get("title") != null && dataFiles.asFormUrlEncoded().get("title").length > 0) ? dataFiles.asFormUrlEncoded().get("title")[0] : null;
         String contentStr = (dataFiles.asFormUrlEncoded().get("content") != null && dataFiles.asFormUrlEncoded().get("content").length > 0) ? dataFiles.asFormUrlEncoded().get("content")[0] : null;
         String visible = (dataFiles.asFormUrlEncoded().get("visible") != null && dataFiles.asFormUrlEncoded().get("visible").length > 0) ? dataFiles.asFormUrlEncoded().get("visible")[0] : null;
-       
+
         String email = (dataFiles.asFormUrlEncoded().get("email") != null && dataFiles.asFormUrlEncoded().get("email").length > 0) ? dataFiles.asFormUrlEncoded().get("email")[0] : null;
         String facebook = (dataFiles.asFormUrlEncoded().get("facebook") != null && dataFiles.asFormUrlEncoded().get("facebook").length > 0) ? dataFiles.asFormUrlEncoded().get("facebook")[0] : null;
         String twitter = (dataFiles.asFormUrlEncoded().get("twitter") != null && dataFiles.asFormUrlEncoded().get("twitter").length > 0) ? dataFiles.asFormUrlEncoded().get("twitter")[0] : null;
         String gPlus = (dataFiles.asFormUrlEncoded().get("gPlus") != null && dataFiles.asFormUrlEncoded().get("gPlus").length > 0) ? dataFiles.asFormUrlEncoded().get("gPlus")[0] : null;
         String instagram = (dataFiles.asFormUrlEncoded().get("instagram") != null && dataFiles.asFormUrlEncoded().get("instagram").length > 0) ? dataFiles.asFormUrlEncoded().get("instagram")[0] : null;
 
-        
+
 
         boolean visibleBool = (visible!=null)?true:false;
 
@@ -147,7 +152,7 @@ public class Application extends Controller {
 
         content.setTitle((title != null && !title.equals("")) ? title : content.getTitle());
         content.setContent((contentStr != null && !contentStr.equals("")) ? contentStr : content.getContent());
-        
+
         content.setVisible(visibleBool);
 
         content.setEmail((email != null && !email.equals("")) ? email : content.getEmail());
@@ -155,15 +160,24 @@ public class Application extends Controller {
         content.setTwitter((twitter != null && !twitter.equals("")) ? twitter : content.getTwitter());
         content.setGPlus((gPlus != null && !gPlus.equals("")) ? gPlus : content.getGPlus());
         content.setInstagram((instagram != null && !instagram.equals("")) ? instagram : content.getInstagram());
-        
+
 
         String[] imageSubTitles = (dataFiles.asFormUrlEncoded().get("subtitle") != null && dataFiles.asFormUrlEncoded().get("subtitle").length > 0) ? dataFiles.asFormUrlEncoded().get("subtitle") : null;
         String[] imageUrlRedirect = (dataFiles.asFormUrlEncoded().get("urlRedirect") != null && dataFiles.asFormUrlEncoded().get("urlRedirect").length > 0) ? dataFiles.asFormUrlEncoded().get("urlRedirect") : null;
         String[] promotion = (dataFiles.asFormUrlEncoded().get("promotion") != null && dataFiles.asFormUrlEncoded().get("promotion").length > 0) ? dataFiles.asFormUrlEncoded().get("promotion") : null;
+        
+        for(Image image:content.getImages()){
+            String imageSubTitlesImage = (dataFiles.asFormUrlEncoded().get("subtitle"+image.getName()) != null && dataFiles.asFormUrlEncoded().get("subtitle"+image.getName()).length > 0) ? dataFiles.asFormUrlEncoded().get("subtitle"+image.getName())[0] : null;
+            String imageUrlRedirectImage = (dataFiles.asFormUrlEncoded().get("urlRedirect"+image.getName()) != null && dataFiles.asFormUrlEncoded().get("urlRedirect"+image.getName()).length > 0) ? dataFiles.asFormUrlEncoded().get("urlRedirect"+image.getName())[0] : null;
+            String promotionImage = (dataFiles.asFormUrlEncoded().get("promotion"+image.getName()) != null && dataFiles.asFormUrlEncoded().get("promotion"+image.getName()).length > 0) ? dataFiles.asFormUrlEncoded().get("promotion"+image.getName())[0] : null;
+            image.setSubtitle(imageSubTitlesImage!=null?imageSubTitlesImage:image.getSubtitle());
+            image.setRedirectUrl(imageUrlRedirectImage!=null?imageUrlRedirectImage:image.getRedirectUrl());
+            image.setPromotion(promotionImage!=null);
+        }
 
         List<Image> imagesNew = new ArrayList<>();
         for(int i = 0 ; i<fileImages.size() ;i++){
-        // for(Http.MultipartFormData.FilePart file : fileImages){
+            // for(Http.MultipartFormData.FilePart file : fileImages){
             Http.MultipartFormData.FilePart file = fileImages.get(i);
             String  imageName;
             if (file != null) {
@@ -177,7 +191,7 @@ public class Application extends Controller {
                 image.setSize(megabytes+" mb");
                 image.setName(imageName);
                 image.setImageFile(fileSave);
-                if(promotion.length > i)
+                if(promotion!=null&&promotion.length > i)
                     image.setPromotion(promotion[i]!=null);
                 if(imageSubTitles!=null &&imageSubTitles.length > i && imageSubTitles[i]!=null){
                     image.setSubtitle(imageSubTitles[i]);
@@ -223,88 +237,6 @@ public class Application extends Controller {
             }
         }
         return internalServerError();
-    }
-    
-    public static Result updatecompra()  {
-
-        Logger.debug("hit");
-        if(request().hasHeader("Origin")&&!request().getHeader("Origin").contains("pagseguro")){
-            Logger.debug("hit");
-            return badRequest();
-        }
-        Map<String, String[]> data = request().body().asFormUrlEncoded();
-        if(data!=null){
-            
-            String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
-            String emailPagseguro = null;
-            String token = null;
-            if(System.getenv("pagseguro.email")!=null){
-                emailPagseguro = System.getenv("pagseguro.email");
-            }else{
-                emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
-            }
-            if(System.getenv("pagseguro.token")!=null){
-                token = System.getenv("pagseguro.token");
-            }else{
-                token =  Play.application().configuration().getString("pagseguro.token");
-            }
-
-            String notificationCode = (data.get("notificationCode") != null && data.get("notificationCode").length > 0) ? data.get("notificationCode")[0] : "";
-
-            String notificationType = (data.get("notificationType") != null && data.get("notificationType").length > 0) ? data.get("notificationType")[0] : "";
-
-            WSRequestHolder holder = WS.url(urlWs + notificationCode);
-
-            WSResponse response =   holder.setQueryParameter("email", emailPagseguro)
-                    .setQueryParameter("token", token)
-                    .get()
-                    .get(10000);
-
-            Document respostaDoc = response.asXml();
-            Logger.debug(respostaDoc.toString());
-            NodeList sender = respostaDoc.getElementsByTagName("sender");
-            NodeList items = respostaDoc.getElementsByTagName("item");
-            NodeList codeTag = respostaDoc.getElementsByTagName("code");
-            NodeList referenceTag = respostaDoc.getElementsByTagName("reference");
-
-            NodeList statusTag = respostaDoc.getElementsByTagName("status");
-
-
-            String code = codeTag.item(0).getTextContent();
-            String status = statusTag.item(0).getTextContent();
-            String reference = referenceTag.item(0).getTextContent();
-
-            
-            Logger.debug("code");
-            Logger.debug(code);
-            Logger.debug("status Code");
-            Logger.debug(status);
-            Logger.debug(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)).name());
-
-            Order order = MongoService.findOrderById(reference);
-            Logger.debug("order");
-            if(order!=null){
-                
-                Logger.debug("status From order");
-                Logger.debug(order.getStatus().toString());
-                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt("3")));
-                MongoService.upDateOrder(reference,newStatus,code);
-                //todo send email if PAGO ou CANCELADO
-                
-            }else{
-                return notFound();
-            }
-
-
-        }
-
-
-        return ok();
-    }
-    
-
-    public static String generateCode(){
-        return "";
     }
 
 

@@ -119,29 +119,58 @@
                             <div class="box-header">
                                 <h3 class="box-title">Images Already Uploaded Start</h3>
                             </div>
-                            <div class="box-body">
-                                <!-- Minimal style -->
-                                <ul class="mailbox-attachments clearfix">
-                                @for( image <- content.getImages){
-                                <!-- checkbox -->
-                                <li id = "li-@image.getName.replace(".","")">
-                                    <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
-                                    <div class="mailbox-attachment-info">
-                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
-                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getSubtitle</a>
-                                        <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getRedirectUrl</a>
-                                        <span class="mailbox-attachment-size">
-                                                   @image.getSize
+                            @for( image <- content.getImages){
+                            <div class="box-body" id = "li-@image.getName.replace(".","")">
+                                <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
 
-                                        @if(image.isPromotion){
-                                           <span class="badge bg-green">Promotion</span>
-                                        }       
-                                        <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
-                                        </span>
+                                <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
+
+                                <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
+                                <div class="box box-primary">
+                                    <div class="form-group">
+                                          <label >SubTitle</label>
+                                          <input type="text" class="form-control" name="subtitle@image.getName" value="@image.getSubtitle" placeholder="Enter SubTitle">
                                     </div>
-                                </li>
-                                }
-                                </ul>
+                                    <div class="form-group">
+                                          <label >Url Redirect</label>
+                                          <input type="text" class="form-control" name="urlRedirect@image.getName" value="@image.getRedirectUrl" placeholder="Enter Url Redirect">
+                                    </div> 
+                                    
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" class="minimal" @if(image.isPromotion){checked=""} name="promotion@image.getName"  value="promotion" /> Promotion
+                                        </label>
+                                    </div>
+                                    <span class="mailbox-attachment-size">
+                                       @image.getSize
+
+                                    @if(image.isPromotion){
+                                       <span class="badge bg-green">Promotion</span>
+                                    }    
+                                </div>
+                            </div>
+                            }
+                                <!-- Minimal style -->
+                                <!--  <ul class="mailbox-attachments clearfix">
+                                    @for( image <- content.getImages){
+                                    <li id = "li-@image.getName.replace(".","")">
+                                        <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
+                                        <div class="mailbox-attachment-info">
+                                            <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
+                                            <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getSubtitle</a>
+                                            <a href="#" style="display: block" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getRedirectUrl</a>
+                                            <span class="mailbox-attachment-size">
+                                                       @image.getSize
+
+                                            @if(image.isPromotion){
+                                               <span class="badge bg-green">Promotion</span>
+                                            }       
+                                            <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                            </span>
+                                        </div>
+                                    </li>
+                                    }
+                                </ul> -->
                                 <div id="modalDelete" class="modal modal-primary">
                                     <div class="modal-dialog">
                                         <div class="modal-content">

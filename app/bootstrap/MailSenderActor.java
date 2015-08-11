@@ -7,8 +7,12 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import models.Order;
+import models.StatusOrder;
 import services.MongoService;
 import services.SendEmail;
+
+import java.util.Comparator;
+import java.util.Date;
 
 public class MailSenderActor extends UntypedActor {
   LoggingAdapter log = Logging.getLogger(getContext().system(), this);
@@ -29,10 +33,13 @@ public class MailSenderActor extends UntypedActor {
   public void onReceive(Object message) throws Exception {
     if (message instanceof String) {
         Order order = MongoService.findOrderById(message.toString());
-        SendEmail.sendOrderStatus(order);
-      log.info("Received String message: {}", message);
-      getSender().tell(message, getSelf());
-    } else
-      unhandled(message);
+        if(order!=null){
+            SendEmail.sendOrderStatus(order);
+        }
+        log.info("Received String message: {}", message);
+        getSender().tell(message, getSelf());
+    } else {
+        unhandled(message);
+    }
   }
 }

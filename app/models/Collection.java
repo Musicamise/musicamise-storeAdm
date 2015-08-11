@@ -45,7 +45,7 @@ public class Collection {
 
     private boolean mainMenu;
     private boolean gender;
-
+    private boolean front;
 
     public boolean isOnLocalStore() {
         return onLocalStore;
@@ -54,7 +54,12 @@ public class Collection {
     public void setOnLocalStore(boolean onLocalStore) {
         this.onLocalStore = onLocalStore;
     }
-
+    public boolean isFront() {
+        return front;
+    }
+    public void setFront(boolean front) {
+        this.front = front;
+    }
     public boolean isGender() {
         return gender;
     }

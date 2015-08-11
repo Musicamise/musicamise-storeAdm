@@ -30,8 +30,14 @@
                 <!-- form start -->
 
                 <div class="box-body">
-                  <form role="form" id="myForm" method="POST" action="@routes.OrderController.saveOrder(order.getId)"
+                  <form role="form" id="myForm" method="POST" action="@routes.OrderController.updateOrderDetails(order.getId)"
                     >
+
+                  <div class="col-xs-4">
+                        <a href="javascript:void(0)"><button type="button" onclick="showUpdateModal()" class="btn btn-primary">Atualizar a Venda</button></a>
+                    </div>
+                      <br/>
+                      <br/>
                 <div class="box-body">
                     @CSRF.formField
                     <label > Proucts</label> 
@@ -43,6 +49,7 @@
                               @inventorie.getProduct.getTitle : <br/> R$@inventorie.getProduct.getPrice / @inventorie.getSize / @inventorie.getGenderSlug</label>
                               <br/>
                              <label >Quantity: @inventorie.getQuantity</label>
+                             <label >Preço: @inventorie.getPriceWithQuantityFormatted</label>
                              <br/>
                         </div>
                     }
@@ -64,6 +71,8 @@
                           <label >@order.getEmail </label>
                     </div>
 
+
+
                     <div class="form-group">
                         <label >GiftCard</label>
                             @if(order.getGiftCard!=null){
@@ -78,25 +87,76 @@
                             <label>@order.getDiscountCode.toString</label>
                         }
                     </div>
+                    <div class="form-group">
+                        <label >PagSeguro</label>
+                        @if(order.getPagSeguroInfo!=null){
+                        <label>@order.getPagSeguroInfo.toString</label>
+                        }
+                    </div>
 
+                    <div class="form-group">
+                        <label >Valores totais com itens: </label>
+                        <label>R$ @order.getTotalValueItemsFormatted</label>
+                    </div>
+                    <div class="form-group">
+                        <label >Total de entrega: </label>
+                        <label> @order.getTotalShippingFormatted</label>
+                    </div>
+                    <div class="form-group">
+                        <label >Total Desconto: </label>
+                        <label> @order.getTotalDiscountFormatted</label>
+                    </div>
+                    <div class="form-group">
+                        <label >Total GiftCard: </label>
+                        <label> @order.getGiftCardValueFormatted</label>
+                    </div>
                     <div class="form-group">
                         <label >Total: </label>
-                        <label>R$ @order.getTotal</label>
+                        <label> @order.getTotal</label>
                     </div>
 
                     <div class="form-group">
-                        <label >Status</label>
-                       <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                              <option value=""></option>
-                              @for(status<- Utils.StatusCompra.values){
-                              <option @if(status.equals(order.getStatus)){selected}  value="@status.code" >@status.name()</option>
-                              }
-                        </select>
+                        <label >Status: </label>
+                        @for(status<- order.getStatus){
+                            <label> @status.getStatus().name() - @status.getCreatedDate()</label>
+                        }
                     </div>
+                    <div class="form-group">
+                        <label >Emails Enviados: </label>
+                        @for(emailsSent<- order.getEmailSents){
+                            <label> @emailsSent.getStatus().name() - @emailsSent.getCreatedDate()</label>
+                        }
+                    </div>
+                    <br/>
+                    <div class="col-xs-4">
+                        <a href="javascript:void(0)"><button type="button" onclick="showEmailModal()" class="btn btn-primary">Enviar Email</button></a>
+                    </div>
+                    <br/>
+                    <br/>
 
+                    @if(order.getPagSeguroInfo==null){
+                        <div class="form-group">
+                            <label >Status</label>
+                            <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                                <option value=""></option>
+                                @for(status<- Utils.StatusCompra.values){
+                                    <option @if(order.getLastStatus()!=null&&status.equals(order.getLastStatus().getStatus())){selected}  value="@status.code" >@status.name()</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    <br/>
+                    <div class="form-group">
+                        <label >Notas</label>
+                        <textarea id="notes" name="notes"  value="" rows="10" cols="80">
+                            @order.getNotes
+                        </textarea>
+                    </div>
+                    <br/>
+                    <br/>
                 </div><!-- /.box-body -->
 
-                <div class="box-footer">
+                  <div class="box-footer">
                     <button type="submit"   class="btn btn-primary">Submit</button>
                 </div>
                 </form>
@@ -111,7 +171,43 @@
     </div>   <!-- /.row -->
 </section><!-- /.content -->
 <!-- jQuery 2.1.4 -->
+
+<div id="modalEmail" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Enviar o email </h4>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja enviar o status atual? <span id="modalSpan"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="emailButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+<div id="modalUpdate" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Atualizar a venda </h4>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja atualizar a venda? <span id="modalSpan"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="updateButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+<script src="@routes.Assets.at("plugins/jquery.blockUI.js")"></script>
 
 <script type="text/javascript">
      $(document).ready(function() {
@@ -127,8 +223,49 @@
 
         });
 
-     
+    function showEmailModal(){
+        $("#emailButton").attr('onclick', "sendEmail()");
+        $("#modalSpan").html(@if(order.getUser()!=null){ @order.getUser().getEmail()}else{@order.getEmail()});
+        $("#modalEmail").modal();
+    }
 
+    function sendEmail(){
+        var all = $("#isAgeSelected").is(':checked');
+        $.blockUI();
+        $.ajax({
+            method:'GET',
+            url: "@routes.OrderController.sendEmailWithCurrentStatus()",
+            data:{'orderId':@order.getId()},
+        }).success(function() {
+            window.location.reload();
+        }).error(function() {
+            alert("Erro on update!")
+        }).done(function(){
+            $.unblockUI();
+        });
+        $(".close").click();
+    }
+    function showUpdateModal(){
+        $("#updateButton").attr('onclick', "update()");
+        $("#modalSpan").html();
+        $("#modalUpdate").modal();
+    }
+
+    function update(){
+        $.blockUI();
+        $.ajax({
+            method:'GET',
+            url: "@routes.OrderController.updateOrder()",
+            data:{'orderId':@order.getId()},
+        }).success(function() {
+            window.location.reload();
+        }).error(function() {
+            alert("Erro on update!")
+        }).done(function(){
+            $.unblockUI();
+        });
+        $(".close").click();
+    }
 
 
 </script>

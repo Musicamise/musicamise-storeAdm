@@ -17,7 +17,7 @@
 
                 <div class="box-body">
                 @if(order.getId==null){
-                    <form role="form" id="myForm" method="POST" action="@routes.OrderController.saveOrder(null)"
+                    <form role="form" id="myForm" method="POST" action="@routes.OrderController.saveOrder()"
                     >
                 }
                 <div class="box-body">
@@ -72,12 +72,28 @@
                               }
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label >Notas</label>
+                        <textarea id="notes" name="notes"  value="" rows="10" cols="80">
+                        </textarea>
+                    </div>
+                    <div class="form-group">
+                        <label >Valor de entrega</label>
+                          <input type="text" id="shippingCost"  name="shippingCost"  value=""  class="price form-control">
+                    </div>
+                    <div class="form-group">
+                        <label >Desconto manual</label>
+                        <input type="text" id="manualDiscount"  name="manualDiscount"  value=""  class="price form-control">
+                    </div>
 
                     <div class="form-group">
                         <label >Total</label>
                         <input name="total" id="total" disabled="" type="text" class="price form-control"  placeholder="Total Value" value="" > 
                     </div>
-
+                    <div class="form-group">
+                        <label >Total do Desconto</label>
+                        <input name="totalDesconto" id="totalDesconto" disabled="" type="text" class="price form-control"  placeholder="Total Value" value="" > 
+                    </div>
                     <div class="form-group">
                         <label >Status</label>
                        <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
@@ -92,7 +108,7 @@
 
                 @if(order.getId==null){
                     <div class="box-footer">
-                        <button type="submit"   class="btn btn-primary">Submit</button>
+                        <button type="button" onClick="sendForm();"  class="btn btn-primary">Submit</button>
                     </div>
                     </form>
                 }
@@ -110,6 +126,13 @@
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
 
 <script type="text/javascript">
+    
+    function sendForm(){
+            $.each($(".price"),function(index,item){
+               item.value = $('.price').maskMoney('unmasked')[index];
+            });
+            document.getElementById("myForm").submit();
+    }
 
     function updatePrice(){
         if(this.parentNode.getElementsByClassName("quantity").item()){
@@ -132,7 +155,8 @@
           url: "@routes.OrderController.calculatePrice()",
           data: { product:product, discountCodeId: discountCodeId }
         }).success(function( data ) {
-              $("#total").val(data);
+              $("#total").val(data.total);
+              $("#totalDesconto").val(data.totalDiscount);
               $(".price").maskMoney('mask');
 
         }).error(function(msg){

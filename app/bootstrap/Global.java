@@ -27,8 +27,7 @@ public class Global extends GlobalSettings {
         MongoService.createInitialColletions();
         MongoService.createInitialTags();
         MongoService.createInitialContent();
-        ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
-        myActor.tell("teste",null);
+
         //MongoHandler.getInstance(null);
         //models.Content test = new models.Content();
         //test.setTitle("Teste title alvaro@silvino.me");

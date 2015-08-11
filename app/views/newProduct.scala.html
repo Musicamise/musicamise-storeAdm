@@ -230,7 +230,7 @@
                           <select name="tags" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
                               <option value=""></option>
                               @for(tag<-tags){
-                              <option @if(product.getUserTags().contains(tag)){selected=""} >@tag</option>
+                                <option @if(product.getUserTags().contains(tag)){selected=""} >@tag</option>
                               }
                           </select>
                       </div>
@@ -240,7 +240,7 @@
                         <select name="collections" data-placeholder="Chose the tages" style="width: 350px; display: none;" multiple="" class="chosen-select-width" tabindex="-1">
                             <option value=""></option>
                             @for(collection<- collections){
-                            <option @if(product.getCollectionsSlugs().contains(collection.getSlug)){selected=""} >@collection.getSlug</option>
+                              <option @if(product.getCollectionsSlugs().contains(collection.getSlug)){selected=""} >@collection.getSlug</option>
                             }
                         </select>
                     </div>
@@ -285,12 +285,18 @@
                             <li id = "li-@image.getName">
                                 <span class="mailbox-attachment-icon has-img"><img width="20%" src="@image.getUrl()" alt="@image.getName"></span>
                                 <div class="mailbox-attachment-info">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="frontImage@image.getName" @if(image.isFrontImage){checked=""}  type="checkbox"> Imagem de frente.
+                                        </label>
+                                    </div>
                                     <a href="#" class="mailbox-attachment-name"><i class="fa fa-camera"></i> @image.getName</a>
-                                            <span class="mailbox-attachment-size">
-                                               @image.getSize
-                                              <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
-                                            </span>
+                                    <span class="mailbox-attachment-size">
+                                       @image.getSize
+                                      <a href="javascript:void(0);"  onclick="showDeleteModal('@image.getName');" class="btn btn-default btn-xs pull-right"><i class="fa  fa-remove"></i></a>
+                                    </span>
                                 </div>
+                                
                             </li>
                             }
                             </ul>

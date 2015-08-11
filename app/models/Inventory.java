@@ -48,7 +48,12 @@ public class Inventory {
 
     private String priceWithQuantityFormatted;
 
-
+    public String toString(){
+        return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" genderSlug "
+                +this.genderSlug+" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
+                +" Price "+this.product.getPriceFormatted()+" color "+this.product.getColor()
+                +" title "+this.product.getTitle()+" description "+this.product.getDescription();
+    }
 
     public double getPriceWithQuantity() {
         return priceWithQuantity;
@@ -56,6 +61,7 @@ public class Inventory {
 
     public void setPriceWithQuantity(double priceWithQuantity) {
         this.priceWithQuantity = priceWithQuantity;
+        this.priceWithQuantityFormatted = this.formatValues(priceWithQuantity);
     }
 
 
@@ -146,5 +152,15 @@ public class Inventory {
     public boolean equals(Object obj) 
     {
         return (((Inventory)this).getSku().equals(((Inventory)obj).getSku()));
+    }
+
+    public String formatValues(double price){
+        Locale locale = new Locale ("pt", "BR");
+        Locale.setDefault(locale);
+
+        DecimalFormat formatter =
+                (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
+
+        return formatter.format(price);
     }
 }

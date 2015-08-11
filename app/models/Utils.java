@@ -9,6 +9,7 @@ import java.util.List;
 public class Utils {
 
     public enum ProductSizeType {
+        UNICO("Tamanho único"),
         RN("recem nascido"),
         um("um ano"),
         dois("dois anos"),
@@ -119,6 +120,7 @@ public class Utils {
 
     public enum CollectionType {
         destaque("Destaque"),
+        unisex("Unisex"),
         masculino("Masculino"),
         feminino("Feminino"),
         infantil("Infantil"),
@@ -218,6 +220,125 @@ public class Utils {
                 case 7: return CANCELADO;
                 case 8: return CHARGEBACK;
                 case 9: return EMCONESTACAO;
+                default: return null;
+            }
+        }
+
+    }
+    public enum PagseguroTypeCompra{
+        PAGAMENTO(1),ASSINATURA(11);
+        public final int code;
+
+        PagseguroTypeCompra(int code){
+            this.code = code;
+        }
+
+        public static PagseguroTypeCompra getTypeByCode(int code){
+            switch (code){
+                case 1: return PAGAMENTO;
+                case 11: return ASSINATURA;
+                default: return null;
+            }
+        }
+
+    }
+    public enum PagseguroPagamentoTypeCompra{
+        CARTAO_DE_CREDITO(1),BOLETO(2),DEBITO_ONLINE(3),SALDO_PAGSEGURO(4),OI_PAGO(5),DEPOSITO_EM_CONTA(7);
+        public final int code;
+
+        PagseguroPagamentoTypeCompra(int code){
+            this.code = code;
+        }
+
+        public static PagseguroPagamentoTypeCompra getTypeByCode(int code){
+            switch (code){
+                case 1: return CARTAO_DE_CREDITO;
+                case 2: return BOLETO;
+                case 3: return DEBITO_ONLINE;
+                case 4: return SALDO_PAGSEGURO;
+                case 5: return OI_PAGO;
+                case 7: return DEPOSITO_EM_CONTA;
+                default: return null;
+            }
+        }
+
+    }
+    public enum PagseguroPagamentoCodeCompra{
+
+        CARTAO_DE_CREDITO_VISA(101),
+        CARTAO_DE_CREDITO_MASTERCARD(102),
+        CARTAO_DE_CREDITO_AMERICAN_EXPRESS(103),
+        CARTAO_DE_CREDITO_DINERS(104),
+        CARTAO_DE_CREDITO_HIPERCARD(105),
+        CARTAO_DE_CREDITO_AURA(106),
+        CARTAO_DE_CREDITO_ELO(107),
+        CARTAO_DE_CREDITO_PLENOCARD(108),
+        CARTAO_DE_CREDITO_PERSONALCARD(109),
+        CARTAO_DE_CREDITO_JCB(110),
+        CARTAO_DE_CREDITO_DISCOVER(111),
+        CARTAO_DE_CREDITO_BRASILCARD(112),
+        CARTAO_DE_CREDITO_FORTBRASIL(113),
+        CARTAO_DE_CREDITO_CARDBAN(114),
+        CARTAO_DE_CREDITO_VALECARD(115),
+        CARTAO_DE_CREDITO_CABAL(116),
+        CARTAO_DE_CREDITO_MAIS(117),
+        CARTAO_DE_CREDITO_AVISTA(118),
+        CARTAO_DE_CREDITO_GRANDCARD(119),
+        CARTAO_DE_CREDITO_SOROCRED(120),
+        BOLETO_BRADESCO(201),
+        BOLETO_SANTANDER(202),
+        DÉBITO_ONLINE_BRADESCO(301),
+        DÉBITO_ONLINE_ITAU(302),
+        DÉBITO_ONLINE_UNIBANCO(303),
+        DÉBITO_ONLINE_BANCO_DO_BRASIL(304),
+        DÉBITO_ONLINE_BANCO_REAL(305),
+        DÉBITO_ONLINE_BANRISUL(306),
+        DÉBITO_ONLINE_HSBC(307),
+        SALDO_PAGSEGURO(401),
+        OI_PAGGO(501),
+        DEPÓSITO_EM_CONTA___BANCO_DO_BRASIL(701),
+        DEPÓSITO_EM_CONTA___HSBC(702);
+        public final int code;
+
+        PagseguroPagamentoCodeCompra(int code){
+            this.code = code;
+        }
+
+        public static PagseguroPagamentoCodeCompra getCompraByCode(int code){
+            switch (code){
+                case 101: return CARTAO_DE_CREDITO_VISA ;
+                case 102: return CARTAO_DE_CREDITO_MASTERCARD ;
+                case 103: return CARTAO_DE_CREDITO_AMERICAN_EXPRESS ;
+                case 104: return CARTAO_DE_CREDITO_DINERS ;
+                case 105: return CARTAO_DE_CREDITO_HIPERCARD ;
+                case 106: return CARTAO_DE_CREDITO_AURA ;
+                case 107: return CARTAO_DE_CREDITO_ELO ;
+                case 108: return CARTAO_DE_CREDITO_PLENOCARD  ;
+                case 109: return CARTAO_DE_CREDITO_PERSONALCARD ;
+                case 110: return CARTAO_DE_CREDITO_JCB ;
+                case 111: return CARTAO_DE_CREDITO_DISCOVER ;
+                case 112: return CARTAO_DE_CREDITO_BRASILCARD ;
+                case 113: return CARTAO_DE_CREDITO_FORTBRASIL ;
+                case 114: return CARTAO_DE_CREDITO_CARDBAN  ;
+                case 115: return CARTAO_DE_CREDITO_VALECARD ;
+                case 116: return CARTAO_DE_CREDITO_CABAL ;
+                case 117: return CARTAO_DE_CREDITO_MAIS;
+                case 118: return CARTAO_DE_CREDITO_AVISTA ;
+                case 119: return CARTAO_DE_CREDITO_GRANDCARD ;
+                case 120: return CARTAO_DE_CREDITO_SOROCRED ;
+                case 201: return BOLETO_BRADESCO  ;
+                case 202: return BOLETO_SANTANDER ;
+                case 301: return DÉBITO_ONLINE_BRADESCO ;
+                case 302: return DÉBITO_ONLINE_ITAU ;
+                case 303: return DÉBITO_ONLINE_UNIBANCO  ;
+                case 304: return DÉBITO_ONLINE_BANCO_DO_BRASIL ;
+                case 305: return DÉBITO_ONLINE_BANCO_REAL  ;
+                case 306: return DÉBITO_ONLINE_BANRISUL ;
+                case 307: return DÉBITO_ONLINE_HSBC ;
+                case 401: return SALDO_PAGSEGURO ;
+                case 501: return OI_PAGGO  ;
+                case 701: return DEPÓSITO_EM_CONTA___BANCO_DO_BRASIL;
+                case 702: return DEPÓSITO_EM_CONTA___HSBC;
                 default: return null;
             }
         }

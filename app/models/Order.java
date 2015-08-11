@@ -31,11 +31,13 @@ public class Order {
 
     private List<Inventory> products ;
 
-    private String idCompraPageseguro;
+    private PagSeguroInfo pagSeguroInfo;
+    private String notes;
 
     private String email;
 
     private UserInner user;
+    private List<EmailSent> emailSents;
 
     @Field("shippingAddress")
     private Address shippingAddress;
@@ -67,8 +69,75 @@ public class Order {
     public Order(){
         this.products = new ArrayList<>();
         this.status = new ArrayList<>();
+        this.emailSents = new ArrayList<>();
     }
 
+
+
+    public String toString(){
+        return "products: " + this.products.toString() + " shippingAddress " + this.shippingAddress.toString()
+                + " user "+ this.user.toString();
+
+    }
+
+    public StatusOrder getLastStatus(){
+        if(this.status.size()>0){
+            return this.status.get(this.status.size()-1);
+        }else{
+            return null;
+        }
+    }
+
+    public boolean isAbleToUpdateInventory(StatusOrder status){
+        if(status.getStatus().equals(Utils.StatusCompra.PAGO)){
+            if(this.status.size()>0){
+                boolean canUpdate = true;
+                for(StatusOrder statusOrder:this.status){
+                    if(statusOrder.getStatus().equals(Utils.StatusCompra.PAGO)){
+                        canUpdate = false;
+                    }else if(statusOrder.getStatus().equals(Utils.StatusCompra.CANCELADO)||statusOrder.getStatus().equals(Utils.StatusCompra.DEVOLVIDA)){
+                        canUpdate = true;
+                    }
+                }
+                return canUpdate;
+            }else{
+                return true;
+            }
+        }else{
+            if(this.status.size()>0){
+                boolean canUpdate = false;
+                for(StatusOrder statusOrder:this.status){
+                    if(statusOrder.getStatus().equals(Utils.StatusCompra.PAGO)){
+                        canUpdate = true;
+                    }else if(statusOrder.getStatus().equals(Utils.StatusCompra.CANCELADO)||statusOrder.getStatus().equals(Utils.StatusCompra.DEVOLVIDA)){
+                        canUpdate = false;
+                    }
+                }
+                return canUpdate;
+            }else{
+                return false;
+            }
+        }
+
+    }
+
+    public String formatValues(double price){
+        Locale locale = new Locale ("pt", "BR");
+        Locale.setDefault(locale);
+
+        DecimalFormat formatter =
+                (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
+
+        return formatter.format(price);
+    }
+
+     public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
 
     public Address getShippingAddress() {
         return shippingAddress;
@@ -101,15 +170,16 @@ public class Order {
 
     public void setGiftCardValue(double giftCardValue) {
         this.giftCardValue = giftCardValue;
+        this.giftCardValueFormatted = this.formatValues(giftCardValue);
     }  
 
 
     public String getGiftCardValueFormatted() {
-        return totalValueItemsFormatted;
+        return giftCardValueFormatted;
     }
 
-    public void setGiftCardValueFormatted(String totalValueItemsFormatted) {
-        this.totalValueItemsFormatted = totalValueItemsFormatted;
+    public void setGiftCardValueFormatted(String giftCardValueFormatted) {
+        this.giftCardValueFormatted = giftCardValueFormatted;
     }
 
     public double getTotalValueItems() {
@@ -118,6 +188,7 @@ public class Order {
 
     public void setTotalValueItems(double totalValueItems) {
         this.totalValueItems = totalValueItems;
+        this.totalValueItemsFormatted = this.formatValues(totalValueItems);
     }  
 
 
@@ -135,6 +206,7 @@ public class Order {
 
     public void setTotalShipping(double totalShipping) {
         this.totalShipping = totalShipping;
+        this.totalShippingFormatted = this.formatValues(totalShipping);
     }  
 
 
@@ -152,6 +224,7 @@ public class Order {
 
     public void setTotalDiscount(double totalDiscount) {
         this.totalDiscount = totalDiscount;
+        this.totalDiscountFormatted = this.formatValues(totalDiscount);
     }  
 
 
@@ -162,9 +235,6 @@ public class Order {
     public void setTotalDiscountFormatted(String totalDiscountFormatted) {
         this.totalDiscountFormatted = totalDiscountFormatted;
     }
-
-
-
 
     public String getId() {
         return id;
@@ -182,12 +252,12 @@ public class Order {
         this.products = products;
     }
 
-    public String getIdCompraPageseguro() {
-        return idCompraPageseguro;
+    public PagSeguroInfo getPagSeguroInfo() {
+        return pagSeguroInfo;
     }
 
-    public void setIdCompraPageseguro(String idCompraPageseguro) {
-        this.idCompraPageseguro = idCompraPageseguro;
+    public void setPagSeguroInfo(PagSeguroInfo pagSeguroInfo) {
+        this.pagSeguroInfo = pagSeguroInfo;
     }
 
     public String getEmail() {
@@ -206,15 +276,16 @@ public class Order {
         this.user = user;
     }
     public void setUser(User user) {
-        this.user = new UserInner();
-        this.user.email = user.getEmail();
-        this.user.id = user.getId();
-        this.user.address = user.getAddress();
-        this.user.displayName = user.getDisplayName();
-        this.user.fullName = user.getFullName();
-        this.user.firstName = user.getFirstName();
-        this.user.lastName = user.getLastName();
-
+        if(user!=null) {
+            this.user = new UserInner();
+            this.user.email = user.getEmail();
+            this.user.id = user.getId();
+            this.user.address = user.getAddress();
+            this.user.displayName = user.getDisplayName();
+            this.user.fullName = user.getFullName();
+            this.user.firstName = user.getFirstName();
+            this.user.lastName = user.getLastName();
+        }
     }
 
     public double getTotal() {
@@ -223,6 +294,7 @@ public class Order {
 
     public void setTotal(double total) {
         this.total = total;
+        this.totalFormatted = this.formatValues(total);
     }
 
     public GiftCard getGiftCard() {
@@ -248,6 +320,48 @@ public class Order {
     public void setStatus(List<StatusOrder> status) {
         this.status = status;
     }
+
+    public List<EmailSent> getEmailSents() {
+        return emailSents;
+    }
+
+    public void setEmailSents(List<EmailSent> emailSents) {
+        this.emailSents = emailSents;
+    }
+
+    @Document
+    public class EmailSent {
+
+        private Utils.StatusCompra status;
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private Date createdDate = new Date();
+
+        public String toString(){
+            return " status "+this.status.name() + " Date " + this.createdDate ;
+        }
+
+        public EmailSent(){
+        }
+
+        public Utils.StatusCompra getStatus() {
+            return status;
+        }
+
+        public void setStatus(Utils.StatusCompra status) {
+            this.status = status;
+        }
+
+        public Date getCreatedDate() {
+            return createdDate;
+        }
+
+        public void setCreatedDate(Date createdDate) {
+            this.createdDate = createdDate;
+        }
+ 
+    }
+
     @Document
     public class UserInner {
 
@@ -294,6 +408,10 @@ public class Order {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private Date resetPasswordExpires = new Date();
 
+        public String toString(){
+            return " email "+this.email + " firstName " + this.firstName +
+                    " lastName " + this.lastName;
+        }
 
         public UserInner(){
             this.address = new ArrayList<>();
@@ -472,6 +590,250 @@ public class Order {
         }
 
 
+    }
+    @Document
+    public class PagSeguroInfo {
+
+        private String code;
+        private String reference;
+        private String type;
+
+        private String cancellationSource;
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private Date date = new Date();
+
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+        private Date lastEventDate = new Date();
+
+        private String paymentMethodType;
+        private String paymentMethodCode;
+        private String grossAmount;
+        private String discountAmount;
+        private String netAmount;
+
+        private Date escrowEndDate;
+        private String extraAmount;
+        private String installmentCount;
+
+        private String creditorFees;
+
+        private String installmentFeeAmount;
+
+        private String operationalFeeAmount;
+
+        private String intermediationRateAmount;
+
+        private String intermediationFeeAmount;
+
+        private String senderEmail;
+        private String senderName;
+        private String senderNumber;
+        private String senderAreaCode;
+
+
+
+        public PagSeguroInfo(){
+        }
+
+        public String toString(){
+            return "code "+this.code +"- type- "+this.type +"- cancellationSource "+this.cancellationSource +
+                    "- date "+this.date +"- lastEventDate "+this.lastEventDate
+                    +"- paymentMethodType "+this.paymentMethodType +"- paymentMethodCode "+this.paymentMethodCode +
+                    "- grossAmount "+this.grossAmount+"- discountAmount "+this.discountAmount+
+                    "- netAmount "+this.netAmount+"- extraAmount "+this.extraAmount+"- installmentCount "+this.installmentCount+
+                    "- installmentFeeAmount "+this.installmentFeeAmount+
+                    "- operationalFeeAmount "+this.operationalFeeAmount+"- intermediationRateAmount "+this.intermediationRateAmount+
+                    "- intermediationFeeAmount "+this.intermediationFeeAmount+
+                    "- installmentFeeAmount "+this.installmentFeeAmount+
+                    "- senderEmail "+this.senderEmail+"- senderName "+this.senderName+"- senderNumber "+this.senderNumber+"- senderAreaCode "+this.senderAreaCode;
+
+        }
+
+        public String getReference() {
+            return reference;
+        }
+
+        public void setReference(String reference) {
+            this.reference = reference;
+        }
+
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public String getCancellationSource() {
+            return cancellationSource;
+        }
+
+        public void setCancellationSource(String cancellationSource) {
+            this.cancellationSource = cancellationSource;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
+        }
+
+        public Date getLastEventDate() {
+            return lastEventDate;
+        }
+
+        public void setLastEventDate(Date lastEventDate) {
+            this.lastEventDate = lastEventDate;
+        }
+
+        public String getPaymentMethodType() {
+            return paymentMethodType;
+        }
+
+        public void setPaymentMethodType(String paymentMethodType) {
+            this.paymentMethodType = paymentMethodType;
+        }
+
+        public String getPaymentMethodCode() {
+            return paymentMethodCode;
+        }
+
+        public void setPaymentMethodCode(String paymentMethodCode) {
+            this.paymentMethodCode = paymentMethodCode;
+        }
+
+        public String getGrossAmount() {
+            return grossAmount;
+        }
+
+        public void setGrossAmount(String grossAmount) {
+            this.grossAmount = grossAmount;
+        }
+
+        public String getDiscountAmount() {
+            return discountAmount;
+        }
+
+        public void setDiscountAmount(String discountAmount) {
+            this.discountAmount = discountAmount;
+        }
+
+        public String getNetAmount() {
+            return netAmount;
+        }
+
+        public void setNetAmount(String netAmount) {
+            this.netAmount = netAmount;
+        }
+
+        public Date getEscrowEndDate() {
+            return escrowEndDate;
+        }
+
+        public void setEscrowEndDate(Date escrowEndDate) {
+            this.escrowEndDate = escrowEndDate;
+        }
+
+        public String getExtraAmount() {
+            return extraAmount;
+        }
+
+        public void setExtraAmount(String extraAmount) {
+            this.extraAmount = extraAmount;
+        }
+
+        public String getInstallmentCount() {
+            return installmentCount;
+        }
+
+        public void setInstallmentCount(String installmentCount) {
+            this.installmentCount = installmentCount;
+        }
+
+        public String getCreditorFees() {
+            return creditorFees;
+        }
+
+        public void setCreditorFees(String creditorFees) {
+            this.creditorFees = creditorFees;
+        }
+
+        public String getInstallmentFeeAmount() {
+            return installmentFeeAmount;
+        }
+
+        public void setInstallmentFeeAmount(String installmentFeeAmount) {
+            this.installmentFeeAmount = installmentFeeAmount;
+        }
+
+        public String getOperationalFeeAmount() {
+            return operationalFeeAmount;
+        }
+
+        public void setOperationalFeeAmount(String operationalFeeAmount) {
+            this.operationalFeeAmount = operationalFeeAmount;
+        }
+
+        public String getIntermediationRateAmount() {
+            return intermediationRateAmount;
+        }
+
+        public void setIntermediationRateAmount(String intermediationRateAmount) {
+            this.intermediationRateAmount = intermediationRateAmount;
+        }
+
+        public String getIntermediationFeeAmount() {
+            return intermediationFeeAmount;
+        }
+
+        public void setIntermediationFeeAmount(String intermediationFeeAmount) {
+            this.intermediationFeeAmount = intermediationFeeAmount;
+        }
+
+        public String getSenderEmail() {
+            return senderEmail;
+        }
+
+        public void setSenderEmail(String senderEmail) {
+            this.senderEmail = senderEmail;
+        }
+
+        public String getSenderName() {
+            return senderName;
+        }
+
+        public void setSenderName(String senderName) {
+            this.senderName = senderName;
+        }
+
+        public String getSenderNumber() {
+            return senderNumber;
+        }
+
+        public void setSenderNumber(String senderNumber) {
+            this.senderNumber = senderNumber;
+        }
+
+        public String getSenderAreaCode() {
+            return senderAreaCode;
+        }
+
+        public void setSenderAreaCode(String senderAreaCode) {
+            this.senderAreaCode = senderAreaCode;
+        }
     }
 }
 

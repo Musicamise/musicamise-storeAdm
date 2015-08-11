@@ -47,7 +47,7 @@
                       <tr>
                         <td >@product.getSlug()</td>
                         <td id="@product.getId">@product.getTitle()</td>
-                        <td>@if(product.getPriceCompareWith!=null &&product.getPriceCompareWith>0){<span style='text-decoration: line-through;'>@product.getPriceCompareWith</span> - }@product.getPrice()</td>
+                        <td>@if(product.getPriceCompareWith<=0 &&product.getPriceCompareWith>0){<span style='text-decoration: line-through;'>@product.getPriceCompareWith</span> - } @product.getPrice()</td>
                           <td>@for( collectionSlug <- product.getCollectionsSlugs()){
                               <span class="badge bg-blue">@collectionSlug</span>
                               }

@@ -29,23 +29,28 @@ public class S3Plugin extends Plugin {
 
     @Override
     public void onStart() {
+
         String accessKey = null;
         String secretKey = null;
-        if(System.getenv("aws.access.key")==null){
+        if(System.getenv("aws.access.key")!=null){
             accessKey = System.getenv("aws.access.key");
         }else{
             accessKey = Play.application().configuration().getString(AWS_ACCESS_KEY);
         }
-        if(System.getenv("aws.secret.key")==null){
-            secretKey = Play.application().configuration().getString(AWS_SECRET_KEY);
-        }else{
+        if(System.getenv("aws.secret.key")!=null){
             secretKey = System.getenv("aws.secret.key");
-        }
-        if(System.getenv("aws.s3.bucket")==null){
-            s3Bucket = Play.application().configuration().getString(AWS_S3_BUCKET);
         }else{
-            s3Bucket = System.getenv("aws.s3.bucket");
+            secretKey = Play.application().configuration().getString(AWS_SECRET_KEY);
+
         }
+        if(System.getenv("aws.s3.bucket")!=null){
+            s3Bucket = System.getenv("aws.s3.bucket");
+
+        }else{
+            s3Bucket = Play.application().configuration().getString(AWS_S3_BUCKET);
+
+        }
+
 
         if ((accessKey != null) && (secretKey != null)) {
             AWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -61,7 +66,8 @@ public class S3Plugin extends Plugin {
 
     @Override
     public boolean enabled() {
-         if(System.getenv("aws.access.key")==null){
+
+         if(System.getenv("aws.access.key")!=null){
             return (System.getenv("aws.access.key")!=null &&
                 System.getenv("aws.secret.key") !=null &&
                 System.getenv("aws.s3.bucket")!=null );

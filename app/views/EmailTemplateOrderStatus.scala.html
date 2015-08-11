@@ -1,9 +1,19 @@
-@(message:String)
+@(order:models.Order,status:models.StatusOrder)
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body class="skin-blue sidebar-mini">
     <div class="wrapper">
-        @message
+        <br/>
+        Sua compra foi processada com o status @status.getStatus.name()
+        <br/>
+        Comprador do Pagseguro:
+        <br/>
+        @order.getPagSeguroInfo.toString()
+        <br/>
+        Order:
+        <br/>
+        @order.toString()
+        <br/>
     </div><!-- ./wrapper -->
   </body>
 </html>

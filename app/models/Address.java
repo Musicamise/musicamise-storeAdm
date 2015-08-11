@@ -23,6 +23,14 @@ public class Address {
     public Address(){
 
     }
+
+    public String toString(){
+        return "name "+this.name+" cep "+this.cep+
+                " address "+this.address+" number "+this.number+
+                " city "+this.city+" state "+this.state+
+                " bairro "+this.bairro+" complemento "+this.complemento+
+                " country "+this.country;
+    }
     public int getId() {
         return id;
     }

@@ -154,13 +154,36 @@ public class MongoService {
     public static void saveOrder(Order order) {
         DS.mop.save(order);
     }
-    public static void upDateOrder(String reference,StatusOrder statusOrder,String idCompraPageseguro) {
+    public static void upDateOrder(String reference,StatusOrder statusOrder) {
         Query query = new Query(where("_id").is(reference));
         Update update = new Update();
-        update.addToSet("status",statusOrder);
-        update.set("idCompraPageseguro",idCompraPageseguro);
+        update.addToSet("status", statusOrder);
+        update.set("updatedDate",new Date());
         DS.mop.updateFirst(query,update,"order");
 
+    }
+    public static void upDateOrder(String reference, Order.PagSeguroInfo pagSeguroInfo) {
+        Query query = new Query(where("_id").is(reference));
+        Update update = new Update();
+        update.set("pagSeguroInfo",pagSeguroInfo);
+        update.set("updatedDate",new Date());
+        DS.mop.updateFirst(query,update,"order");
+    }
+    public static void upDateOrder(String reference,StatusOrder statusOrder,String notes) {
+        Query query = new Query(where("_id").is(reference));
+        Update update = new Update();
+        update.addToSet("status", statusOrder);
+        update.set("notes",notes);
+        update.set("updatedDate",new Date());
+        DS.mop.updateFirst(query,update,"order");
+
+    }
+    public static void updateOrderEmailSent(String reference, Order.EmailSent emailSent) {
+        Query query = new Query(where("_id").is(reference));
+        Update update = new Update();
+        update.addToSet("emailSents", emailSent);
+        update.set("updatedDate",new Date());
+        DS.mop.updateFirst(query,update,"order");
     }
 
     public static Product findProductById(String id) {
@@ -246,9 +269,10 @@ public class MongoService {
         }
     }
 
-    public static void saveInventoryEntry(InventoryEntry inventoryEntry) {
+    public static void saveInventoryEntry(InventoryEntry  inventoryEntry) {
         DS.mop.save(inventoryEntry);
     }
+    
     public static GiftCard findGiftCardById(String id) {
         GiftCard giftCard = DS.mop.findById(id,GiftCard.class);
         return giftCard;

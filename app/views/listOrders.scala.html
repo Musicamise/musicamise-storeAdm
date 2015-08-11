@@ -24,6 +24,14 @@
                     <div class="col-xs-4">
                         <a href="@routes.OrderController.order()"><button type="button" class="btn btn-primary">Add Order</button></a>
                     </div>
+                    <div class="col-xs-4">
+                        <a href="javascript:void(0)"><button type="button" onclick="showConfirmacaoDeUpdate()" class="btn btn-primary">Atualizar as compras</button></a>
+                        <div class="checkbox">
+                            <label>
+                                <input name="all" id="all"   type="checkbox"> Todas os pedidos?
+                            </label>
+                        </div>
+                    </div>
                 </div><!-- /.box-header -->
                 <div class="box-body">  
                   <table id="example1" class="table table-bordered table-striped">
@@ -71,6 +79,25 @@
             </div><!-- /.col -->
           </div><!-- /.row -->
         </section><!-- /.content -->
+
+<div id="modalUpdate" class="modal modal-primary">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" id="modalClose" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Atualizar os Pedidos?</h4>
+            </div>
+            <div class="modal-body">
+                <p>Tem certeza que deseja atualizar os pedidos? <span id="modalSpan"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                <button type="button" id="upDateButton" class="btn btn-outline">Confirm</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <!-- jQuery 2.1.4 -->
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
 
@@ -79,6 +106,28 @@
              $("li" ).removeClass("active");
             $("#li-orders" ).addClass("active");
         });
+
+    function showConfirmacaoDeUpdate(){
+        $("#upDateButton").attr('onclick', "updateOrder()");
+        $("#modalUpdate").modal();
+    }
+    function updateOrder(){
+        var all = $("#all").is(':checked');
+        $.blockUI();
+        $.ajax({
+            method:'GET',
+            url: "@routes.OrderController.updateOrders()",
+            data:{'all':all},
+        }).success(function() {
+            window.location.reload();
+        }).error(function() {
+            alert("Erro on update!")
+            $.unblockUI();
+        }).done(function(){
+            $.unblockUI();
+        });
+        $(".close").click();
+    }
 
 </script>
    }

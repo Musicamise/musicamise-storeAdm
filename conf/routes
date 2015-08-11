@@ -11,15 +11,19 @@ GET            /signin                           controllers.Application.login()
 POST           /signin                           controllers.Authentication.authenticate()
 GET            /logout                       controllers.Application.logout()
 
-GET            /updatecompra                     controllers.Application.updatecompra()
-POST           /updatecompra                     controllers.Application.updatecompra()
+GET            /updatecompra                     controllers.OrderController.updatecompra()
+POST           /updatecompra                     controllers.OrderController.updatecompra()
 
 
 GET     /orders                           controllers.OrderController.listOrders()
 GET     /order                          controllers.OrderController.order(id :String ?= null)
-POST     /order/newOrEdit                              controllers.OrderController.saveOrder(id :String )
+POST     /order/newOrEdit                              controllers.OrderController.saveOrder()
+POST     /updateOrderDetails                           controllers.OrderController.updateOrderDetails(id :String ?= null)
 GET     /getDiscounteCodeApplicable                           controllers.OrderController.getDiscounteCodeApplicable(sku :String ?=null)
 POST     /calculatePrice                           controllers.OrderController.calculatePrice()
+GET     /sendEmailWithCurrentStatus/                           controllers.OrderController.sendEmailWithCurrentStatus(orderId :String ?= null)
+GET     /updateOrders/                           controllers.OrderController.updateOrders(all :String ?= null)
+GET     /updateOrder/                           controllers.OrderController.updateOrder(orderId :String ?= null)
 
 GET     /collection                          controllers.CollectionsController.listCollections()
 GET     /collection/newOrEdit                                  controllers.CollectionsController.collection(id :String ?= null)

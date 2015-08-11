@@ -42,11 +42,20 @@ public class InventoryEntry {
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
 
+    private String orderId ;
+
 
     public InventoryEntry(){
         this.inventory = new Inventory();
     }
 
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 
     public String getId() {
         return id;
