@@ -14,4 +14,3 @@ dist
 /RUNNING_PID
 /.settings
 /conf/application2.conf
-/conf/application.conf
