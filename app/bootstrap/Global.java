@@ -33,7 +33,7 @@ public class Global extends GlobalSettings {
         //test.setTitle("Teste title alvaro@silvino.me");
         //test.setContent("alvaro");
         //test.setType(Utils.Content.ABOUT);
-        //createUser();
+        createUser();
 
         //ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringMongoConfig1.class);
         //MongoOperations mongoOperation = (MongoOperations)ctx.getBean("mongoTemplate");
