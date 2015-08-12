@@ -161,8 +161,8 @@ public class OrderController extends Controller {
         
         double totalWithDiscount = OrderController.calculateFinalPrice(order.getProducts(),discountCode);
         double totalValueItems = OrderController.calculateValueItems(order.getProducts());
-        double discountValue = (discountCode==null)?manualDiscountValue:(totalWithDiscount - totalValueItems);
-        double total = totalValueItems + shippingValue - discountValue;
+        double discountValue = (discountCode==null)?(-1*manualDiscountValue):(totalWithDiscount - totalValueItems);
+        double total = totalValueItems + shippingValue + discountValue;
 
         order.setEmail(email!=null&&!email.equals("")?email:user.getEmail());
         order.setUser(user);
