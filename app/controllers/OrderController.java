@@ -408,16 +408,8 @@ public class OrderController extends Controller {
             String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
             String emailPagseguro = null;
             String token = null;
-            if(System.getenv("pagseguro.email")!=null){
-                emailPagseguro = System.getenv("pagseguro.email");
-            }else{
-                emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
-            }
-            if(System.getenv("pagseguro.token")!=null){
-                token = System.getenv("pagseguro.token");
-            }else{
-                token =  Play.application().configuration().getString("pagseguro.token");
-            }
+            emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
+            token =  Play.application().configuration().getString("pagseguro.token");
 
             String notificationCode = (data.get("notificationCode") != null && data.get("notificationCode").length > 0) ? data.get("notificationCode")[0] : "";
 
@@ -467,16 +459,8 @@ public class OrderController extends Controller {
         String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
         String emailPagseguro = null;
         String token = null;
-        if (System.getenv("pagseguro.email") != null) {
-            emailPagseguro = System.getenv("pagseguro.email");
-        } else {
-            emailPagseguro = Play.application().configuration().getString("pagseguro.email");
-        }
-        if (System.getenv("pagseguro.token") != null) {
-            token = System.getenv("pagseguro.token");
-        } else {
-            token = Play.application().configuration().getString("pagseguro.token");
-        }
+        emailPagseguro = Play.application().configuration().getString("pagseguro.email");
+        token = Play.application().configuration().getString("pagseguro.token");
         for (Order order : orders) {
             WSRequestHolder holder = WS.url(urlWs);
 
@@ -521,16 +505,8 @@ public class OrderController extends Controller {
         String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
         String emailPagseguro = null;
         String token = null;
-        if (System.getenv("pagseguro.email") != null) {
-            emailPagseguro = System.getenv("pagseguro.email");
-        } else {
-            emailPagseguro = Play.application().configuration().getString("pagseguro.email");
-        }
-        if (System.getenv("pagseguro.token") != null) {
-            token = System.getenv("pagseguro.token");
-        } else {
-            token = Play.application().configuration().getString("pagseguro.token");
-        }
+        emailPagseguro = Play.application().configuration().getString("pagseguro.email");
+        token = Play.application().configuration().getString("pagseguro.token");
         if(order!=null) {
             WSRequestHolder holder = WS.url(urlWs);
 

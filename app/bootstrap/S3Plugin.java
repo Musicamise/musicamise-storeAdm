@@ -32,24 +32,9 @@ public class S3Plugin extends Plugin {
 
         String accessKey = null;
         String secretKey = null;
-        if(System.getenv("aws.access.key")!=null){
-            accessKey = System.getenv("aws.access.key");
-        }else{
-            accessKey = Play.application().configuration().getString(AWS_ACCESS_KEY);
-        }
-        if(System.getenv("aws.secret.key")!=null){
-            secretKey = System.getenv("aws.secret.key");
-        }else{
-            secretKey = Play.application().configuration().getString(AWS_SECRET_KEY);
-
-        }
-        if(System.getenv("aws.s3.bucket")!=null){
-            s3Bucket = System.getenv("aws.s3.bucket");
-
-        }else{
-            s3Bucket = Play.application().configuration().getString(AWS_S3_BUCKET);
-
-        }
+        accessKey = Play.application().configuration().getString(AWS_ACCESS_KEY);
+        secretKey = Play.application().configuration().getString(AWS_SECRET_KEY);
+        s3Bucket = Play.application().configuration().getString(AWS_S3_BUCKET);
 
 
         if ((accessKey != null) && (secretKey != null)) {
@@ -66,16 +51,9 @@ public class S3Plugin extends Plugin {
 
     @Override
     public boolean enabled() {
-
-         if(System.getenv("aws.access.key")!=null){
-            return (System.getenv("aws.access.key")!=null &&
-                System.getenv("aws.secret.key") !=null &&
-                System.getenv("aws.s3.bucket")!=null );
-        }else{
-            return (application.configuration().keys().contains(AWS_ACCESS_KEY) &&
+        return (application.configuration().keys().contains(AWS_ACCESS_KEY) &&
                 application.configuration().keys().contains(AWS_SECRET_KEY) &&
                 application.configuration().keys().contains(AWS_S3_BUCKET));
-        }
     }
 
 
