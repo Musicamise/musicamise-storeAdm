@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document
 public class Address {
 
-    private int id;
+    private String _id ;
     private String name;
     private String cep;
     private String address;
@@ -19,6 +19,7 @@ public class Address {
     private String bairro;
     private String complemento;
     private String country;
+    private String prazo;
 
     public Address(){
 
@@ -31,12 +32,20 @@ public class Address {
                 " bairro "+this.bairro+" complemento "+this.complemento+
                 " country "+this.country;
     }
-    public int getId() {
-        return id;
+    public String getPrazo() {
+        return prazo;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setPrazo(String prazo) {
+        this.prazo = prazo;
+    }
+
+    public String get_Id() {
+        return _id;
+    }
+
+    public void set_Id(String _id) {
+        this._id = _id;
     }
     public String getName() {
         return name;
