@@ -84,12 +84,15 @@ public class OrderController extends Controller {
         String shippingCost = (dataFiles.get("shippingCost") != null && dataFiles.get("shippingCost").length > 0) ? dataFiles.get("shippingCost")[0] : null;
         String notes = (dataFiles.get("notes") != null && dataFiles.get("notes").length > 0) ? dataFiles.get("notes")[0] : null;
         String manualDiscount = (dataFiles.get("manualDiscount") != null && dataFiles.get("manualDiscount").length > 0) ? dataFiles.get("manualDiscount")[0] : null;
+        String statusEntregaCode = (dataFiles.get("statusEntrega") != null && dataFiles.get("statusEntrega").length > 0) ? dataFiles.get("statusEntrega")[0] : null;
 
 
         User user = null;
         GiftCard giftCard = null;
         DiscountCode discountCode = null;
         Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode.equals("")?"0":statusCode));
+        Utils.StatusEntrega statusEntrega = Utils.StatusEntrega.getStatusByCode(Integer.parseInt(statusEntregaCode.equals("")?"0":statusEntregaCode));
+
         List<Inventory> inventories = new ArrayList<>();
         List<InventoryEntry> inventoryEntries = new ArrayList<>();
         if(userId!=null&&!userId.equals("")){
@@ -136,7 +139,8 @@ public class OrderController extends Controller {
                         return redirect(routes.OrderController.order(null));
                     }else{
 
-                        Inventory inventoryOrder = new Inventory(inventory);
+                        Order.InventoryOrder inventoryOrder = order.new InventoryOrder();
+                        inventoryOrder.cloneInventory(inventory);
                         inventoryOrder.setQuantity(quantity);
                         inventoryOrder.setPriceWithQuantity(inventoryOrder.getProduct().getPrice()*quantity);
                         order.getProducts().add(inventoryOrder);
@@ -177,7 +181,9 @@ public class OrderController extends Controller {
 
         StatusOrder statusOrder = new StatusOrder();
         statusOrder.setStatus(status);
+
         order.getStatus().add(statusOrder);
+        order.setStatusEntrega(statusEntrega);
 
         //save Inventory change
         MongoService.saveOrder(order);
@@ -195,17 +201,25 @@ public class OrderController extends Controller {
         Order order = new Order();
         String statusCode = (dataFiles.get("status") != null && dataFiles.get("status").length > 0) ? dataFiles.get("status")[0] : null;
         String notes = (dataFiles.get("notes") != null && dataFiles.get("notes").length > 0) ? dataFiles.get("notes")[0] : null;
-        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt(statusCode.equals("")?"0":statusCode));
+        String statusEntregaCode = (dataFiles.get("statusEntrega") != null && dataFiles.get("statusEntrega").length > 0) ? dataFiles.get("statusEntrega")[0] : null;
+        
+        Utils.StatusCompra status = Utils.StatusCompra.getStatusByCode(Integer.parseInt((statusCode!=null)&&!statusCode.equals("")?statusCode:"0"));
+        Utils.StatusEntrega statusEntrega = Utils.StatusEntrega.getStatusByCode(Integer.parseInt(statusEntregaCode.equals("")?"0":statusEntregaCode));
 
         //save order already in base
-        if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)&&status!=null) {
+        if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)) {
             order = MongoService.findOrderById(id);
-            StatusOrder newStatus = new StatusOrder();
-            newStatus.setStatus(status);
-            order.setNotes(notes);
-            updateInventoryWithStatus(newStatus,order);
-            MongoService.upDateOrder(order.getId(),newStatus,notes);
-            return redirect(routes.OrderController.listOrders());
+            StatusOrder newStatus = null;
+            if(status!=null){
+                newStatus = new StatusOrder();
+                newStatus.setStatus(status);
+
+                updateInventoryWithStatus(newStatus,order);
+            }
+
+            MongoService.upDateOrder(order.getId(),newStatus,statusEntrega,notes);
+
+            return redirect(routes.OrderController.order(id));
         }else{
             flash("listOrders","Venda não encontrada");
             return redirect(routes.OrderController.listOrders());
@@ -232,18 +246,23 @@ public class OrderController extends Controller {
         List<String> productIdsAndQuantityList = Arrays.asList(productIdsAndQuantity);
 
         DiscountCode discountCode = null;
-        List<Inventory> inventories = new ArrayList<>();
+        List<Order.InventoryOrder> inventories = new ArrayList<>();
 
         if(discountCodeId!=null&&!discountCodeId.equals("")){
             discountCode = MongoService.findDiscountCodeById(discountCodeId);
         }
         if(productIds!=null&& productIds.size() >0) {
-            inventories = MongoService.findInventoriesByIds(productIds);
+            Order order = new Order();
+            for(Inventory inventory:MongoService.findInventoriesByIds(productIds)){
+               Order.InventoryOrder inventoryOrder = order.new InventoryOrder();
+                inventoryOrder.cloneInventory(inventory);
+                inventories.add(inventoryOrder);
+            }
         }
         if(inventories.size()>0){
             for(int i=0;i<inventories.size();i++){
                 try{
-                    final Inventory inventory = inventories.get(i);
+                    final Order.InventoryOrder inventory = inventories.get(i);
                     int quantity =  Integer.parseInt(productIdsAndQuantityList.stream().filter(product -> product.contains(inventory.getSku())).findFirst().get().split("-")[1]);
                     if(quantity<=0||inventory.getQuantity()<quantity){
                         Logger.debug("quantity = "+quantity);
@@ -271,11 +290,11 @@ public class OrderController extends Controller {
         return ok(Json.newObject().put("total",formattedTotal).put("totalDiscount",formattedDiscount));
     }
 
-    public static double calculateValueItems(List<Inventory> inventories){
+    public static double calculateValueItems(List<Order.InventoryOrder> inventories){
         double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
         return total;
     }
-    public static double calculateFinalPrice(List<Inventory> inventories,DiscountCode discountCode){
+    public static double calculateFinalPrice(List<Order.InventoryOrder> inventories,DiscountCode discountCode){
         double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
 
         if(discountCode!=null){
@@ -295,9 +314,9 @@ public class OrderController extends Controller {
                     break;
                 case toEveryProduct:
                     total = 0;
-                    for(Inventory inventory: inventories){
+                    for(Order.InventoryOrder inventory: inventories){
                         double value = inventory.getProduct().getPrice()*inventory.getQuantity();
-                        List<Inventory> newListInverntory = new ArrayList<>();
+                        List<Order.InventoryOrder> newListInverntory = new ArrayList<>();
                         newListInverntory.add(inventory);
                         if(discountIsApplicable(newListInverntory,discountCode)){
                             switch(discountCode.getTypeForPay()){
@@ -318,14 +337,14 @@ public class OrderController extends Controller {
         return total;
     }
 
-    public static boolean discountIsApplicable(List<Inventory> inventories,DiscountCode discountCode){
+    public static boolean discountIsApplicable(List<Order.InventoryOrder> inventories,DiscountCode discountCode){
         double total = inventories.stream().mapToDouble(i->i.getProduct().getPrice()*i.getQuantity()).sum();
         Set<String> colelctionsSlug = new HashSet<>();
         Set<String> productsSlug = new HashSet<>();
         boolean collectionActive = false;
         boolean productActive = false;
 
-        for(Inventory i:inventories){
+        for(Order.InventoryOrder i:inventories){
             colelctionsSlug.addAll(i.getProduct().getCollectionsSlugs());
             productsSlug.add(i.getProduct().getSlug());
         }
@@ -379,71 +398,90 @@ public class OrderController extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public static Result updateOrders(String all){
-        if(all!=null&&!all.equals(""))
-            updateAllOrders(all!=null&&!all.equals(""));
-        else{
+        try{
+            if(all!=null&&!all.equals(""))
+                updateAllOrders(all!=null&&!all.equals(""));
+            else{
+                return internalServerError();
+            }
+        }catch(Exception e){
             return internalServerError();
         }
         return ok("true");
     }
     @Security.Authenticated(Secured.class)
     public static Result updateOrder(String orderId){
-        if(orderId!=null&&!orderId.equals(""))
-            updateSingleOrder(orderId);
-        else{
+        try{
+            if(orderId!=null&&!orderId.equals(""))
+                updateSingleOrder(orderId);
+            else{
+                return internalServerError();
+            }
+        }catch(Exception e){
             return internalServerError();
         }
         return ok("true");
     }
 
     public static Result updatecompra()  {
-
-        if(request().hasHeader("Origin")&&!request().getHeader("Origin").contains("pagseguro")){
-            Logger.debug("hit");
-            return badRequest();
-        }
-        Map<String, String[]> data = request().body().asFormUrlEncoded();
-        if(data!=null){
-
-            String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
-            String emailPagseguro = null;
-            String token = null;
-            emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
-            token =  Play.application().configuration().getString("pagseguro.token");
-
-            String notificationCode = (data.get("notificationCode") != null && data.get("notificationCode").length > 0) ? data.get("notificationCode")[0] : "";
-
-            String notificationType = (data.get("notificationType") != null && data.get("notificationType").length > 0) ? data.get("notificationType")[0] : "";
-
-            WSRequestHolder holder = WS.url(urlWs + notificationCode);
-
-            WSResponse response =   holder.setQueryParameter("email", emailPagseguro)
-                    .setQueryParameter("token", token)
-                    .get()
-                    .get(10000);
-
-            Document respostaDoc = response.asXml();
-            Order order = bindXMLWithPagseguroObject(null,respostaDoc);
-            NodeList referenceTag = respostaDoc.getElementsByTagName("reference");
-            NodeList statusTag = respostaDoc.getElementsByTagName("status");
-            String reference = referenceTag.item(0).getTextContent();
-            String status = statusTag.item(0).getTextContent();
-            if(order!=null){
-
-                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
-                MongoService.upDateOrder(reference,newStatus);
-
-                updateInventoryWithStatus(newStatus,order);
-
-                // send email if PAGO ou CANCELADO
-                ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
-                myActor.tell(reference,null);
-            }else{
-                return notFound();
+        try{
+            if(request().hasHeader("Origin")&&!request().getHeader("Origin").contains("pagseguro")){
+                Logger.debug("hit");
+                return badRequest();
             }
+            Map<String, String[]> data = request().body().asFormUrlEncoded();
+            if(data!=null){
 
+                String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
+                String emailPagseguro = null;
+                String token = null;
+                emailPagseguro =  Play.application().configuration().getString("pagseguro.email");
+                token =  Play.application().configuration().getString("pagseguro.token");
+
+                String notificationCode = (data.get("notificationCode") != null && data.get("notificationCode").length > 0) ? data.get("notificationCode")[0] : "";
+
+                String notificationType = (data.get("notificationType") != null && data.get("notificationType").length > 0) ? data.get("notificationType")[0] : "";
+
+                WSRequestHolder holder = WS.url(urlWs + notificationCode);
+
+                WSResponse response =   holder.setQueryParameter("email", emailPagseguro)
+                        .setQueryParameter("token", token)
+                        .get()
+                        .get(10000);
+
+                Document respostaDoc = response.asXml();
+                Order order = bindXMLWithPagseguroObject(null,respostaDoc);
+                NodeList referenceTag = respostaDoc.getElementsByTagName("reference");
+                NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                String reference = referenceTag.item(0).getTextContent();
+                String status = statusTag.item(0).getTextContent();
+                if(order!=null){
+
+                    StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                   
+                    MongoService.upDateOrder(reference,newStatus);
+
+                    if(newStatus.getStatus().equals(Utils.StatusCompra.PAGO)){
+                        Utils.StatusEntrega entrega = Utils.StatusEntrega.PRODUCAO;
+                        MongoService.upDateOrder(reference,entrega);
+                    }else{
+                        Utils.StatusEntrega entrega = Utils.StatusEntrega.SEMSTATUS;
+                        MongoService.upDateOrder(reference,entrega);
+                    }
+
+                    updateInventoryWithStatus(newStatus,order);
+
+                    // send email if PAGO ou CANCELADO
+                    ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+                    myActor.tell(reference,null);
+                }else{
+                    return notFound();
+                }
+
+            }
+        }catch(Exception e){
+            return internalServerError();
         }
-
         return ok();
     }
 
@@ -469,32 +507,34 @@ public class OrderController extends Controller {
                     .setQueryParameter("reference", order.getId())
                     .get()
                     .get(10000);
+            if(responseWithReference.getStatus()==200){
+                Document respostaReferenceDoc = responseWithReference.asXml();
+                if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
+                    String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
 
-            Document respostaReferenceDoc = responseWithReference.asXml();
-            if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
-                String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
+                    holder = WS.url(urlWs+code);
 
-                holder = WS.url(urlWs+code);
+                    WSResponse response = holder.setQueryParameter("email", emailPagseguro)
+                            .setQueryParameter("token", token)
+                            .get()
+                            .get(10000);
 
-                WSResponse response = holder.setQueryParameter("email", emailPagseguro)
-                        .setQueryParameter("token", token)
-                        .get()
-                        .get(10000);
+                    Document respostaDoc = response.asXml();
+                    bindXMLWithPagseguroObject(order,respostaDoc);
+                    NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                    String status = statusTag.item(0).getTextContent();
+                    StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                    if (order.getLastStatus()==null||
+                        order.getLastStatus()!=null &&
+                        !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
 
-                Document respostaDoc = response.asXml();
-                bindXMLWithPagseguroObject(order,respostaDoc);
-                NodeList statusTag = respostaDoc.getElementsByTagName("status");
-                String status = statusTag.item(0).getTextContent();
-                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
-                if (order.getLastStatus()==null||
-                    order.getLastStatus()!=null &&
-                    !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
+                        MongoService.upDateOrder(order.getId(), newStatus);
+                        updateInventoryWithStatus(newStatus,order);
 
-                    MongoService.upDateOrder(order.getId(), newStatus);
-                    updateInventoryWithStatus(newStatus,order);
-                    
+                    }
                 }
             }
+
 
         }
     }
@@ -516,28 +556,31 @@ public class OrderController extends Controller {
                     .get()
                     .get(10000);
 
-            Document respostaReferenceDoc = responseWithReference.asXml();
-            if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
-                String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
+            if(responseWithReference.getStatus()==200) {
+                Document respostaReferenceDoc = responseWithReference.asXml();
+                if (respostaReferenceDoc.getElementsByTagName("code").getLength() > 0) {
+                    String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
 
-                holder = WS.url(urlWs+code);
+                    holder = WS.url(urlWs + code);
 
-                WSResponse response = holder.setQueryParameter("email", emailPagseguro)
-                        .setQueryParameter("token", token)
-                        .get()
-                        .get(10000);
+                    WSResponse response = holder.setQueryParameter("email", emailPagseguro)
+                            .setQueryParameter("token", token)
+                            .get()
+                            .get(10000);
+                    if(response.getStatus()==200) {
+                        Document respostaDoc = response.asXml();
+                        bindXMLWithPagseguroObject(order, respostaDoc);
+                        NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                        String status = statusTag.item(0).getTextContent();
+                        StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                        if (order.getLastStatus() == null ||
+                                order.getLastStatus() != null &&
+                                        !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
 
-                Document respostaDoc = response.asXml();
-                bindXMLWithPagseguroObject(order,respostaDoc);
-                NodeList statusTag = respostaDoc.getElementsByTagName("status");
-                String status = statusTag.item(0).getTextContent();
-                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
-                 if (order.getLastStatus()==null||
-                    order.getLastStatus()!=null &&
-                    !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
-
-                    MongoService.upDateOrder(order.getId(), newStatus);
-                    updateInventoryWithStatus(newStatus,order);
+                            MongoService.upDateOrder(order.getId(), newStatus);
+                            updateInventoryWithStatus(newStatus, order);
+                        }
+                    }
                 }
             }
         }
@@ -651,7 +694,7 @@ public class OrderController extends Controller {
     }
 
 
-     public static void updateInventoryWithStatus(StatusOrder newStatus,Order order){
+    public static void updateInventoryWithStatus(StatusOrder newStatus,Order order){
 
         switch (newStatus.getStatus()){
             case AGUARDANDO:
@@ -683,7 +726,7 @@ public class OrderController extends Controller {
 
     public static void updateInventory(Order order,boolean devolvida){
 
-        for(Inventory vendido :order.getProducts()){
+        for(Order.InventoryOrder vendido :order.getProducts()){
 
             Inventory inventoryDB = MongoService.findInventoryById(vendido.getSku());
             if(inventoryDB!=null){

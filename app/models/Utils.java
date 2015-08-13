@@ -225,6 +225,25 @@ public class Utils {
         }
 
     }
+     public enum StatusEntrega{
+        SEMSTATUS(0),PRODUCAO(1),EMBALAGEM(2),EMTRANSITO(3),ENTREGUE(4);
+        public final int code;
+
+        StatusEntrega(int code){
+            this.code = code;
+        }
+
+        public static StatusEntrega getStatusByCode(int code){
+            switch (code){
+                case 1: return PRODUCAO;
+                case 2: return EMBALAGEM;
+                case 3: return EMTRANSITO;
+                case 4: return ENTREGUE;
+                default: return SEMSTATUS;
+            }
+        }
+
+    }
     public enum PagseguroTypeCompra{
         PAGAMENTO(1),ASSINATURA(11);
         public final int code;
