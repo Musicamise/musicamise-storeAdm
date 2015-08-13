@@ -157,11 +157,25 @@ public class MongoService {
     public static void upDateOrder(String reference,StatusOrder statusOrder) {
         Query query = new Query(where("_id").is(reference));
         Update update = new Update();
-        update.addToSet("status", statusOrder);
+        boolean updated = false;
+        if(statusOrder!=null){
+            update.addToSet("status", statusOrder);
+            updated = true;
+        }
+        if(updated){
+            update.set("updatedDate",new Date());
+            DS.mop.updateFirst(query,update,"order");
+        }
+    }
+
+    public static void upDateOrder(String reference, Utils.StatusEntrega statusEntrega) {
+        Query query = new Query(where("_id").is(reference));
+        Update update = new Update();
+        update.set("statusEntrega", statusEntrega);
         update.set("updatedDate",new Date());
         DS.mop.updateFirst(query,update,"order");
-
     }
+
     public static void upDateOrder(String reference, Order.PagSeguroInfo pagSeguroInfo) {
         Query query = new Query(where("_id").is(reference));
         Update update = new Update();
@@ -169,14 +183,26 @@ public class MongoService {
         update.set("updatedDate",new Date());
         DS.mop.updateFirst(query,update,"order");
     }
-    public static void upDateOrder(String reference,StatusOrder statusOrder,String notes) {
+    public static void upDateOrder(String reference,StatusOrder statusOrder,Utils.StatusEntrega statusEntrega,String notes) {
         Query query = new Query(where("_id").is(reference));
         Update update = new Update();
-        update.addToSet("status", statusOrder);
-        update.set("notes",notes);
-        update.set("updatedDate",new Date());
-        DS.mop.updateFirst(query,update,"order");
-
+        boolean updated = false;
+        if(statusOrder!=null){
+            update.addToSet("status", statusOrder);
+            updated = true;
+        }
+        if(statusEntrega!=null){
+            update.set("statusEntrega",statusEntrega);
+            updated = true;
+        }
+        if(notes!=null){
+            update.set("notes",notes);
+            updated = true;
+        }
+        if(updated){
+            update.set("updatedDate",new Date());
+            DS.mop.updateFirst(query,update,"order");
+        }
     }
     public static void updateOrderEmailSent(String reference, Order.EmailSent emailSent) {
         Query query = new Query(where("_id").is(reference));

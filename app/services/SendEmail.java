@@ -72,12 +72,14 @@ public class SendEmail {
                 // sends text, HTML or both...
                 email.setBodyText("A text message");
 
-                StatusOrder lastSatus = order.getStatus().get(order.getStatus().size()-1);
+                StatusOrder lastSatus = order.getLastStatus();
                 email.setBodyHtml(views.html.EmailTemplateOrderStatus.render(order,lastSatus).toString());
                 MailerPlugin.send(email);
                 //save that you sent a email with that status
                 Order.EmailSent emailSent = order.new EmailSent();
                 emailSent.setStatus(lastSatus.getStatus());
+                emailSent.setStatusEntrega(order.getStatusEntrega());
+
                 MongoService.updateOrderEmailSent(order.getId(),emailSent);
             }
 

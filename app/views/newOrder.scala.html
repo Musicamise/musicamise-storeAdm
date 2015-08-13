@@ -103,6 +103,15 @@
                               }
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label >Status De Entrega</label>
+                       <select name="statusEntrega" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(status<- Utils.StatusEntrega.values){
+                              <option  value="@status.code" >@status.name()</option>
+                              }
+                        </select>
+                    </div>
 
                 </div><!-- /.box-body -->
 

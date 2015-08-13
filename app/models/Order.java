@@ -3,6 +3,7 @@ package models;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -28,8 +29,8 @@ public class Order {
 
     @Id
     private  String id;
-
-    private List<Inventory> products ;
+    @Field("products")
+    private List<InventoryOrder> products ;
 
     private PagSeguroInfo pagSeguroInfo;
     private String notes;
@@ -50,6 +51,7 @@ public class Order {
     private DiscountCode discountCode;
 
     private List<StatusOrder> status;
+    private Utils.StatusEntrega statusEntrega;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
@@ -244,11 +246,11 @@ public class Order {
         this.id = id;
     }
 
-    public List<Inventory> getProducts() {
+    public List<InventoryOrder> getProducts() {
         return products;
     }
 
-    public void setProducts(List<Inventory> products) {
+    public void setProducts(List<InventoryOrder> products) {
         this.products = products;
     }
 
@@ -320,6 +322,13 @@ public class Order {
     public void setStatus(List<StatusOrder> status) {
         this.status = status;
     }
+     public Utils.StatusEntrega getStatusEntrega() {
+        return statusEntrega;
+    }
+
+    public void setStatusEntrega(Utils.StatusEntrega statusEntrega) {
+        this.statusEntrega = statusEntrega;
+    }
 
     public List<EmailSent> getEmailSents() {
         return emailSents;
@@ -330,9 +339,147 @@ public class Order {
     }
 
     @Document
+    public class InventoryOrder {
+
+        @Id
+        private String sku;
+
+        private Product product;
+
+        private int quantity;
+
+        private String size;
+
+        private String genderSlug;
+
+        private boolean orderOutOfStock;
+
+        private boolean sellInOutOfStock;
+
+        private double priceWithQuantity;
+
+        private String priceWithQuantityFormatted;
+
+
+        public String toString(){
+            return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" genderSlug "
+                    +this.genderSlug+" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
+                    +" Price "+this.product.getPriceFormatted()+" color "+this.product.getColor()
+                    +" title "+this.product.getTitle()+" description "+this.product.getDescription();
+        }
+
+        public double getPriceWithQuantity() {
+            return priceWithQuantity;
+        }
+
+        public void setPriceWithQuantity(double priceWithQuantity) {
+            this.priceWithQuantity = priceWithQuantity;
+            this.priceWithQuantityFormatted = this.formatValues(priceWithQuantity);
+        }
+
+
+        public String getPriceWithQuantityFormatted() {
+            return priceWithQuantityFormatted;
+        }
+
+        public void setPriceWithQuantityFormatted(String priceWithQuantityFormatted) {
+            this.priceWithQuantityFormatted = priceWithQuantityFormatted;
+        }
+
+
+
+        public void cloneInventory(Inventory inventory){
+            this.sku = inventory.getSku();
+            this.product = inventory.getProduct();
+            this.quantity = inventory.getQuantity();
+            this.size = inventory.getSize();
+            this.genderSlug = inventory.getGenderSlug();
+            this.orderOutOfStock = inventory.isOrderOutOfStock();
+            this.sellInOutOfStock = inventory.isSellInOutOfStock();
+        }
+
+        public boolean isSellInOutOfStock() {
+            return sellInOutOfStock;
+        }
+
+        public void setSellInOutOfStock(boolean sellInOutOfStock) {
+            this.sellInOutOfStock = sellInOutOfStock;
+        }
+
+        public String getSku() {
+            return sku;
+        }
+
+        public void setSku(String sku) {
+            this.sku = sku;
+        }
+
+
+        public String getGenderSlug() {
+            return genderSlug;
+        }
+
+        public void setGenderSlug(String genderSlug) {
+            this.genderSlug = genderSlug;
+        }
+
+        public boolean isOrderOutOfStock() {
+            return orderOutOfStock;
+        }
+
+        public void setOrderOutOfStock(boolean orderOutOfStock) {
+            this.orderOutOfStock = orderOutOfStock;
+        }
+
+        public String getSize() {
+            return size;
+        }
+
+        public void setSize(String size) {
+            this.size = size;
+        }
+
+        public int getQuantity() {
+            return quantity;
+        }
+
+        public void setQuantity(int quantity) {
+            this.quantity = quantity;
+        }
+
+        public Product getProduct() {
+            return product;
+        }
+
+        public void setProduct(Product product) {
+            this.product = product;
+        }
+
+        public int hashCode()
+        {
+            return sku.hashCode();
+        }
+
+        public boolean equals(Object obj)
+        {
+            return (((InventoryOrder)this).getSku().equals(((InventoryOrder)obj).getSku()));
+        }
+
+        public String formatValues(double price){
+            Locale locale = new Locale ("pt", "BR");
+            Locale.setDefault(locale);
+
+            DecimalFormat formatter =
+                    (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
+
+            return formatter.format(price);
+        }
+    }
+    @Document
     public class EmailSent {
 
         private Utils.StatusCompra status;
+        private Utils.StatusEntrega statusEntrega;
 
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         private Date createdDate = new Date();
@@ -342,6 +489,16 @@ public class Order {
         }
 
         public EmailSent(){
+        }
+         public Utils.StatusEntrega getStatusEntrega() {
+            return statusEntrega;
+        }
+
+        public void setStatusEntrega(Utils.StatusEntrega statusEntrega) {
+            if(statusEntrega!=null)
+                this.statusEntrega = statusEntrega;
+            else
+                this.statusEntrega = Utils.StatusEntrega.SEMSTATUS;
         }
 
         public Utils.StatusCompra getStatus() {

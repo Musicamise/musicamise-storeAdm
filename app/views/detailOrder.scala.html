@@ -32,10 +32,11 @@
                 <div class="box-body">
                   <form role="form" id="myForm" method="POST" action="@routes.OrderController.updateOrderDetails(order.getId)"
                     >
-
-                  <div class="col-xs-4">
+                    @if(order.getPagSeguroInfo!=null){
+                    <div class="col-xs-4">
                         <a href="javascript:void(0)"><button type="button" onclick="showUpdateModal()" class="btn btn-primary">Atualizar a Venda</button></a>
                     </div>
+                    }
                       <br/>
                       <br/>
                 <div class="box-body">
@@ -112,7 +113,7 @@
                     </div>
                     <div class="form-group">
                         <label >Total: </label>
-                        <label> @order.getTotal</label>
+                        <label> @order.getTotalFormatted</label>
                     </div>
 
                     <div class="form-group">
@@ -120,6 +121,14 @@
                         @for(status<- order.getStatus){
                             <label> @status.getStatus().name() - @status.getCreatedDate()</label>
                         }
+                    </div>
+                    <div class="form-group">
+                        <label >Último status: </label>
+                        <label>@if(order.getLastStatus()!=null){ @order.getLastStatus().getStatus().name() - @order.getLastStatus().getCreatedDate()}else{Sem último status}</label>
+                    </div>
+                    <div class="form-group">
+                        <label >Status Entrega: </label>
+                        <label>@if(order.getStatusEntrega()!=null){ @order.getStatusEntrega().name()}else{Sem status de entrega}</label>
                     </div>
                     <div class="form-group">
                         <label >Emails Enviados: </label>
@@ -138,13 +147,23 @@
                         <div class="form-group">
                             <label >Status</label>
                             <select name="status" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                                <option value=""></option>
+                                <option value="0">NO UPDATE</option>
                                 @for(status<- Utils.StatusCompra.values){
-                                    <option @if(order.getLastStatus()!=null&&status.equals(order.getLastStatus().getStatus())){selected}  value="@status.code" >@status.name()</option>
+                                    <option  value="@status.code" >@status.name()</option>
                                 }
                             </select>
                         </div>
                     }
+                    <br/>
+                    <div class="form-group">
+                        <label >Status De Entrega</label>
+                       <select name="statusEntrega" data-placeholder="Chose the product" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                              <option value=""></option>
+                              @for(status<- Utils.StatusEntrega.values){
+                              <option  value="@status.code" >@status.name()</option>
+                              }
+                        </select>
+                    </div>
                     <br/>
                     <div class="form-group">
                         <label >Notas</label>
