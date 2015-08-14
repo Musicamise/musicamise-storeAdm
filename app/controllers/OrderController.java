@@ -210,7 +210,7 @@ public class OrderController extends Controller {
         if(id!=null&&!id.equals("")&&MongoService.hasOrderById(id)) {
             order = MongoService.findOrderById(id);
             StatusOrder newStatus = null;
-            if(status!=null){
+            if(status!=null&&order.getLastStatus()!=null&&!order.getLastStatus().getStatus().equals(status)){
                 newStatus = new StatusOrder();
                 newStatus.setStatus(status);
 
