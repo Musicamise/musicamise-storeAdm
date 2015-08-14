@@ -91,6 +91,7 @@ public class Order {
     }
 
     public boolean isAbleToUpdateInventory(StatusOrder status){
+        this.status.remove(status);
         if(status.getStatus().equals(Utils.StatusCompra.PAGO)){
             if(this.status.size()>0){
                 boolean canUpdate = true;
