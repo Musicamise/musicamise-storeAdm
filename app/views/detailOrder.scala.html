@@ -244,7 +244,7 @@
 
     function showEmailModal(){
         $("#emailButton").attr('onclick', "sendEmail()");
-        $("#modalSpan").html(@if(order.getUser()!=null){ @order.getUser().getEmail()}else{@order.getEmail()});
+        $("#modalSpan").html(@if(order.getUser()!=null){'@order.getUser().getEmail()'}else{'@order.getEmail()'});
         $("#modalEmail").modal();
     }
 
@@ -254,7 +254,7 @@
         $.ajax({
             method:'GET',
             url: "@routes.OrderController.sendEmailWithCurrentStatus()",
-            data:{'orderId':@order.getId()},
+            data:{'orderId':'@order.getId()'},
         }).success(function() {
             window.location.reload();
         }).error(function() {
@@ -275,7 +275,7 @@
         $.ajax({
             method:'GET',
             url: "@routes.OrderController.updateOrder()",
-            data:{'orderId':@order.getId()},
+            data:{'orderId':'@order.getId()'},
         }).success(function() {
             window.location.reload();
         }).error(function() {

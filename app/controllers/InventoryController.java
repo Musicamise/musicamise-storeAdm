@@ -50,7 +50,8 @@ public class InventoryController extends Controller {
         return ok(newInventory.render(inventory,products,genders));
     }
     
-     @Security.Authenticated(Secured.class)
+    
+    @Security.Authenticated(Secured.class)
     public static Result updateInventoryQuantity(String id,String quantity){
         if(id!=null && quantity!=null){
             Inventory inventory = MongoService.findInventoryById(id);
