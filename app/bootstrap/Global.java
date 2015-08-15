@@ -24,6 +24,7 @@ public class Global extends GlobalSettings {
 
     public void onStart(Application app) {
         DS.init();
+
         MongoService.createInitialColletions();
         MongoService.createInitialTags();
         MongoService.createInitialContent();
