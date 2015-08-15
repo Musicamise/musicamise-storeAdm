@@ -23,6 +23,7 @@ import play.libs.ws.WSResponse;
 import play.mvc.*;
 
 import services.MongoService;
+import services.SendEmail;
 import views.html.*;
 
 import javax.mail.internet.AddressException;
@@ -471,8 +472,12 @@ public class OrderController extends Controller {
                     updateInventoryWithStatus(newStatus,order);
 
                     // send email if PAGO ou CANCELADO
-                    ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
-                    myActor.tell(reference,null);
+//                    ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+//                    myActor.tell(reference,null);
+                    Order newOrder = MongoService.findOrderById(reference.toString());
+                    if(newOrder!=null){
+                        SendEmail.sendOrderStatus(newOrder);
+                    }
                 }else{
                     return notFound();
                 }
@@ -587,8 +592,12 @@ public class OrderController extends Controller {
     public static void sendEmailWIthStatusOrder(String orderId) {
         if(orderId!=null&&!orderId.equals("")){
             // send email if PAGO ou CANCELADO
-            ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
-            myActor.tell(orderId,null);
+//            ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
+//            myActor.tell(orderId,null);
+            Order order = MongoService.findOrderById(orderId.toString());
+            if(order!=null){
+                SendEmail.sendOrderStatus(order);
+            }
         }
     }
 
