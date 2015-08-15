@@ -182,7 +182,7 @@ public class OrderController extends Controller {
         statusOrder.setStatus(status);
 
         order.getStatus().add(statusOrder);
-        order.setStatusEntrega(statusEntrega);
+        order.setStatusEntrega(statusEntrega.name());
 
         //save Inventory change
         MongoService.saveOrder(order);

@@ -242,6 +242,16 @@ public class Utils {
                 default: return SEMSTATUS;
             }
         }
+        
+        public static StatusEntrega getStatusByName(String name){
+            switch (name){
+                case "PRODUCAO": return PRODUCAO;
+                case "EMBALAGEM": return EMBALAGEM;
+                case "EMTRANSITO": return EMTRANSITO;
+                case "ENTREGUE": return ENTREGUE;
+                default: return SEMSTATUS;
+            }
+        }
 
     }
     public enum PagseguroTypeCompra{

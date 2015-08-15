@@ -128,12 +128,13 @@
                     </div>
                     <div class="form-group">
                         <label >Status Entrega: </label>
-                        <label>@if(order.getStatusEntrega()!=null){ @order.getStatusEntrega().name()}else{Sem status de entrega}</label>
+                        <label>@if(order.getStatusEntrega()!=null){ @order.getStatusEntrega()}else{Sem status de entrega}</label>
                     </div>
                     <div class="form-group">
                         <label >Emails Enviados: </label>
+                        <br/>
                         @for(emailsSent<- order.getEmailSents){
-                            <label> @emailsSent.getStatus().name() - @emailsSent.getCreatedDate()</label>
+                            <label> @emailsSent.getStatus().name() - @emailsSent.getStatusEntrega() - @emailsSent.getCreatedDate()</label>
                         }
                     </div>
                     <br/>
@@ -259,6 +260,7 @@
             window.location.reload();
         }).error(function() {
             alert("Erro on update!")
+            $.unblockUI();
         }).done(function(){
             $.unblockUI();
         });
@@ -280,6 +282,7 @@
             window.location.reload();
         }).error(function() {
             alert("Erro on update!")
+            $.unblockUI();
         }).done(function(){
             $.unblockUI();
         });

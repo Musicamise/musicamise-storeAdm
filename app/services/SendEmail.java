@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import play.libs.mailer.MailerPlugin;
+import models.*;
 
 public class SendEmail {
 
@@ -78,7 +79,7 @@ public class SendEmail {
                 //save that you sent a email with that status
                 Order.EmailSent emailSent = order.new EmailSent();
                 emailSent.setStatus(lastSatus.getStatus());
-                emailSent.setStatusEntrega(order.getStatusEntrega());
+                emailSent.setStatusEntrega(Utils.StatusEntrega.getStatusByName(order.getStatusEntrega()));
 
                 MongoService.updateOrderEmailSent(order.getId(),emailSent);
             }
