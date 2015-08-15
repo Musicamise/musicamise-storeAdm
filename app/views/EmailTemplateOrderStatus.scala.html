@@ -12,12 +12,14 @@
         <br/>
         Acompanhe seu pedido pelo link: <a href="http://www.musicamise.com.br/#!/checkorder?id=@order.getId()"> Status da Compra </a> <br/>
         @if(order.getStatusEntrega()!=null){
-            Seu status de entrega é @order.getStatusEntrega().<br/>
+            Seu status de entrega é @order.getStatusEntrega() .<br/>
         }
         <br/>
         Comprador do Pagseguro:
         <br/>
-        @order.getPagSeguroInfo.toString()
+        @if(order.getPagSeguroInfo!=null){
+            @order.getPagSeguroInfo.toString()
+        }
         <br/>
         Order:
         <br/>

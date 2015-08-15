@@ -51,7 +51,8 @@ public class Order {
     private DiscountCode discountCode;
 
     private List<StatusOrder> status;
-    private Utils.StatusEntrega statusEntrega;
+
+    private String statusEntrega;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
@@ -77,8 +78,17 @@ public class Order {
 
 
     public String toString(){
-        return "products: " + this.products.toString() + " shippingAddress " + this.shippingAddress.toString()
-                + " user "+ this.user.toString();
+        String shippingAddress = "";
+        if(this.shippingAddress!=null)
+            shippingAddress = " shippingAddress " + this.shippingAddress.toString();
+        String user = "";
+        if(this.user!=null){
+            user = this.user.toString();
+        }else{
+            user = this.email;
+        }
+        return "products: " + this.products.toString() +  shippingAddress
+                + " user "+ user;
 
     }
 
@@ -323,11 +333,11 @@ public class Order {
     public void setStatus(List<StatusOrder> status) {
         this.status = status;
     }
-     public Utils.StatusEntrega getStatusEntrega() {
-        return statusEntrega;
+     public String getStatusEntrega() {
+        return this.statusEntrega;
     }
 
-    public void setStatusEntrega(Utils.StatusEntrega statusEntrega) {
+    public void setStatusEntrega(String statusEntrega) {
         this.statusEntrega = statusEntrega;
     }
 
