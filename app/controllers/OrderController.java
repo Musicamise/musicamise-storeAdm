@@ -187,7 +187,7 @@ public class OrderController extends Controller {
 
         //save Inventory change
         MongoService.saveOrder(order);
-        updateInventoryWithStatus(statusOrder,order);
+        updateInventoryAndDiscountCodeWithStatus(statusOrder,order);
 
         return redirect(routes.OrderController.listOrders());
     }
@@ -214,7 +214,7 @@ public class OrderController extends Controller {
                 newStatus = new StatusOrder();
                 newStatus.setStatus(status);
 
-                updateInventoryWithStatus(newStatus,order);
+                updateInventoryAndDiscountCodeWithStatus(newStatus,order);
             }
 
             MongoService.upDateOrder(order.getId(),newStatus,statusEntrega,notes);
@@ -469,7 +469,7 @@ public class OrderController extends Controller {
                         MongoService.upDateOrder(reference,entrega);
                     }
 
-                    updateInventoryWithStatus(newStatus,order);
+                    updateInventoryAndDiscountCodeWithStatus(newStatus,order);
 
                     // send email if PAGO ou CANCELADO
 //                    ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
@@ -533,7 +533,7 @@ public class OrderController extends Controller {
                         !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
 
                         MongoService.upDateOrder(order.getId(), newStatus);
-                        updateInventoryWithStatus(newStatus,order);
+                        updateInventoryAndDiscountCodeWithStatus(newStatus,order);
 
                     }
                 }
@@ -582,7 +582,7 @@ public class OrderController extends Controller {
                                         !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
 
                             MongoService.upDateOrder(order.getId(), newStatus);
-                            updateInventoryWithStatus(newStatus, order);
+                            updateInventoryAndDiscountCodeWithStatus(newStatus, order);
                         }
                     }
                 }
@@ -702,7 +702,7 @@ public class OrderController extends Controller {
     }
 
 
-    public static void updateInventoryWithStatus(StatusOrder newStatus,Order order){
+    public static void updateInventoryAndDiscountCodeWithStatus(StatusOrder newStatus,Order order){
 
         switch (newStatus.getStatus()){
             case AGUARDANDO:
@@ -712,6 +712,7 @@ public class OrderController extends Controller {
             case PAGO:
                 if (order.isAbleToUpdateInventory(newStatus)) {
                     updateInventory(order,false);
+                    updateDiscountCode(order,false);
                 }
                 break;
             case DISPONIVEL:
@@ -721,42 +722,69 @@ public class OrderController extends Controller {
             case DEVOLVIDA:
                 if (order.isAbleToUpdateInventory(newStatus)) {
                     updateInventory(order,true);
+                    updateDiscountCode(order,true);
                 }
                 break;
             case CANCELADO:
                 if (order.isAbleToUpdateInventory(newStatus)) {
                     updateInventory(order,true);
+                    updateDiscountCode(order,true);
                 }
                 break;
         }
      }
 
 
+    public static void updateDiscountCode(Order order,boolean devolvida){
+        try{
+
+            int multi = devolvida?1:-1;
+
+            if(order.getDiscountCode()!=null){
+                DiscountCode discountCode = MongoService.findDiscountCodeById(order.getDiscountCode().getCode());
+                if(!discountCode.isNoTimesLimits()){
+                    discountCode.setTimesLeft(discountCode.getTimesLeft()+(multi*1));
+                }
+                discountCode.setTimesUsed(discountCode.getTimesUsed()-(multi*1));
+                MongoService.saveDiscountCode(discountCode);
+            }
+
+        }catch(Exception e){
+            Logger.debug("error on update Discount Code");
+        }
+
+    }
+
     public static void updateInventory(Order order,boolean devolvida){
+        try{
 
-        for(Order.InventoryOrder vendido :order.getProducts()){
+            for(Order.InventoryOrder vendido :order.getProducts()){
 
-            Inventory inventoryDB = MongoService.findInventoryById(vendido.getSku());
-            if(inventoryDB!=null){
-                try {
-                    int multi = devolvida?1:-1;
+                Inventory inventoryDB = MongoService.findInventoryById(vendido.getSku());
+                if(inventoryDB!=null){
+                    try {
+                        int multi = devolvida?1:-1;
 
-                    int oldQuantity = inventoryDB.getQuantity();
-                    int quantityVendida = vendido.getQuantity();
-                    InventoryEntry entry = new InventoryEntry();
+                        int oldQuantity = inventoryDB.getQuantity();
+                        int quantityVendida = vendido.getQuantity();
+                        InventoryEntry entry = new InventoryEntry();
 
-                    entry.setInventory(inventoryDB);
-                    entry.setQuantity(multi*quantityVendida);
-                    entry.setOrderId(order.getId());
+                        entry.setInventory(inventoryDB);
+                        entry.setQuantity(multi*quantityVendida);
+                        entry.setOrderId(order.getId());
 
-                    // Save Inventory
-                    inventoryDB.setQuantity(oldQuantity+multi*quantityVendida);
-                    MongoService.saveInventory(inventoryDB);
-                    // Save Inventory Entry
-                    MongoService.saveInventoryEntry(entry);
-                }catch (Exception e) {
+                        // Save Inventory
+                        inventoryDB.setQuantity(oldQuantity+multi*quantityVendida);
+                        MongoService.saveInventory(inventoryDB);
+                        // Save Inventory Entry
+                        MongoService.saveInventoryEntry(entry);
+                    }catch (Exception e) {
+                    }
                 }
             }
+        }catch(Exception e){
+            Logger.debug("error on update inventory Code");
+
         }
 
     }
