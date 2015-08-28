@@ -31,7 +31,6 @@ public class Global extends GlobalSettings {
 
         createUser();
 
-
         Logger.info("Application has started");
     }
     public static void createUser(){
@@ -63,7 +62,6 @@ public class Global extends GlobalSettings {
         return Promise.<Result>pure(badRequest("Don't try to hack the URI!"));
     }
 
-    // For CORS
     // private class ActionWrapper extends Action.Simple {
     //     public ActionWrapper(Action<?> action) {
     //         this.delegate = action;
