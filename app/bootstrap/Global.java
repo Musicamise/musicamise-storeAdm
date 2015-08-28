@@ -29,15 +29,8 @@ public class Global extends GlobalSettings {
         MongoService.createInitialTags();
         MongoService.createInitialContent();
 
-        //MongoHandler.getInstance(null);
-        //models.Content test = new models.Content();
-        //test.setTitle("Teste title alvaro@silvino.me");
-        //test.setContent("alvaro");
-        //test.setType(Utils.Content.ABOUT);
         createUser();
 
-        //ApplicationContext ctx = new AnnotationConfigApplicationContext(SpringMongoConfig1.class);
-        //MongoOperations mongoOperation = (MongoOperations)ctx.getBean("mongoTemplate");
 
         Logger.info("Application has started");
     }
