@@ -14,7 +14,7 @@ import services.MongoService;
 import static play.mvc.Results.*;
 
 public class Global extends GlobalSettings {
-
+    //removed for pagseguro 
     //  @Override
     // public <T extends EssentialFilter> Class<T>[] filters() {
     //     Logger.debug("filter CSRF");
