@@ -25,6 +25,9 @@ GET     /sendEmailWithCurrentStatus/                           controllers.Order
 GET     /updateOrders/                           controllers.OrderController.updateOrders(all :String ?= null)
 GET     /updateOrder/                           controllers.OrderController.updateOrder(orderId :String ?= null)
 
+GET     /seeEmailToSend/                           controllers.OrderController.seeEmailToSend(orderId :String ?= null)
+
+
 GET     /collection                          controllers.CollectionsController.listCollections()
 GET     /collection/newOrEdit                                  controllers.CollectionsController.collection(id :String ?= null)
 POST     /collection/newOrEdit/saveCollection                              controllers.CollectionsController.saveCollection(id :String ?= null)

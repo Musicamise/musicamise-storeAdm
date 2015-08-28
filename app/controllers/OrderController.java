@@ -63,6 +63,17 @@ public class OrderController extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
+    public static Result seeEmailToSend(String id){
+        Order order = MongoService.findOrderById(id);
+        if(order==null){
+            return notFound();
+        }else{
+            StatusOrder lastSatus = order.getLastStatus();
+            return ok(EmailTemplateOrderStatus.render(order,lastSatus));
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result listOrders() {
         List<Order> orders = MongoService.getAllOrders();
         return ok(listOrders.render(orders));
