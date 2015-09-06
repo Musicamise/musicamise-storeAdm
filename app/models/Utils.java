@@ -125,6 +125,8 @@ public class Utils {
         feminino("Feminino"),
         infantil("Infantil"),
         posters("Poster"),
+        casa("Casa"),
+        poster("Poster"),
         especial("Especial"),
         foraDeEstoque("Fora de Estoque");
         public String title;

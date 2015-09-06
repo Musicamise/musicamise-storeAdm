@@ -59,6 +59,9 @@
                                 @if(collection.isGender){
                                     <span class="badge bg-gray">Is Gender</span>
                                 }
+                                @if(collection.isOtherProducts){
+                                    <span class="badge bg-gray">Is Other Products</span>
+                                }
                             </td>
                             <td>
                                 <a href="@routes.CollectionsController.collection(collection.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
