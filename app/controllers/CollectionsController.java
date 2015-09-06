@@ -54,12 +54,14 @@ public class CollectionsController extends Controller {
 
         String mainMenu = (dataFiles.asFormUrlEncoded().get("mainMenu") != null && dataFiles.asFormUrlEncoded().get("mainMenu").length > 0) ? dataFiles.asFormUrlEncoded().get("mainMenu")[0] : null;
         String gender = (dataFiles.asFormUrlEncoded().get("gender") != null && dataFiles.asFormUrlEncoded().get("gender").length > 0) ? dataFiles.asFormUrlEncoded().get("gender")[0] : null;
+        String otherProducts = (dataFiles.asFormUrlEncoded().get("otherProducts") != null && dataFiles.asFormUrlEncoded().get("otherProducts").length > 0) ? dataFiles.asFormUrlEncoded().get("otherProducts")[0] : null;
         String front = (dataFiles.asFormUrlEncoded().get("front") != null && dataFiles.asFormUrlEncoded().get("front").length > 0) ? dataFiles.asFormUrlEncoded().get("front")[0] : null;
 
         boolean onlineBool = (visibleOnline!=null)?true:false;
         boolean storeBool = (hasOnLocalStore!=null)?true:false;
         boolean mainMenuBool = (mainMenu!=null)?true:false;
         boolean genderBool = (gender!=null)?true:false;
+        boolean otherProductsBool = (otherProducts!=null)?true:false;
         boolean frontBool = (front!=null)?true:false;
 
         List<String> productsList =  (products!=null)?Arrays.asList(products):new ArrayList<>();
@@ -94,6 +96,7 @@ public class CollectionsController extends Controller {
         collection.setOnLocalStore(storeBool);
         collection.setMainMenu(mainMenuBool);
         collection.setGender(genderBool);
+        collection.setOtherProducts(otherProductsBool);
         collection.setFront(frontBool);
 
 
