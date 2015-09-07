@@ -120,11 +120,11 @@ public class InventoryController extends Controller {
             flash("inventory","Product does not Exist");
             return redirect(routes.InventoryController.inventory(id));
         }
-        if(gender!=null&&!gender.equals("")&&!MongoService.hasCollectionByGender(gender)){
+        if(gender!=null&&!MongoService.hasCollectionByGender(gender)||gender==null||gender.equals("")){
             flash("inventory","Gender dont exists or Gender empty ");
             return redirect(routes.InventoryController.inventory(id));
         }
-        if(productSize!=null&&!productSize.equals("")&&!Utils.ProductSizeType.getList().contains(productSize)){
+        if(productSize==null||productSize.equals("")||productSize!=null&&!Utils.ProductSizeType.getList().contains(productSize)){
             flash("inventory","Product Size dont exists or Product Size empty ");
             return redirect(routes.InventoryController.inventory(id));
         }
