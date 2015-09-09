@@ -411,7 +411,7 @@ public class OrderController extends Controller {
     public static Result updateOrders(String all){
         try{
             if(all!=null&&!all.equals(""))
-                updateAllOrders(all!=null&&!all.equals(""));
+                updateAllOrders(all != null && !all.equals(""));
             else{
                 return internalServerError();
             }
@@ -509,97 +509,70 @@ public class OrderController extends Controller {
         } else {
             orders  = MongoService.getAllOrders();
         }
-        String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
-        String emailPagseguro = null;
-        String token = null;
-        emailPagseguro = Play.application().configuration().getString("pagseguro.email");
-        token = Play.application().configuration().getString("pagseguro.token");
-        for (Order order : orders) {
-            WSRequestHolder holder = WS.url(urlWs);
 
-            WSResponse responseWithReference = holder.setQueryParameter("email", emailPagseguro)
-                    .setQueryParameter("token", token)
-                    .setQueryParameter("reference", order.getId())
-                    .get()
-                    .get(10000);
-            if(responseWithReference.getStatus()==200){
-                Document respostaReferenceDoc = responseWithReference.asXml();
-                if(respostaReferenceDoc.getElementsByTagName("code").getLength()>0){
-                    String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
-
-                    holder = WS.url(urlWs+code);
-
-                    WSResponse response = holder.setQueryParameter("email", emailPagseguro)
-                            .setQueryParameter("token", token)
-                            .get()
-                            .get(10000);
-
-                    Document respostaDoc = response.asXml();
-                    bindXMLWithPagseguroObject(order,respostaDoc);
-                    NodeList statusTag = respostaDoc.getElementsByTagName("status");
-                    String status = statusTag.item(0).getTextContent();
-                    StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
-                    if (order.getLastStatus()==null||
-                        order.getLastStatus()!=null &&
-                        !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
-
-                        MongoService.upDateOrder(order.getId(), newStatus);
-                        updateInventoryAndDiscountCodeWithStatus(newStatus,order);
-
-                    }
-                }
-            }
-
-
+        for(Order order: orders){
+            updateSingleOrder(order.getId());
         }
+
+
     }
 
     public static void updateSingleOrder(String orderId) {
         Order order = MongoService.findOrderById(orderId);
-        
-        String urlWs = Play.application().configuration().getString("pagseguro.ws.notification.url");
+
+        String urlWs = Play.application().configuration().getString("pagseguro.ws.consult.url");
         String emailPagseguro = null;
         String token = null;
         emailPagseguro = Play.application().configuration().getString("pagseguro.email");
         token = Play.application().configuration().getString("pagseguro.token");
-        if(order!=null) {
-            WSRequestHolder holder = WS.url(urlWs);
+        if (order != null) {
 
-            WSResponse responseWithReference = holder.setQueryParameter("email", emailPagseguro)
+            String code = null;
+            if (order.getPagSeguroInfo()==null||order.getPagSeguroInfo().getCode() == null) {
+                WSRequestHolder holder = WS.url(urlWs);
+
+                WSResponse responseWithReference = holder.setQueryParameter("email", emailPagseguro)
+                        .setQueryParameter("token", token)
+                        .setQueryParameter("reference", order.getId())
+                        .get()
+                        .get(10000);
+
+                if (responseWithReference.getStatus() == 200) {
+                    Document respostaReferenceDoc = responseWithReference.asXml();
+                    if (respostaReferenceDoc.getElementsByTagName("code").getLength() > 0) {
+                        code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
+                    }
+                }
+            } else {
+                code = order.getPagSeguroInfo().getCode();
+            }
+
+            WSRequestHolder holder = WS.url(urlWs + code);
+
+            WSResponse response = holder.setQueryParameter("email", emailPagseguro)
                     .setQueryParameter("token", token)
-                    .setQueryParameter("reference", order.getId())
                     .get()
                     .get(10000);
+            if (response.getStatus() == 200) {
+                Document respostaDoc = response.asXml();
+                if(order.getPagSeguroInfo().getCode() == null){
+                    bindXMLWithPagseguroObject(order, respostaDoc);
+                }
+                NodeList statusTag = respostaDoc.getElementsByTagName("status");
+                String status = statusTag.item(0).getTextContent();
+                StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
+                if (order.getLastStatus() == null ||
+                        order.getLastStatus() != null &&
+                                !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
 
-            if(responseWithReference.getStatus()==200) {
-                Document respostaReferenceDoc = responseWithReference.asXml();
-                if (respostaReferenceDoc.getElementsByTagName("code").getLength() > 0) {
-                    String code = respostaReferenceDoc.getElementsByTagName("code").item(0).getTextContent();
-
-                    holder = WS.url(urlWs + code);
-
-                    WSResponse response = holder.setQueryParameter("email", emailPagseguro)
-                            .setQueryParameter("token", token)
-                            .get()
-                            .get(10000);
-                    if(response.getStatus()==200) {
-                        Document respostaDoc = response.asXml();
-                        bindXMLWithPagseguroObject(order, respostaDoc);
-                        NodeList statusTag = respostaDoc.getElementsByTagName("status");
-                        String status = statusTag.item(0).getTextContent();
-                        StatusOrder newStatus = new StatusOrder(Utils.StatusCompra.getStatusByCode(Integer.parseInt(status)));
-                        if (order.getLastStatus() == null ||
-                                order.getLastStatus() != null &&
-                                        !newStatus.getStatus().equals(order.getLastStatus().getStatus())) {
-
-                            MongoService.upDateOrder(order.getId(), newStatus);
-                            updateInventoryAndDiscountCodeWithStatus(newStatus, order);
-                        }
-                    }
+                    MongoService.upDateOrder(order.getId(), newStatus);
+                    updateInventoryAndDiscountCodeWithStatus(newStatus, order);
                 }
             }
         }
     }
+
+
     public static void sendEmailWIthStatusOrder(String orderId) {
         if(orderId!=null&&!orderId.equals("")){
             // send email if PAGO ou CANCELADO
@@ -648,7 +621,7 @@ public class OrderController extends Controller {
 
         String cancellationSource = cancellationSourceTag.getLength()>0?cancellationSourceTag.item(0).getTextContent():"";
         String lastEventDateString = lastEventDateTag.getLength()>0?lastEventDateTag.item(0).getTextContent():"";
-        DateTime lastEventDate = new DateTime(lastEventDateString);
+        DateTime lastEventDate = (!lastEventDateString.equals(""))?new DateTime(lastEventDateString):null;
 
         String paymentMethodTag_type =  paymentMethodTag.getLength()>0? paymentMethodTag.item(0).getFirstChild().getTextContent():"";
         String paymentMethodTag_code =  paymentMethodTag.getLength()>0? paymentMethodTag.item(0).getLastChild().getTextContent():"";
@@ -657,7 +630,8 @@ public class OrderController extends Controller {
         String discountAmount = discountAmountTag.getLength()>0?discountAmountTag.item(0).getTextContent():"";
         String netAmount = netAmountTag.getLength()>0?netAmountTag.item(0).getTextContent():"";
         String escrowEndDateString = escrowEndDateTag.getLength()>0?escrowEndDateTag.item(0).getTextContent():"";
-        DateTime escrowEndDate = new DateTime(escrowEndDateString);
+
+        DateTime escrowEndDate = (!escrowEndDateString.equals(""))?new DateTime(escrowEndDateString):null;
 
         String extraAmount = extraAmountTag.getLength()>0?extraAmountTag.item(0).getTextContent():"";
         String installmentCount = installmentCountTag.getLength()>0?installmentCountTag.item(0).getTextContent():"";
@@ -683,18 +657,19 @@ public class OrderController extends Controller {
         }
         Order.PagSeguroInfo pagSeguroInfo =  order.new PagSeguroInfo();
         pagSeguroInfo.setCode(code);
+        pagSeguroInfo.setReference(reference);
         pagSeguroInfo.setType(Utils.PagseguroTypeCompra.getTypeByCode(Integer.parseInt(type)).name());
         pagSeguroInfo.setCancellationSource(cancellationSource);
         pagSeguroInfo.setDate(date.toDate());
         pagSeguroInfo.setDiscountAmount(discountAmount);
-        pagSeguroInfo.setEscrowEndDate(escrowEndDate.toDate());
+        pagSeguroInfo.setEscrowEndDate((escrowEndDate!=null)?escrowEndDate.toDate():null);
         pagSeguroInfo.setExtraAmount(extraAmount);
         pagSeguroInfo.setGrossAmount(grossAmount);
         pagSeguroInfo.setInstallmentCount(installmentCount);
         pagSeguroInfo.setInstallmentFeeAmount(installmentFeeAmount);
         pagSeguroInfo.setIntermediationFeeAmount(intermediationFeeAmount);
         pagSeguroInfo.setIntermediationRateAmount(intermediationRateAmount);
-        pagSeguroInfo.setLastEventDate(lastEventDate.toDate());
+        pagSeguroInfo.setLastEventDate((lastEventDate!=null)?lastEventDate.toDate():null);
         pagSeguroInfo.setNetAmount(netAmount);
         pagSeguroInfo.setOperationalFeeAmount(operationalFeeAmount);
         pagSeguroInfo.setPaymentMethodCode(Utils.PagseguroPagamentoCodeCompra.getCompraByCode(Integer.parseInt(paymentMethodTag_code)).name());
@@ -704,8 +679,7 @@ public class OrderController extends Controller {
         pagSeguroInfo.setSenderName(sender_name);
         pagSeguroInfo.setSenderNumber(sender_number);
         //save
-        if(order.getPagSeguroInfo()==null)
-            MongoService.upDateOrder(reference, pagSeguroInfo);
+        MongoService.upDateOrder(reference, pagSeguroInfo);
 
         order.setPagSeguroInfo(pagSeguroInfo);
 
