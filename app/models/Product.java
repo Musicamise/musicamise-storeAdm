@@ -7,6 +7,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,8 +35,11 @@ public class Product {
     @Id
     private String id;
 
+    @TextIndexed(weight = 2)
     private  String title;
+    @TextIndexed
     private  String description;
+
     private  double price;
     private  double priceCompareWith;
 
@@ -43,6 +48,7 @@ public class Product {
 
     private List<Image> images;
 
+    @TextIndexed
     private String slug;
 
     private String color;
@@ -64,8 +70,11 @@ public class Product {
 
 
     //Organization
+    @TextIndexed
     private String type;
+    @TextIndexed
     private Set<String> userTags;
+    @TextIndexed
     private Set<String> collectionsSlugs;
 
 
