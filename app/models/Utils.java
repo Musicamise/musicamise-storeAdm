@@ -318,17 +318,17 @@ public class Utils {
         CARTAO_DE_CREDITO_SOROCRED(120),
         BOLETO_BRADESCO(201),
         BOLETO_SANTANDER(202),
-        DÉBITO_ONLINE_BRADESCO(301),
-        DÉBITO_ONLINE_ITAU(302),
-        DÉBITO_ONLINE_UNIBANCO(303),
-        DÉBITO_ONLINE_BANCO_DO_BRASIL(304),
-        DÉBITO_ONLINE_BANCO_REAL(305),
-        DÉBITO_ONLINE_BANRISUL(306),
-        DÉBITO_ONLINE_HSBC(307),
+        DEBITO_ONLINE_BRADESCO(301),
+        DEBITO_ONLINE_ITAU(302),
+        DEBITO_ONLINE_UNIBANCO(303),
+        DEBITO_ONLINE_BANCO_DO_BRASIL(304),
+        DEBITO_ONLINE_BANCO_REAL(305),
+        DEBITO_ONLINE_BANRISUL(306),
+        DEBITO_ONLINE_HSBC(307),
         SALDO_PAGSEGURO(401),
         OI_PAGGO(501),
-        DEPÓSITO_EM_CONTA___BANCO_DO_BRASIL(701),
-        DEPÓSITO_EM_CONTA___HSBC(702);
+        DEPOSITO_EM_CONTA___BANCO_DO_BRASIL(701),
+        DEPOSITO_EM_CONTA___HSBC(702);
         public final int code;
 
         PagseguroPagamentoCodeCompra(int code){
@@ -359,17 +359,17 @@ public class Utils {
                 case 120: return CARTAO_DE_CREDITO_SOROCRED ;
                 case 201: return BOLETO_BRADESCO  ;
                 case 202: return BOLETO_SANTANDER ;
-                case 301: return DÉBITO_ONLINE_BRADESCO ;
-                case 302: return DÉBITO_ONLINE_ITAU ;
-                case 303: return DÉBITO_ONLINE_UNIBANCO  ;
-                case 304: return DÉBITO_ONLINE_BANCO_DO_BRASIL ;
-                case 305: return DÉBITO_ONLINE_BANCO_REAL  ;
-                case 306: return DÉBITO_ONLINE_BANRISUL ;
-                case 307: return DÉBITO_ONLINE_HSBC ;
+                case 301: return DEBITO_ONLINE_BRADESCO ;
+                case 302: return DEBITO_ONLINE_ITAU ;
+                case 303: return DEBITO_ONLINE_UNIBANCO  ;
+                case 304: return DEBITO_ONLINE_BANCO_DO_BRASIL ;
+                case 305: return DEBITO_ONLINE_BANCO_REAL  ;
+                case 306: return DEBITO_ONLINE_BANRISUL ;
+                case 307: return DEBITO_ONLINE_HSBC ;
                 case 401: return SALDO_PAGSEGURO ;
                 case 501: return OI_PAGGO  ;
-                case 701: return DEPÓSITO_EM_CONTA___BANCO_DO_BRASIL;
-                case 702: return DEPÓSITO_EM_CONTA___HSBC;
+                case 701: return DEPOSITO_EM_CONTA___BANCO_DO_BRASIL;
+                case 702: return DEPOSITO_EM_CONTA___HSBC;
                 default: return null;
             }
         }

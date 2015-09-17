@@ -260,6 +260,9 @@ public class MongoService {
     public static List<Inventory> getAllInventories() {
         return DS.mop.findAll(Inventory.class);
     }
+    public static long countAllInventories() {
+        return DS.mop.count(new Query(),Inventory.class);
+    }
 
     public static List<Inventory> findInventoriesByIds(List<String> ids) {
         List<ObjectId> idList = new ArrayList<>();
@@ -521,6 +524,9 @@ public class MongoService {
 
     public static List<Order> getAllOrders() {
         return DS.mop.findAll(Order.class);
+    }
+    public static long countAllOrders() {
+        return DS.mop.count(new Query(),Order.class);
     }
 
     public static boolean hasInventoryByProductIdSizeAndGender(String productId,String size,String gender){

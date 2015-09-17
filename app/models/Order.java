@@ -29,6 +29,8 @@ public class Order {
 
     @Id
     private  String id;
+    private  String friendlyId;
+    
     @Field("products")
     private List<InventoryOrder> products ;
 
@@ -143,8 +145,15 @@ public class Order {
 
         return formatter.format(price);
     }
+    
+    public String getFriendlyId() {
+        return friendlyId;
+    }
 
-     public String getNotes() {
+    public void setFriendlyId(String friendlyId) {
+        this.friendlyId = friendlyId;
+    }
+    public String getNotes() {
         return notes;
     }
 

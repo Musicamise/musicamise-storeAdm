@@ -10,6 +10,7 @@ import play.Play;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import models.BeforeSaveListener;
 
 /**
  * Mongodb Configuration - Heroku
@@ -33,7 +34,10 @@ public class MongoConfig extends AbstractMongoConfiguration{
 	protected String getDatabaseName() {
         return clientURI.getDatabase();
 	}
-
+	@Bean
+    public BeforeSaveListener beforeSaveListener() {
+        return new BeforeSaveListener();
+    }
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {

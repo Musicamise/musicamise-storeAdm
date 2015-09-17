@@ -20,6 +20,7 @@ import com.mongodb.MongoException;
 import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteConcern;
+import models.BeforeSaveListener;
 
 import play.Logger;
 import play.Play;
@@ -72,7 +73,10 @@ public class MongoConf extends AbstractMongoConfiguration{
 	protected String getDatabaseName() {
 		return Play.application().configuration().getString("connections.mongo.name");
 	}
-
+	@Bean
+    public BeforeSaveListener beforeSaveListener() {
+        return new BeforeSaveListener();
+    }
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {
