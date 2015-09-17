@@ -142,7 +142,11 @@ public class InventoryController extends Controller {
         }
         Product product = MongoService.findProductById(productId);
 
-        inventory = (inventory!=null)?inventory:new Inventory();
+        if(inventory==null){
+            inventory = new Inventory();
+            inventory.setSku("sku"+(MongoService.countAllInventories()+1));
+        } 
+
         inventory.setOrderOutOfStock(outOfStockBool);
         inventory.setProduct(product);
         int oldQuantity = inventory.getQuantity();
