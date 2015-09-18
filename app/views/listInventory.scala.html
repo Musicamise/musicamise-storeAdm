@@ -37,6 +37,8 @@
                         <th>Product Slug</th>
                         <th>Product Size</th>
                         <th>Product Gender</th>
+                        <th>Product Color</th>
+                        <th>Product Modelo</th>
                         <th>Quantity</th>
                         <th>Product Price</th>
                         <th>Action</th>
@@ -52,6 +54,15 @@
                         </td>
                         <td> 
                             <span class="label label-warning" style="font-size: 100%; font-weight: 200;">@inventory.getGenderSlug</span>
+                        </td>
+                        <td> 
+                            <span @if(inventory.getColor!=null){
+                                style="background-color:@inventory.getColor; font-size: 100%; font-weight: 200;"
+                                }
+                              class="label label-warning" > Cor</span>
+                        </td>
+                        <td> 
+                            <span class="label label-success" style="font-size: 100%; font-weight: 200;">@inventory.getType</span>
                         </td>
                         <td>
                             <input type="text" style="width:30px;" id="quantity@inventory.getSku" class="quantity" name="quantity" value="@inventory.getQuantity" placeholder="Quantity">
@@ -72,6 +83,8 @@
                         <th>Product Slug</th>
                         <th>Product Size</th>
                         <th>Product Gender</th>
+                        <th>Product Color</th>
+                        <th>Product Modelo</th>
                         <th>Quantity</th>
                         <th>Product Price</th>
                         <th>Action</th>

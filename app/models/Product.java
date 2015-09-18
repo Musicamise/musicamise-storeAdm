@@ -51,8 +51,6 @@ public class Product {
     @TextIndexed
     private String slug;
 
-    private String color;
-
     private boolean newProduct;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
@@ -71,7 +69,8 @@ public class Product {
 
     //Organization
     @TextIndexed
-    private String type;
+    private Set<String> types;
+
     @TextIndexed
     private Set<String> userTags;
     @TextIndexed
@@ -87,6 +86,7 @@ public class Product {
 
     public Product(){
         this.userTags = new HashSet<>();
+        this.types = new HashSet<>();
         this.localStoresSlugs = new HashSet<>();
         this.images = new ArrayList<>();
         this.collectionsSlugs = new HashSet<>();
@@ -260,13 +260,7 @@ public class Product {
 
     }
 
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
+   
 
     public boolean isNewProduct() {
         return newProduct;
@@ -292,12 +286,12 @@ public class Product {
         this.onLineVisible = onLineVisible;
     }
 
-    public String getType() {
-        return type;
+    public Set<String> getTypes() {
+        return types;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setTypes(Set<String> types) {
+        this.types = types;
     }
 
     public Set<String> getUserTags() {

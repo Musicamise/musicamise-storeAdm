@@ -68,7 +68,7 @@ public class ProductController extends Controller {
         String weight = (dataFiles.asFormUrlEncoded().get("weight") != null && dataFiles.asFormUrlEncoded().get("weight").length > 0) ? dataFiles.asFormUrlEncoded().get("weight")[0] : null;
         String mail = (dataFiles.asFormUrlEncoded().get("mail") != null && dataFiles.asFormUrlEncoded().get("mail").length > 0) ? dataFiles.asFormUrlEncoded().get("mail")[0] : null;
         String[] tags = (dataFiles.asFormUrlEncoded().get("tags") != null && dataFiles.asFormUrlEncoded().get("tags").length > 0) ? dataFiles.asFormUrlEncoded().get("tags") : null;
-        String productType = (dataFiles.asFormUrlEncoded().get("productType") != null && dataFiles.asFormUrlEncoded().get("productType").length > 0) ? dataFiles.asFormUrlEncoded().get("productType")[0] : null;
+        String[] productType = (dataFiles.asFormUrlEncoded().get("productTypes") != null && dataFiles.asFormUrlEncoded().get("productTypes").length > 0) ? dataFiles.asFormUrlEncoded().get("productTypes") : null;
         String[] collections = (dataFiles.asFormUrlEncoded().get("collections") != null && dataFiles.asFormUrlEncoded().get("collections").length > 0) ? dataFiles.asFormUrlEncoded().get("collections") : null;
         String color = (dataFiles.asFormUrlEncoded().get("color") != null && dataFiles.asFormUrlEncoded().get("color").length > 0) ? dataFiles.asFormUrlEncoded().get("color")[0] : null;
 
@@ -97,6 +97,7 @@ public class ProductController extends Controller {
 
         Set<String> tagsList =  (tags!=null)?new HashSet<>(Arrays.asList(tags)):new HashSet<>();
         Set<String> collectionsList =  (collections!=null)?new HashSet<>(Arrays.asList(collections)):new HashSet<>();
+        Set<String> productTypeList =  (productType!=null)?new HashSet<>(Arrays.asList(productType)):new HashSet<>();
 
         Set<String> localStoresList =  (localStores!=null)?new HashSet<>(Arrays.asList(localStores)):new HashSet<>();
 
@@ -134,12 +135,11 @@ public class ProductController extends Controller {
         product.setPriceCompareWith(priceCompareWithDouble);
         product.setSendMail(mailBool);
         product.setStoreVisible(storeBool);
-        product.setType((productType != null && !productType.equals("")) ? productType : product.getType());
+        product.setTypes(productTypeList);
         product.setUserTags(tagsList);
         product.setWeight(weightDouble);
         product.setCollectionsSlugs(collectionsList);
         product.setLocalStoresSlugs(localStoresList);
-        product.setColor(color);
 
 
         // product.setHasDiscount(hasDiscountBool);

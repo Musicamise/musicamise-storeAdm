@@ -38,7 +38,7 @@
                         <th>Collections</th>
                         <th>Tags</th>
                         <th>Local Store</th>
-                        <th>type</th>
+                        <th>types</th>
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -60,7 +60,7 @@
                               <span class="badge bg-gray">@localStoreSlug</span>
                               }
                           </td>
-                          <td>@product.getType()</td>
+                          <td>@product.getTypes()</td>
                           <td>
                               <a href="@routes.ProductController.product(product.getId())"><i class="fa fa-file-text-o"></i> Edit</a>
                               <span> | </span>

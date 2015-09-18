@@ -205,25 +205,14 @@
                     <!-- text input -->
                       <div class="form-group">
                           <label >Product Type</label>
-                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                          <select name="productTypes" data-placeholder="Chose the tages" style="width: 350px; display: none;"  multiple="" class="chosen-select-width" tabindex="-1">
                               <option value=""></option>
                               @for(productType<- Utils.ProductType.getList){
-                                <option @if(productType.equals(product.getType)){selected=""} value="@productType">@productType</option>
+                                <option @if(product.getTypes().contains(productType)){selected=""} value="@productType">@productType</option>
                               }
                           </select>
                       </div>
-                        <div class="form-group">
-                            <label >Cor</label>
-                            <div id="colorPicker"></div>
-                            <div class="input-group">
-                            <span @if(product.getColor!=null){
-                                  style="background-color:@product.getColor;"
-                                  }
-                                id="color" class="input-group-addon"></span>
-                            <input disabled="" type="text" id="colorRGB"  value="@product.getColor"  class="form-control"/>
-                            <input  type="hidden" name="color" id="colorRGBValue"  value="@product.getColor"  class="form-control"/>
-                            </div>
-                          </div>
+                       
 
                       <div class="form-group">
                           <label >User Tags</label>
