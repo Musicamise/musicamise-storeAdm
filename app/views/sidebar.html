@@ -2,9 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="viewport" content="width=device-width"/>
-    <style>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="width=device-width"/>
+	<style>
 /**********************************************
 * Ink v1.0.5 - Copyright 2013 ZURB Inc        *
 **********************************************/
@@ -774,9 +774,9 @@ body.outlook p {
   </style>
 </head>
 <body>
-    <table class="body">
-        <tr>
-            <td class="center" align="center" valign="top">
+	<table class="body">
+		<tr>
+			<td class="center" align="center" valign="top">
         <center>
 
           <table class="row header">
@@ -794,7 +794,7 @@ body.outlook p {
                               <img src="http://placehold.it/200x50">
                             </td>
                             <td class="six sub-columns last" style="text-align:right; vertical-align:middle;">
-                              <span class="template-label">Musicamise</span>
+                              <span class="template-label">SIDEBAR</span>
                             </td>
                             <td class="expander"></td>
                           </tr>
@@ -809,7 +809,7 @@ body.outlook p {
             </tr>
           </table>
 
-                 <br>
+				 <br>
 
           <table class="container">
             <tr>
@@ -824,14 +824,9 @@ body.outlook p {
                       <table class="six columns">
                         <tr>
                           <td>
-                            <h2>Obrigado por sua Compra!<br> @order.getUser.getDisplayName</h2>
-                            <p>Recebemos seu pedido, aguarde nosso contato!</p><br/>
-                            <p>Sua compra foi processada com o Status:
-                            <span>@if(status!=null){
-                                    @status.getStatus.name()
-                                  }</span>
-                            </p>
-                            <p>Não se preocupe, agora deixe tudo com a Musicamise.</p>
+                            <h2>Hello,<br> Han Fastolfe</h2>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et.</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Lorem ipsum dolor sit amet.</p>
                           </td>
                           <td class="expander"></td>
                         </tr>
@@ -840,8 +835,9 @@ body.outlook p {
                       <table class="six columns">
                         <tr>
                           <td class="panel">
-                            <p>Você pode ver as regras de trocas e entregas nesse link: <a href="">Click Aqui! »</a></p>
+                            <p>Phasellus dictum sapien a neque luctus cursus. Pellentesque sem dolor, fringilla et pharetra vitae. <a href="#">Click it! »</a></p>
                           </td>
+
                           <td class="expander"></td>
                         </tr>
                       </table>
@@ -850,23 +846,14 @@ body.outlook p {
                         <tr>
                           <td>
                             <br>
-                            <h3>Detalhe da compra</h3>
-                            <br>
-                            <h3>Endereço de Entrega:</h3>
-                            <p>@order.getShippingAddress.getName</p><br>
-                            <p>Rua: @order.getShippingAddress.getAddress, @order.getShippingAddress.getNumber , @order.getShippingAddress.getBairro, @order.getShippingAddress.getCity, @order.getShippingAddress.getState </p> 
-                            <p>@order.getShippingAddress.getCep</p>
-                            <br>
-                            <h3>Forma de pagamento:</h3>
-                            <p>@order.getPagSeguroInfo.getPaymentMethodType</p><br>
-                            <p>@order.getPagSeguroInfo.getPaymentMethodCode </p> 
-                            <p>@order.getPagSeguroInfo.getInstallmentCount X  - @order.getTotalFormatted </p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et.</p>
 
-                            <p>Você pode acomapnhar o seu pedido aqui:</p>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et. Lorem ipsum dolor sit amet.</p>
+
                             <table class="button">
                               <tr>
                                 <td>
-                                  <a href="https://www.musicamise.com.br/#!/checkorder?id=@order.getId()">Click Aqui!</a>
+                                  <a href="#">Click Me!</a>
                                 </td>
                               </tr>
                             </table>
@@ -882,20 +869,63 @@ body.outlook p {
                       <table class="six columns">
                         <tr>
                           <td class="panel">
-                            <h6>Sua Compra</h6>
-                            <p>Parabéns pela compra:</p>
-                            @for(inventory <- order.getProducts){
-                              <table>
-                                <tr>
-                                  <img src="@inventory.getProduct.getImages.get(0).getUrl">
-                                  <td>
-                                    @inventory.getProduct.getTitle - @inventory.getQuantity X @inventory.getProduct.getPriceFormatted. <br/>
-                                    Total: @inventory.getPriceWithQuantityFormatted
-                                  </td>
-                                </tr>
-                              </table>
-                              <hr>
-                            }
+                            <h6>Header Thing</h6>
+                            <p>Sub-head or something</p>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
+                            <hr>
+                            <table>
+                              <tr>
+                                <td>
+                                  <a href="#">Just a Plain Link &raquo;</a>
+                                </td>
+                              </tr>
+                            </table>
                           </td>
                           <td class="expander"></td>
                         </tr>
@@ -906,18 +936,38 @@ body.outlook p {
                       <table class="six columns">
                         <tr>
                           <td class="panel">
-                            <h6 style="margin-bottom:5px;">Se conect:</h6>
+                            <h6 style="margin-bottom:5px;">Connect With Us:</h6>
                             <table class="tiny-button facebook">
                               <tr>
                                 <td>
-                                  <a href="https://www.facebook.com/musicamise">Facebook</a>
+                                  <a href="#">Facebook</a>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <hr>
+
+                            <table class="tiny-button twitter">
+                              <tr>
+                                <td>
+                                  <a href="#">Twitter</a>
+                                </td>
+                              </tr>
+                            </table>
+
+                            <hr>
+
+                            <table class="tiny-button google-plus">
+                              <tr>
+                                <td>
+                                  <a href="#">Google +</a>
                                 </td>
                               </tr>
                             </table>
                             <br>
-                            <h6 style="margin-bottom:5px;">Informações:</h6>
-                            <p>Telefone: <b>81 9 9699.5060</b></p>
-                            <p>Email: <a href="mailto:administrador@@musicamise.com.br">administrador@@musicamise.com.br</a></p>
+                            <h6 style="margin-bottom:5px;">Contact Info:</h6>
+                            <p>Phone: <b>408.341.0600</b></p>
+                            <p>Email: <a href="mailto:hseldon@@trantor.com">hseldon@@trantor.com</a></p>
                           </td>
                           <td class="expander"></td>
                         </tr>
@@ -937,7 +987,7 @@ body.outlook p {
                         <tr>
                           <td align="center">
                             <center>
-                              <p style="text-align:center;"><a href="#">Termos</a> | <a href="#">Privacidade</a> | <a href="#">Unsubscribe</a></p>
+                              <p style="text-align:center;"><a href="#">Terms</a> | <a href="#">Privacy</a> | <a href="#">Unsubscribe</a></p>
                             </center>
                           </td>
                           <td class="expander"></td>
@@ -954,8 +1004,8 @@ body.outlook p {
           </table>
 
         </center>
-            </td>
-        </tr>
-    </table>
+			</td>
+		</tr>
+	</table>
 </body>
 </html>
