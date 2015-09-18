@@ -34,7 +34,8 @@ public class Global extends GlobalSettings {
         Logger.info("Application has started");
     }
     public static void createUser(){
-        User user = new User("Admin", "administrador@musicamise.com.br", "admin");
+        String password = System.getenv("ADMIN_PASSWORD")!=null?System.getenv("ADMIN_PASSWORD"):"admin";
+        User user = new User("Admin", "administrador@musicamise.com.br", password);
         user.setManager(true);
         MongoService.saveUser(user);
     }
