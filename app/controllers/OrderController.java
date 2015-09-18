@@ -189,7 +189,7 @@ public class OrderController extends Controller {
         order.setGiftCard(giftCard);
         order.setDiscountCode(discountCode);
         order.setNotes(notes);
-        order.setFriendlyId('pos-ordem-'+(MongoService.countAllOrders()+1));
+        order.setFriendlyId("pos-ordem-"+(MongoService.countAllOrders()+1));
 
         StatusOrder statusOrder = new StatusOrder();
         statusOrder.setStatus(status);
