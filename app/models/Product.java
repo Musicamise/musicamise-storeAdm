@@ -59,6 +59,7 @@ public class Product {
     private double weight;
 
     private boolean onLineVisible;
+    private boolean canBuy = true;
     private boolean storeVisible;
     private boolean sendMail;
 
@@ -85,6 +86,7 @@ public class Product {
 
 
     public Product(){
+        this.canBuy = true;
         this.userTags = new HashSet<>();
         this.types = new HashSet<>();
         this.localStoresSlugs = new HashSet<>();
@@ -165,6 +167,13 @@ public class Product {
         this.storeVisible = storeVisible;
     }
 
+    public boolean isCanBuy() {
+        return canBuy;
+    }
+
+    public void setCanBuy(boolean canBuy) {
+        this.canBuy = canBuy;
+    }
     public boolean isSendMail() {
         return sendMail;
     }
