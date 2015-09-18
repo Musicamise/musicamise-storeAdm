@@ -369,6 +369,8 @@ public class Order {
         private int quantity;
 
         private String size;
+        private String type;
+        private String color;
 
         private String genderSlug;
 
@@ -384,7 +386,7 @@ public class Order {
         public String toString(){
             return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" genderSlug "
                     +this.genderSlug+" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
-                    +" Price "+this.product.getPriceFormatted()+" color "+this.product.getColor()
+                    +" Price "+this.product.getPriceFormatted()+" color "+this.getColor()+" model "+this.getType()
                     +" title "+this.product.getTitle()+" description "+this.product.getDescription();
         }
 
@@ -425,7 +427,21 @@ public class Order {
         public void setSellInOutOfStock(boolean sellInOutOfStock) {
             this.sellInOutOfStock = sellInOutOfStock;
         }
+        public String getType() {
+            return type;
+        }
 
+        public void setType(String type) {
+            this.type = type;
+        }
+
+         public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
         public String getSku() {
             return sku;
         }

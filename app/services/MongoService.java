@@ -529,12 +529,13 @@ public class MongoService {
         return DS.mop.count(new Query(),Order.class);
     }
 
-    public static boolean hasInventoryByProductIdSizeAndGender(String productId,String size,String gender){
+    public static boolean hasInventoryByProductIdSizeAndGenderAndType(String productId,String size,String gender,String type){
         Query query = new Query();
         query.addCriteria(Criteria.where(null)
                 .andOperator(
                     Criteria.where("product.id").is(productId),
                     Criteria.where("size").is(size),
+                    Criteria.where("type").is(type),
                     Criteria.where("genderSlug").is(gender)));
 
 

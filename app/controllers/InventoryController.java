@@ -97,6 +97,8 @@ public class InventoryController extends Controller {
         String quantity = (dataFiles.get("quantity") != null && dataFiles.get("quantity").length > 0) ? dataFiles.get("quantity")[0] : null;
         String sellInOutOfStock = (dataFiles.get("sellInOutOfStock") != null && dataFiles.get("sellInOutOfStock").length > 0) ? dataFiles.get("sellInOutOfStock")[0] : null;
         String gender = (dataFiles.get("gender") != null && dataFiles.get("gender").length > 0) ? dataFiles.get("gender")[0] : null;
+        String productType = (dataFiles.get("productType") != null && dataFiles.get("productType").length > 0) ? dataFiles.get("productType")[0] : null;
+        String color = (dataFiles.get("color") != null && dataFiles.get("color").length > 0) ? dataFiles.get("color")[0] : null;
 
         boolean outOfStockBool = (outOfStock!=null)?true:false;
         boolean sellInOutOfStockBool = (sellInOutOfStock!=null)?true:false;
@@ -124,12 +126,16 @@ public class InventoryController extends Controller {
             flash("inventory","Gender dont exists or Gender empty ");
             return redirect(routes.InventoryController.inventory(id));
         }
+        if(productType==null||productType.equals("")){
+            flash("inventory","Coloque um modelo ou tipo");
+            return redirect(routes.InventoryController.inventory(id));
+        }
         if(productSize==null||productSize.equals("")||productSize!=null&&!Utils.ProductSizeType.getList().contains(productSize)){
             flash("inventory","Product Size dont exists or Product Size empty ");
             return redirect(routes.InventoryController.inventory(id));
         }
 
-        if(id==null&&MongoService.hasInventoryByProductIdSizeAndGender(productId,productSize,gender)){
+        if(id==null&&MongoService.hasInventoryByProductIdSizeAndGenderAndType(productId,productSize,gender,productType)){
             flash("inventory","Inventory Already exists please update");
             return redirect(routes.InventoryController.inventory(id));
         }
@@ -154,6 +160,8 @@ public class InventoryController extends Controller {
         inventory.setSize(productSize);
         inventory.setSellInOutOfStock(sellInOutOfStockBool);
         inventory.setGenderSlug(gender);
+        inventory.setType(productType);
+        inventory.setColor(color);
 
         //save Inventory
         MongoService.saveInventory(inventory);

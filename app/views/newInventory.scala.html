@@ -99,7 +99,36 @@
                               
                           </select>
                       </div>
-
+                      <div class="form-group">
+                          <label >Modelo @if(inventory!=null){NO CHANGE}</label>
+                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  multiple="" class="chosen-select-width" tabindex="-1">
+                             @if(inventory!=null&&inventory.getGenderSlug!=null){
+                                @for(productType<- Utils.ProductType.getList){
+                                  @if(productType.equals(inventory.getType)){
+                                    <option selected="" value="@inventory.getType">@inventory.getType</option>
+                                  }
+                                }
+                             }else{
+                                <option value=""></option>
+                                @for(productType<- Utils.ProductType.getList){
+                                  <option @if(productType.equals(inventory.getType)){selected=""} value="@productType">@productType</option>
+                                }
+                             }
+                              
+                          </select>
+                      </div>
+                      <div class="form-group">
+                          <label >Cor </label>
+                          <div id="colorPicker"></div>
+                          <div class="input-group">
+                          <span @if(inventory.getColor!=null){
+                                style="background-color:@inventory.getColor;"
+                                }
+                              id="color" class="input-group-addon"></span>
+                          <input disabled="" type="text" id="colorRGB"  value="@inventory.getColor"  class="form-control"/>
+                          <input  type="hidden" name="color" id="colorRGBValue"  value="@inventory.getColor"  class="form-control"/>
+                          </div>
+                      </div>
 
                       <div class="form-group">
                           <label for="quantity">Quantity</label><br/>
@@ -126,13 +155,31 @@
         </section><!-- /.content -->
 <!-- jQuery 2.1.4 -->
 <script src="@routes.Assets.at("plugins/jQuery/jQuery-2.1.4.min.js")"></script>
+<style type="text/css">
+  
+  .ColorBlotch {
+    border: 1px solid #000000;
+    padding: 0 2px 0 2px;
+    font-family: monospace;
+    cursor: pointer;
+    font-size: 1.2em;
+  }
 
+</style>
 <script type="text/javascript">
      $(document).ready(function() {
              $("li" ).removeClass("active")
              $(".treeview" ).addClass("active");
 
+             $('#colorPicker').empty().addColorPicker({
+                clickCallback: function(c) {
+                  $('#color').css('background-color',c);
+                  $('#colorRGB').val(c);
+                  $('#colorRGBValue').val(c);
 
+                  
+                }
+              });
             $("#li-inventory" ).addClass("active");
         });
 
