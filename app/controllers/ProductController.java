@@ -63,6 +63,7 @@ public class ProductController extends Controller {
         String price = (dataFiles.asFormUrlEncoded().get("price") != null && dataFiles.asFormUrlEncoded().get("price").length > 0) ? dataFiles.asFormUrlEncoded().get("price")[0] : null;
         String priceCompareWith = (dataFiles.asFormUrlEncoded().get("priceCompareWith") != null && dataFiles.asFormUrlEncoded().get("priceCompareWith").length > 0) ? dataFiles.asFormUrlEncoded().get("priceCompareWith")[0] : null;
         String online = (dataFiles.asFormUrlEncoded().get("online") != null && dataFiles.asFormUrlEncoded().get("online").length > 0) ? dataFiles.asFormUrlEncoded().get("online")[0] : null;
+        String canbuy = (dataFiles.asFormUrlEncoded().get("canbuy") != null && dataFiles.asFormUrlEncoded().get("canbuy").length > 0) ? dataFiles.asFormUrlEncoded().get("canbuy")[0] : null;
         String store = (dataFiles.asFormUrlEncoded().get("store") != null && dataFiles.asFormUrlEncoded().get("store").length > 0) ? dataFiles.asFormUrlEncoded().get("store")[0] : null;
         String newProduct = (dataFiles.asFormUrlEncoded().get("newProduct") != null && dataFiles.asFormUrlEncoded().get("newProduct").length > 0) ? dataFiles.asFormUrlEncoded().get("newProduct")[0] : null;
         String weight = (dataFiles.asFormUrlEncoded().get("weight") != null && dataFiles.asFormUrlEncoded().get("weight").length > 0) ? dataFiles.asFormUrlEncoded().get("weight")[0] : null;
@@ -87,6 +88,7 @@ public class ProductController extends Controller {
 
 
         boolean onlineBool = (online!=null)?true:false;
+        boolean canbuyBool = (canbuy!=null)?true:false;
         boolean storeBool = (store!=null)?true:false;
         boolean newProductBool = (newProduct!=null)?true:false;
         boolean mailBool = (mail!=null)?true:false;
@@ -131,6 +133,7 @@ public class ProductController extends Controller {
         product.setDescription((description != null && !description.equals("")) ? title : product.getDescription());
         product.setNewProduct(newProductBool);
         product.setOnLineVisible(onlineBool);
+        product.setCanBuy(canbuyBool);
         product.setPrice(priceDouble);
         product.setPriceCompareWith(priceCompareWithDouble);
         product.setSendMail(mailBool);

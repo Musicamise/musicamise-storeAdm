@@ -164,6 +164,11 @@
                         </div>
                         <div class="checkbox">
                           <label>
+                              <input type="checkbox" class="minimal"  name="canbuy"  @if(product.isCanBuy){checked=""}  /> Can Buy
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label>
                             <input name="store" type="checkbox" @if(product.isStoreVisible){checked=""}> Local Point store
                           </label>
                         </div>
