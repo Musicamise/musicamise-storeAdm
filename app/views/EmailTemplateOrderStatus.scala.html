@@ -809,7 +809,7 @@ body.outlook p {
             </tr>
           </table>
 
-                 <br>
+         <br>
 
           <table class="container">
             <tr>
@@ -825,6 +825,8 @@ body.outlook p {
                         <tr>
                           <td>
                             <h2>Obrigado por sua Compra!<br> @order.getUser.getDisplayName</h2>
+                            <br>
+                            <p>Número da compra: <br> @order.getFriendlyId</p>
                             <p>Recebemos seu pedido, aguarde nosso contato!</p><br/>
                             <p>Sua compra foi processada com o Status:
                             <span>@if(status!=null){
