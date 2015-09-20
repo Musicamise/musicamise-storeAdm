@@ -264,6 +264,14 @@ public class MongoService {
         return DS.mop.count(new Query(),Inventory.class);
     }
 
+    public static List<Inventory> findInventoriesByProductId(String productId) {
+        
+        Query query = new Query();
+        query.addCriteria(Criteria.where("product").is(productId));
+
+        return DS.mop.find(query,Inventory.class);
+    }
+
     public static List<Inventory> findInventoriesByIds(List<String> ids) {
         List<ObjectId> idList = new ArrayList<>();
         for(String id:ids){
