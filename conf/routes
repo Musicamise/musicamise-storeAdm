@@ -76,6 +76,8 @@ POST     /product/newOrEdit/saveProduct                               controller
 GET     /product/delete                               controllers.ProductController.deleteProduct(id :String ?= null)
 GET     /product/image/delete/                                controllers.ProductController.deleteProductImage(productId: String ?= null,imageName :String ?= null)
 
+GET     /product/newOrEdit/updateInventories                               controllers.ProductController.updateInventories(id :String ?= null,outOfStock :String ?= null,productSize :String ?= null,quantity :String ?= null,sellInOutOfStock :String ?= null,gender :String ?= null,productType :String ?= null,color :String ?= null)
+
 GET     /costumer                           controllers.CostumerController.listCostumers()
 GET     /costumer/newOrEdit                            controllers.CostumerController.costumer(id :String ?= null)
 POST     /costumer/newOrEdit/saveCostumer                               controllers.CostumerController.saveCostumer(id :String ?= null)

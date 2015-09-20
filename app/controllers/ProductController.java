@@ -40,11 +40,13 @@ public class ProductController extends Controller {
     public static Result product(String id){
         Product product = MongoService.findProductById(id);
         product= (product!=null?product:new Product());
+        List<Inventory> inventories = MongoService.findInventoriesByProductId(product.getId());
         List<Collection> collections = MongoService.getAllCollections();
+
         List<String> tags = MongoService.getAllTags().stream().map(Tag::getSlug).collect(Collectors.toList());
         List<DiscountCode> discounts = MongoService.findDiscountCodeByProduct(product);
         List<LocalStore> localStores = MongoService.getAllLocalStores();
-        return ok(newProduct.render(product,collections,tags,localStores,discounts));
+        return ok(newProduct.render(product,inventories,collections,tags,localStores,discounts));
     }
 
     @Security.Authenticated(Secured.class)
@@ -178,6 +180,61 @@ public class ProductController extends Controller {
 
         return redirect(routes.ProductController.listProduct());
     }
+    @RequireCSRFCheck
+    @Security.Authenticated(Secured.class)
+    public static Result updateInventories(String id,String outOfStock,
+        String productSize,String quantity,
+        String sellInOutOfStock,String gender,
+        String productType,String color){
+
+        boolean outOfStockBool = (outOfStock!=null)?true:false;
+        boolean sellInOutOfStockBool = (sellInOutOfStock!=null)?true:false;
+
+
+        int quantityInt = Integer.parseInt(quantity.trim().replace(".",""));
+
+
+        //build inventory object
+        Inventory inventory = null;
+        if(id!=null) {
+            inventory = MongoService.findInventoryById(id);
+        }
+        Logger.debug(inventory.toString());
+
+        if(inventory==null){
+            return notFound();
+        } 
+
+        inventory.setOrderOutOfStock(outOfStockBool);
+        int oldQuantity = inventory.getQuantity();
+        inventory.setQuantity(quantityInt);
+        inventory.setSize(productSize);
+        inventory.setSellInOutOfStock(sellInOutOfStockBool);
+        inventory.setGenderSlug(gender);
+        inventory.setType(productType);
+        inventory.setColor(color);
+
+        //save Inventory
+        MongoService.saveInventory(inventory);
+        // Save Inventory Entry
+        
+        boolean updatedQuantity = ((oldQuantity - quantityInt)==0)?false:true;
+
+        if(updatedQuantity){
+            InventoryEntry entry = new InventoryEntry();
+            entry.setInventory(inventory);
+            if(id!=null){
+                entry.setQuantity(quantityInt - oldQuantity);
+            }else{
+                entry.setQuantity(quantityInt);
+            }
+            MongoService.saveInventoryEntry(entry);
+        }
+
+        return ok();
+    }
+
+    
 
         @Security.Authenticated(Secured.class)
     public static Result deleteProduct(String id){
