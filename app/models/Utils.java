@@ -39,6 +39,7 @@ public class Utils {
 
     public enum ProductType{
         camiseta("Camiseta"),
+        golav("Gola V"),
         regata("Regata"),
         bata("Bata"),
         manga_longa("Manga Longa"),
