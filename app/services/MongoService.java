@@ -273,12 +273,12 @@ public class MongoService {
     }
 
     public static List<Inventory> findInventoriesByIds(List<String> ids) {
-        List<ObjectId> idList = new ArrayList<>();
+       /* List<ObjectId> idList = new ArrayList<>();
         for(String id:ids){
             idList.add(new ObjectId(id));
-        }
+        }*/
         Query query = new Query();
-        query.addCriteria(Criteria.where("_id").in(idList));
+        query.addCriteria(Criteria.where("_id").in(ids));
 
         return DS.mop.find(query,Inventory.class);
     }
@@ -744,6 +744,18 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardProducts(DateTime startDate, DateTime endDate){
 
 
+        /*//Products sold
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("date","$createdDate");
+        obj.append("quantity","$products.quantity");
+        obj.append("gender","$products.genderSlug");
+        obj.append("size","$products.size");
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.sku").push(obj).as("data")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);*/
         //Products sold
         BasicDBObject obj = new BasicDBObject();
         obj.append("date","$createdDate");
@@ -753,12 +765,109 @@ public class MongoService {
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
                 Aggregation.unwind("products"),
-                Aggregation.group("products.product").push(obj).as("data")
+                Aggregation.group("createdDate").count().as("orders").sum("products.quantity").as("quantity")
         );
         return DS.mop.aggregate(agg,Order.class, DBObject.class);
 
     }
 
+    public static AggregationResults<DBObject> getDashboardSize(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("size","$products.size");
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("createdDate").push(obj).as("data")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+
+    }
+    public static AggregationResults<DBObject> getDashboardGender(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("gender","$products.genderSlug");
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("createdDate").push(obj).as("data")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+
+    }
+    public static AggregationResults<DBObject> getDashboardSoldbySize(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.size").sum("products.quantity").as("quantity")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+
+    }
+
+    public static AggregationResults<DBObject> getDashboardSoldbyGender(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.genderSlug").sum("products.quantity").as("quantity")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+
+    }
+    public static AggregationResults<DBObject> getDashboardSoldbyType(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.type").sum("products.quantity").as("quantity")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+
+    }
+
+    public static AggregationResults<DBObject> getDashboardSoldbyColor(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+
+
+        //Products sold by size
+        obj = new BasicDBObject();
+        obj.append("quantity","$products.quantity");
+        Aggregation  agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.unwind("products"),
+                Aggregation.group("products.color").sum("products.quantity").as("quantity")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
+    }
 
 
 }

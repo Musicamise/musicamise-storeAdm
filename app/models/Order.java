@@ -415,6 +415,7 @@ public class Order {
             this.product = inventory.getProduct();
             this.quantity = inventory.getQuantity();
             this.size = inventory.getSize();
+            this.color = inventory.getColor();
             this.genderSlug = inventory.getGenderSlug();
             this.orderOutOfStock = inventory.isOrderOutOfStock();
             this.sellInOutOfStock = inventory.isSellInOutOfStock();

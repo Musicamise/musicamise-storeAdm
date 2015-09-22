@@ -82,11 +82,20 @@ public class Application extends Controller {
         AggregationResults<DBObject> aggResultsEntry = null;
         AggregationResults<DBObject> aggResultsOrder = null;
         AggregationResults<DBObject> aggResultsOrderPrice = null;
+        AggregationResults<DBObject> aggResultsType = null;
+        AggregationResults<DBObject> aggResultsColor = null;
         List<Order> ordersByDate  = null;
-        // aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        aggResultsSize = MongoService.getDashboardSize(startDate.minusMonths(1),endDate);
+        aggResultsGender = MongoService.getDashboardSoldbyGender(startDate.minusMonths(1),endDate);
+        aggResultsType = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
+        aggResultsColor = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
+
+        aggResultsGender = MongoService.getDashboardGender(startDate.minusMonths(1),endDate);
+
         // List<DBObject> products = aggResultsProducts.getMappedResults();
         // BasicDBList data = (BasicDBList)products.get(0).get("data");
-        return ok(dashboardTrue.render(null));
+        return ok(aggResultsGender.getRawResults().toString());
     }
 
     @AddCSRFToken
