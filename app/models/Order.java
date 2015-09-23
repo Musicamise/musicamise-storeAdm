@@ -55,6 +55,7 @@ public class Order {
     private List<StatusOrder> status;
 
     private String statusEntrega;
+    private StatusOrder statusCompra;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
@@ -77,7 +78,10 @@ public class Order {
         this.emailSents = new ArrayList<>();
     }
 
-
+    public void addStatus(StatusOrder status){
+        this.status.add(status);
+        this.statusCompra = status;
+    }
 
     public String toString(){
         String shippingAddress = "";
@@ -341,6 +345,14 @@ public class Order {
 
     public void setStatus(List<StatusOrder> status) {
         this.status = status;
+    }
+
+    public StatusOrder getStatusCompra() {
+        return this.statusCompra;
+    }
+
+    public void setStatusCompra(StatusOrder statusCompra) {
+        this.statusCompra = statusCompra;
     }
      public String getStatusEntrega() {
         return this.statusEntrega;

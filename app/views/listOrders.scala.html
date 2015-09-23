@@ -1,4 +1,4 @@
-@(orders:List[models.Order])
+@(orders:List[models.Order],statusEntrega:String,statusCompra:String)
 @index{
 <!-- Content Header (Page header) -->
 <section class="content-header">
@@ -25,6 +25,32 @@
                         <a href="@routes.OrderController.order()"><button type="button" class="btn btn-primary">Add Order</button></a>
                     </div>
                     <div class="col-xs-4">
+                        <form method="GET" action="@routes.OrderController.listOrders()">
+                                
+                            <div class="form-group">
+                                <label >Status De Compra</label>
+                               <select name="statusCompra" data-placeholder="Escolha status compra" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                                      <option value="">NONE</option>
+                                      @for(status<- Utils.StatusCompra.values){                                       
+                                      <option @if(status.name().equals(statusCompra)){ selected=''} value="@status.name()" >@status.name()</option>
+                                      }
+                                </select>
+                            </div>
+                            <br/>
+                            <div class="form-group">
+                                <label >Status De Entrega</label>
+                               <select name="statusEntrega" data-placeholder="Escolha status entrega" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                                      <option value="">NONE</option>
+                                      @for(status<- Utils.StatusEntrega.values){
+                                      <option @if(status.name().equals(statusEntrega)){ selected="" }  value="@status.name()" >@status.name()</option>
+                                      }
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </form>
+
+                        <br/>
+                        
                         <a href="javascript:void(0)"><button type="button" onclick="showConfirmacaoDeUpdate()" class="btn btn-primary">Atualizar as compras</button></a>
                         <div class="checkbox">
                             <label>

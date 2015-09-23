@@ -11,6 +11,7 @@ GET     /getOrderTypeCount                           controllers.Application.get
 GET     /getOrderGenderCount                           controllers.Application.getOrderGenderCount()
 GET     /getOrderColorCount                           controllers.Application.getOrderColorCount()
 GET     /getOrderProducts                           controllers.Application.getOrderProducts()
+GET     /getOrderProductsFaturamento                           controllers.Application.getOrderProductsFaturamento()
 
 
 GET            /signin                           controllers.Application.login()
