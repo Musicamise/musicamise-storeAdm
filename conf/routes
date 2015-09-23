@@ -12,7 +12,9 @@ GET     /getOrderGenderCount                           controllers.Application.g
 GET     /getOrderColorCount                           controllers.Application.getOrderColorCount()
 GET     /getOrderProducts                           controllers.Application.getOrderProducts()
 GET     /getOrderProductsFaturamento                           controllers.Application.getOrderProductsFaturamento()
-
+GET     /getEntryProducts                           controllers.Application.getEntryProducts()
+GET     /getLeaveProducts                           controllers.Application.getLeaveProducts()
+GET     /getUsuariosGrow                           controllers.Application.getUsuariosGrow()
 
 GET            /signin                           controllers.Application.login()
 POST           /signin                           controllers.Authentication.authenticate()

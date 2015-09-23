@@ -18,6 +18,7 @@
            <!-- Main row -->
           <div class="row">
             <div class=" col-lg-7 form-group">
+            <p>Status compra: PAGO</p>
                 <label>Date range:</label>
                 <div class="input-group">
                     <div class="input-group-addon">
@@ -139,7 +140,88 @@
             <!-- right col (We are only adding the ID to make the widgets sortable)-->
             <section class="col-lg-5 connectedSortable">
 
+             
               <!-- solid sales graph -->
+              <div class="box box-solid bg-teal-gradient">
+                <div class="box-header">
+                  <i class="fa fa-th"></i>
+                  <h3 class="box-title">Entrada de produtos</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <div class="box-body border-radius-none">
+                  <div class="chart" id="line-chart-entrada" style="height: 250px;"></div>
+                </div><!-- /.box-body -->
+                <div class="box-footer no-border" style="display: none">
+                  <div class="row">
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                      <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">Mail-Orders</div>
+                    </div><!-- ./col -->
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                      <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">Online</div>
+                    </div><!-- ./col -->
+                    <div class="col-xs-4 text-center">
+                      <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">In-Store</div>
+                    </div><!-- ./col -->
+                  </div><!-- /.row -->
+                </div><!-- /.box-footer -->
+              </div><!-- /.box -->
+               <!-- solid sales graph -->
+              <div class="box box-solid bg-teal-gradient">
+                <div class="box-header">
+                  <i class="fa fa-th"></i>
+                  <h3 class="box-title">Saida de produtos</h3>
+                  <div class="box-tools pull-right">
+                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <button class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
+                  </div>
+                </div>
+                <div class="box-body border-radius-none">
+                  <div class="chart" id="line-chart-saida" style="height: 250px;"></div>
+                </div><!-- /.box-body -->
+                <div class="box-footer no-border" style="display: none">
+                  <div class="row">
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                      <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">Mail-Orders</div>
+                    </div><!-- ./col -->
+                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
+                      <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">Online</div>
+                    </div><!-- ./col -->
+                    <div class="col-xs-4 text-center">
+                      <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
+                      <div class="knob-label">In-Store</div>
+                    </div><!-- ./col -->
+                  </div><!-- /.row -->
+                </div><!-- /.box-footer -->
+              </div><!-- /.box -->
+              
+              <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="active"><a href="#usuarios-chart" data-toggle="tab">Area</a></li>
+                  <li><a href="#sales-chart" data-toggle="tab">Donut</a></li>
+                  <li class="pull-left header"><i class="fa fa-inbox"></i> Usuarios Cadastrados</li>
+                </ul>
+                <div class="tab-content no-padding">
+                  <!-- Morris chart - Sales -->
+                  <div class="chart tab-pane active" id="usuarios-chart" style="position: relative; height: 300px;"></div>
+                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
+                </div>
+              </div><!-- /.nav-tabs-custom -->
+
+              
+
+            </section><!-- right col -->
+            <section class="col-lg-12 connectedSortable">
+            
+             <!-- solid sales graph -->
               <div class="box box-solid bg-teal-gradient">
                 <div class="box-header">
                   <i class="fa fa-th"></i>
@@ -150,7 +232,7 @@
                   </div>
                 </div>
                 <div class="box-body border-radius-none">
-                  <div class="chart" id="line-chart" style="height: 250px;"></div>
+                  <div class="chart" id="line-chart-vendas" style="height: 250px;"></div>
                 </div><!-- /.box-body -->
                 <div class="box-footer no-border" style="display: none">
                   <div class="row">
@@ -199,86 +281,9 @@
                   </div><!-- /.row -->
                 </div><!-- /.box-footer -->
               </div><!-- /.box -->
-              <!-- solid sales graph -->
-              <div class="box box-solid bg-teal-gradient">
-                <div class="box-header">
-                  <i class="fa fa-th"></i>
-                  <h3 class="box-title">Entrada de produtos</h3>
-                  <div class="box-tools pull-right">
-                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    <button class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-                  </div>
-                </div>
-                <div class="box-body border-radius-none">
-                  <div class="chart" id="line-chart" style="height: 250px;"></div>
-                </div><!-- /.box-body -->
-                <div class="box-footer no-border" style="display: none">
-                  <div class="row">
-                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                      <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">Mail-Orders</div>
-                    </div><!-- ./col -->
-                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                      <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">Online</div>
-                    </div><!-- ./col -->
-                    <div class="col-xs-4 text-center">
-                      <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">In-Store</div>
-                    </div><!-- ./col -->
-                  </div><!-- /.row -->
-                </div><!-- /.box-footer -->
-              </div><!-- /.box -->
+            </section><!-- unique col -->
 
-               <!-- solid sales graph -->
-              <div class="box box-solid bg-teal-gradient">
-                <div class="box-header">
-                  <i class="fa fa-th"></i>
-                  <h3 class="box-title">Saida de produtos</h3>
-                  <div class="box-tools pull-right">
-                    <button class="btn bg-teal btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                    <button class="btn bg-teal btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-                  </div>
-                </div>
-                <div class="box-body border-radius-none">
-                  <div class="chart" id="line-chart" style="height: 250px;"></div>
-                </div><!-- /.box-body -->
-                <div class="box-footer no-border" style="display: none">
-                  <div class="row">
-                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                      <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">Mail-Orders</div>
-                    </div><!-- ./col -->
-                    <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
-                      <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">Online</div>
-                    </div><!-- ./col -->
-                    <div class="col-xs-4 text-center">
-                      <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC"/>
-                      <div class="knob-label">In-Store</div>
-                    </div><!-- ./col -->
-                  </div><!-- /.row -->
-                </div><!-- /.box-footer -->
-              </div><!-- /.box -->
-              
-              <div class="nav-tabs-custom">
-                <!-- Tabs within a box -->
-                <ul class="nav nav-tabs pull-right">
-                  <li class="active"><a href="#revenue-chart" data-toggle="tab">Area</a></li>
-                  <li><a href="#sales-chart" data-toggle="tab">Donut</a></li>
-                  <li class="pull-left header"><i class="fa fa-inbox"></i> Usuarios Cadastrados</li>
-                </ul>
-                <div class="tab-content no-padding">
-                  <!-- Morris chart - Sales -->
-                  <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;"></div>
-                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
-                </div>
-              </div><!-- /.nav-tabs-custom -->
 
-              
-
-            </section><!-- right col -->
-            
           </div><!-- /.row (main row) -->
           
         </section><!-- /.content -->
@@ -288,8 +293,20 @@
 <script type="text/javascript">
 function hoverCallback (index, options, content, row) {
   var date = new Date(row[Object.keys(row)[0]].replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"))
-  //return date.format("dd/mm/yyyy") +" = "+ Object.keys(row)[1]+" - " + row[Object.keys(row)[1]] ;
-  return   row[Object.keys(row)[1]] ;
+  return date.format("dd/mm/yyyy") +" = "+ Object.keys(row)[1]+" - " + row[Object.keys(row)[1]] ;
+  // return   row[Object.keys(row)[1]] ;
+
+};
+function hoverCallbackMoney (index, options, content, row) {
+  var date = new Date(row[Object.keys(row)[0]].replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"))
+  return date.format("dd/mm/yyyy") +" = "+ Object.keys(row)[1]+" - R$" + Math.round(row[Object.keys(row)[1]] *100)/100 ;
+  // return   row[Object.keys(row)[1]] ;
+
+};
+function hoverCallbackProduct (index, options, content, row) {
+  var date = new Date(row[Object.keys(row)[0]].replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"))
+  return date.format("dd/mm/yyyy") +" / "+ Object.keys(row)[1]+" = " + row[Object.keys(row)[1]] ;
+  // return   row[Object.keys(row)[1]] ;
 
 };
      $(document).ready(function() {
@@ -304,16 +321,217 @@ function hoverCallback (index, options, content, row) {
           format: 'DD/MM/YYYY'
         });
 
-         //-------------
-        //- Line CHART -
-        //-------------
-        var options = {
-            element: 'line-chart',
+
+        var color = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de"];
+        
+        // Users chart
+        // var area = new Morris.Area();
+        var option_user = {
+            element: 'usuarios-chart',
             resize: true,
             data: [
             ],
             xkey: 'y',
-            ykeys: ['vendas' ],
+            ykeys: ['quantidade'],
+            labels: ['Quantidade' ],
+            lineColors: ['#a0d0e0'],
+            hideHover: 'auto'
+          };
+          //Donut Chart
+          var donut = new Morris.Donut({
+            element: 'sales-chart',
+            resize: true,
+            colors: ["#3c8dbc", "#f56954", "#00a65a"],
+            data: [
+              {label: "Download Sales", value: 12},
+              {label: "In-Store Sales", value: 30},
+              {label: "Mail-Order Sales", value: 20}
+            ],
+            hideHover: 'auto'
+          });
+          $.ajax({
+              method:'GET',
+              url: "@routes.Application.getUsuariosGrow()",
+              data:{},
+          }).success(function(response) {
+            var data = [];
+            JSON.parse(response).result.forEach(function(elem,index){
+                var obj = {};
+                obj.y = elem._id.year+'-'+elem._id.month+'-'+elem._id.day ;
+                obj.quantidade = elem.quantity;
+                data.push(obj);
+            });
+            option_user.data = data;
+
+            var line = new Morris.Area(option_user);
+
+          }).error(function() {
+              alert("Erro on update!")
+          });
+
+        //-------------
+        //- Line CHART -
+        //-------------
+        var options_entrada = {
+            element: 'line-chart-entrada',
+            resize: true,
+            data: [
+            ],
+            xkey: 'y',
+            
+            lineWidth: 2,
+            hideHover: 'auto',
+            hoverCallback: 'auto',
+            gridTextColor: "#fff",
+            gridStrokeWidth: 0.4,
+            pointSize: 4,
+            gridLineColor: "#efefef",
+            gridTextFamily: "Open Sans",
+            gridTextSize: 10
+          };
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getEntryProducts()",
+            data:{},
+        }).success(function(response) {
+          var data = [];
+          var  ykeys = [];
+          var labels =  [];
+          var lineColors =  [];
+          var count = 0;
+          var pointStrokeColors = [];
+          var uniqueSku = {};
+          for(var date in response){
+            for(var line in response[date]){
+              var lineName = line.split(' ')[0];
+              uniqueSku[lineName] = true;
+            }
+          }
+          for(var sku in uniqueSku){
+            ykeys.push(sku);
+            labels.push(sku);
+            lineColors.push(color[count%6]);
+            pointStrokeColors.push(color[count%6]);
+            count = count+1;
+          }
+
+          for(var date in response){
+            var obj = {};
+            obj.y = date ;
+            for(var line in response[date]){
+              var lineName = line.split(' ')[0];
+              obj[lineName] = response[date][line] ;
+            }
+            ykeys.forEach(function(lineName_){
+              if(!obj[lineName_])
+                obj[lineName_] = 0 ;
+            });
+            data.push(obj);
+          }
+          options_entrada.data = data;
+          options_entrada.labels = labels;
+          options_entrada.ykeys = ykeys;
+          options_entrada.lineColors = lineColors;
+          options_entrada.pointStrokeColors = pointStrokeColors;
+
+          var line = new Morris.Line(options_entrada);
+
+        }).error(function() {
+            alert("Erro on update!")
+        });
+      
+
+         //-------------
+        //- END Line CHART -
+        //-------------
+
+
+        //-------------
+        //- Line CHART -
+        //-------------
+        var options_saida = {
+            element: 'line-chart-saida',
+            resize: true,
+            data: [
+            ],
+            xkey: 'y',
+           
+            lineWidth: 2,
+            hideHover: 'auto',
+            hoverCallback: 'auto',
+            gridTextColor: "#fff",
+            gridStrokeWidth: 0.4,
+            pointSize: 4,
+            gridLineColor: "#efefef",
+            gridTextFamily: "Open Sans",
+            gridTextSize: 10
+          };
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getLeaveProducts()",
+            data:{},
+        }).success(function(response) {
+          var data = [];
+          var  ykeys = [];
+          var labels =  [];
+          var lineColors =  [];
+          var count = 0;
+          var pointStrokeColors = [];
+          var uniqueSku = {};
+          for(var date in response){
+            for(var line in response[date]){
+              var lineName = line.split(' ')[0];
+              uniqueSku[lineName] = true;
+            }
+          }
+          for(var sku in uniqueSku){
+            ykeys.push(sku);
+            labels.push(sku);
+            lineColors.push(color[count%6]);
+            pointStrokeColors.push(color[count%6]);
+            count = count+1;
+          }
+
+          for(var date in response){
+            var obj = {};
+            obj.y = date ;
+            for(var line in response[date]){
+              var lineName = line.split(' ')[0];
+              obj[lineName] = response[date][line] ;
+            }
+            ykeys.forEach(function(lineName_){
+              if(!obj[lineName_])
+                obj[lineName_] = 0 ;
+            });
+            data.push(obj);
+          }
+          options_saida.data = data;
+          options_saida.labels = labels;
+          options_saida.ykeys = ykeys;
+          options_saida.lineColors = lineColors;
+          options_saida.pointStrokeColors = pointStrokeColors;
+
+          var line = new Morris.Line(options_saida);
+
+        }).error(function() {
+            alert("Erro on update!")
+        });
+      
+
+         //-------------
+        //- END Line CHART -
+        //-------------
+
+         //-------------
+        //- Line CHART -
+        //-------------
+        var options = {
+            element: 'line-chart-vendas',
+            resize: true,
+            data: [
+            ],
+            xkey: 'y',
+            ykeys: ['quantidade' ],
             labels: ['Quantidade'],
             lineColors: ['#efefef'],
             lineWidth: 2,
@@ -336,8 +554,9 @@ function hoverCallback (index, options, content, row) {
           JSON.parse(response).result.forEach(function(elem,index){
             var obj = {};
             obj.y = elem._id.year+'-'+elem._id.month+'-'+elem._id.day ;
-            obj.vendas = elem.quantity;
+            obj.quantidade = elem.quantity;
             data.push(obj);
+
           });
           options.data = data;
           var line = new Morris.Line(options);
@@ -366,7 +585,7 @@ function hoverCallback (index, options, content, row) {
             lineColors: ['#efefef'],
             lineWidth: 2,
             hideHover: 'auto',
-            hoverCallback: hoverCallback,
+            hoverCallback: hoverCallbackMoney,
             gridTextColor: "#fff",
             gridStrokeWidth: 0.4,
             pointSize: 4,
@@ -406,7 +625,6 @@ function hoverCallback (index, options, content, row) {
         var pieChartCanvas = $("#camisasPorTamanhoPieChart").get(0).getContext("2d");
         var pieChart = new Chart(pieChartCanvas);
         
-        var color = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de"];
           
         var PieData = [
         ];

@@ -58,6 +58,10 @@ public class Inventory {
                 +" Price "+this.product.getPriceFormatted()
                 +" title "+this.product.getTitle()+" description "+this.product.getDescription();
     }
+    public String getName(){
+        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.size+ "-"+this.type+""
+                +this.genderSlug;
+    }
     public String getType() {
         return type;
     }

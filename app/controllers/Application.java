@@ -3,6 +3,7 @@ package controllers;
 import akka.actor.ActorRef;
 import akka.actor.Props;
 import bootstrap.MailSenderActor;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.DBObject;
 import com.mongodb.BasicDBList;
 
@@ -97,14 +98,74 @@ public class Application extends Controller {
         // BasicDBList data = (BasicDBList)products.get(0).get("data");
         return ok(dashboardTrue.render(null));
     }
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getUsuariosGrow(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+        aggResult = MongoService.getDashboardUsuarioGrow(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+    }
 
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getEntryProducts(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        List<InventoryEntry> entries = null;
+        entries = MongoService.getDashboardEntryProducts(startDate.minusMonths(1),endDate);
+        ObjectNode results = Json.newObject();
+
+        for(InventoryEntry entry : entries){
+            String newstring = new SimpleDateFormat("yyyy-MM-dd").format(entry.getCreatedDate());
+
+            if(!results.has(newstring)){
+                results.put(newstring,Json.newObject());
+            }
+            if(!results.with(newstring).has(entry.getInventory().getName())){
+                results.with(newstring).put(entry.getInventory().getName(),0);
+            }
+            if(entry.getQuantity()>0){
+                int newValue = results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity();
+                results.with(newstring).put(entry.getInventory().getName(),newValue);
+            }
+        }
+        return ok(results);
+    }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getLeaveProducts(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        List<InventoryEntry> entries = null;
+        entries = MongoService.getDashboardEntryProducts(startDate.minusMonths(1),endDate);
+        ObjectNode results = Json.newObject();
+
+        for(InventoryEntry entry : entries){
+            String newstring = new SimpleDateFormat("yyyy-MM-dd").format(entry.getCreatedDate());
+
+            if(!results.has(newstring)){
+                results.put(newstring,Json.newObject());
+            }
+            if(!results.with(newstring).has(entry.getInventory().getName())){
+                results.with(newstring).put(entry.getInventory().getName(),0);
+            }
+            if(entry.getQuantity()<0){
+                int newValue = Math.abs(results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity());
+                results.with(newstring).put(entry.getInventory().getName(),newValue);
+            }
+        }
+        return ok(results);
+    }
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderProductsFaturamento(){
         DateTime startDate = new DateTime();
         DateTime endDate   = new DateTime();
         AggregationResults<DBObject> aggResult = null;
-
         aggResult = MongoService.getDashboardProductsFaturamento(startDate.minusMonths(1),endDate);
         return ok(aggResult.getRawResults().toString());
     }
