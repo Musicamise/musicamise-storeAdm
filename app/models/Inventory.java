@@ -59,7 +59,7 @@ public class Inventory {
                 +" title "+this.product.getTitle()+" description "+this.product.getDescription();
     }
     public String getName(){
-        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.size+ "-"+this.type+""
+        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.size+ "-"+this.type+"-"
                 +this.genderSlug;
     }
     public String getType() {
