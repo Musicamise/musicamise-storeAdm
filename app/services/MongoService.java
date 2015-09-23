@@ -832,6 +832,37 @@ public class MongoService {
 
     }
 
+
+    public static List<InventoryEntry> getDashboardEntryProducts(DateTime startDate, DateTime endDate){
+        Query query = new Query();
+        query.addCriteria(where("createdDate").gte(startDate).lte(endDate));
+        
+
+        return DS.mop.find(query,InventoryEntry.class);
+
+    }
+
+    
+    public static AggregationResults<DBObject> getDashboardUsuarioGrow(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("$month","$createdDate");
+        obj.append("$dayOfMonth","$$createdDate");
+        obj.append("$year","$$createdDate");
+
+        BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
+                .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
+                .append("year", new BasicDBObject("$year", "$createdDate"));
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.project("createdDate").andExpression("dayOfMonth(createdDate)").as("day")
+                        .andExpression("month(createdDate)").as("month")
+                        .andExpression("year(createdDate)").as("year"),
+                Aggregation.group(Fields.fields().and("day").and("month").and("year"))
+                        .count().as("quantity")
+        );
+        return DS.mop.aggregate(agg,User.class, DBObject.class);
+
+    }
     public static AggregationResults<DBObject> getDashboardSize(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
