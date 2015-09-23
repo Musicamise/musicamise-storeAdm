@@ -95,8 +95,67 @@ public class Application extends Controller {
 
         // List<DBObject> products = aggResultsProducts.getMappedResults();
         // BasicDBList data = (BasicDBList)products.get(0).get("data");
-        return ok(aggResultsGender.getRawResults().toString());
+        return ok(dashboardTrue.render(null));
     }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getOrderProducts(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+
+    }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getOrderSizeCount(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardSoldbySize(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+
+    }
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getOrderTypeCount(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+
+    }
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getOrderGenderCount(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardSoldbyGender(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+
+    }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getOrderColorCount(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardSoldbyColor(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+
+    }
+
 
     @AddCSRFToken
     @Security.Authenticated(Secured.class)

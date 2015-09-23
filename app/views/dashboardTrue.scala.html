@@ -41,22 +41,22 @@
                     <div class="row">
                       <div class="col-md-8">
                         <div class="chart-responsive">
-                          <canvas id="pieChart" height="150"></canvas>
+                          <canvas id="camisasPorTamanhoPieChart" height="150"></canvas>
                         </div><!-- ./chart-responsive -->
                       </div><!-- /.col -->
                       <div class="col-md-4">
-                        <ul class="chart-legend clearfix">
+                        <!-- <ul class="chart-legend clearfix">
                           <li><i class="fa fa-circle-o text-red"></i> Chrome</li>
                           <li><i class="fa fa-circle-o text-green"></i> IE</li>
                           <li><i class="fa fa-circle-o text-yellow"></i> FireFox</li>
                           <li><i class="fa fa-circle-o text-aqua"></i> Safari</li>
                           <li><i class="fa fa-circle-o text-light-blue"></i> Opera</li>
                           <li><i class="fa fa-circle-o text-gray"></i> Navigator</li>
-                        </ul>
+                        </ul> -->
                       </div><!-- /.col -->
                     </div><!-- /.row -->
                   </div><!-- /.box-body -->
-                  <div class="box-footer no-padding">
+                 <!--  <div class="box-footer no-padding">
                     <ul class="nav nav-pills nav-stacked">
                       <li><a href="#">United States of America <span class="pull-right text-red"><i class="fa fa-angle-down"></i> 12%</span></a></li>
                       <li><a href="#">India <span class="pull-right text-green"><i class="fa fa-angle-up"></i> 4%</span></a></li>
@@ -66,7 +66,7 @@
               </div><!-- /.box -->
               <div class="box box-default">
                   <div class="box-header with-border">
-                    <h3 class="box-title">Quantidade de vendas por genero</h3>
+                    <h3 class="box-title">Quantidade de vendas por Modelo</h3>
                     <div class="box-tools pull-right">
                       <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
                       <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
@@ -76,29 +76,64 @@
                     <div class="row">
                       <div class="col-md-8">
                         <div class="chart-responsive">
-                          <canvas id="pieChart" height="150"></canvas>
+                          <canvas id="camisasPorTipoPieChart" height="150"></canvas>
                         </div><!-- ./chart-responsive -->
                       </div><!-- /.col -->
                       <div class="col-md-4">
-                        <ul class="chart-legend clearfix">
+                        <!-- <ul class="chart-legend clearfix">
                           <li><i class="fa fa-circle-o text-red"></i> Chrome</li>
                           <li><i class="fa fa-circle-o text-green"></i> IE</li>
                           <li><i class="fa fa-circle-o text-yellow"></i> FireFox</li>
                           <li><i class="fa fa-circle-o text-aqua"></i> Safari</li>
                           <li><i class="fa fa-circle-o text-light-blue"></i> Opera</li>
                           <li><i class="fa fa-circle-o text-gray"></i> Navigator</li>
-                        </ul>
+                        </ul> -->
                       </div><!-- /.col -->
                     </div><!-- /.row -->
                   </div><!-- /.box-body -->
-                  <div class="box-footer no-padding">
+                 <!--  <div class="box-footer no-padding">
+                    <ul class="nav nav-pills nav-stacked">
+                      <li><a href="#">United States of America <span class="pull-right text-red"><i class="fa fa-angle-down"></i> 12%</span></a></li>
+                      <li><a href="#">India <span class="pull-right text-green"><i class="fa fa-angle-up"></i> 4%</span></a></li>
+                      <li><a href="#">China <span class="pull-right text-yellow"><i class="fa fa-angle-left"></i> 0%</span></a></li>
+                    </ul>
+                  </div><!-- /.footer --> 
+              </div><!-- /.box -->
+               <div class="box box-default">
+                  <div class="box-header with-border">
+                    <h3 class="box-title">Quantidade de vendas por Genero</h3>
+                    <div class="box-tools pull-right">
+                      <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                      <button class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                    </div>
+                  </div><!-- /.box-header -->
+                  <div class="box-body">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <div class="chart-responsive">
+                          <canvas id="camisasPorGeneroPieChart" height="150"></canvas>
+                        </div><!-- ./chart-responsive -->
+                      </div><!-- /.col -->
+                      <div class="col-md-4">
+                        <!-- <ul class="chart-legend clearfix">
+                          <li><i class="fa fa-circle-o text-red"></i> Chrome</li>
+                          <li><i class="fa fa-circle-o text-green"></i> IE</li>
+                          <li><i class="fa fa-circle-o text-yellow"></i> FireFox</li>
+                          <li><i class="fa fa-circle-o text-aqua"></i> Safari</li>
+                          <li><i class="fa fa-circle-o text-light-blue"></i> Opera</li>
+                          <li><i class="fa fa-circle-o text-gray"></i> Navigator</li>
+                        </ul> -->
+                      </div><!-- /.col -->
+                    </div><!-- /.row -->
+                  </div><!-- /.box-body -->
+                 <!--  <div class="box-footer no-padding">
                     <ul class="nav nav-pills nav-stacked">
                       <li><a href="#">United States of America <span class="pull-right text-red"><i class="fa fa-angle-down"></i> 12%</span></a></li>
                       <li><a href="#">India <span class="pull-right text-green"><i class="fa fa-angle-up"></i> 4%</span></a></li>
                       <li><a href="#">China <span class="pull-right text-yellow"><i class="fa fa-angle-left"></i> 0%</span></a></li>
                     </ul>
                   </div><!-- /.footer -->
-                </div><!-- /.box -->
+              </div><!-- /.box -->
               <div class="box box-default">
                 <div class="box-header with-border">
                   <h3 class="box-title">Montante por Produto</h3>
@@ -480,36 +515,44 @@ function hoverCallback (index, options, content, row) {
          //-------------
         //- Line CHART -
         //-------------
-        var line = new Morris.Line({
+        var options = {
             element: 'line-chart',
             resize: true,
             data: [
-              {y: '2011-01-01', item1: 2666},
-              {y: '2011-02-01', item1: 2778},
-              {y: '2011-03-01', item1: 4912},
-              {y: '2011-04-01', item1: 3767},
-              {y: '2011-05-01', item1: 6810},
-              {y: '2011-01-01', item2: 5670},
-              {y: '2011-02-01', item2: 4820},
-              {y: '2011-03-01', item2: 15073},
-              {y: '2011-04-01', item2: 10687},
-              {y: '2011-05-01', item2: 8432},
             ],
             xkey: 'y',
-            ykeys: ['item1','item2' ],
-            labels: ['Item 1','Item 2'],
-            lineColors: ['#efefef','#000'],
+            ykeys: ['vendas' ],
+            labels: ['Vendas'],
+            lineColors: ['#efefef'],
             lineWidth: 2,
             hideHover: 'auto',
             hoverCallback: hoverCallback,
             gridTextColor: "#fff",
             gridStrokeWidth: 0.4,
             pointSize: 4,
-            pointStrokeColors: ["#efefef","#000"],
+            pointStrokeColors: ["#efefef"],
             gridLineColor: "#efefef",
             gridTextFamily: "Open Sans",
             gridTextSize: 10
+          };
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getOrderProducts()",
+            data:{},
+        }).success(function(response) {
+          var data = [];
+          JSON.parse(response).result.forEach(function(elem,index){
+            var obj = {};
+            obj.y = elem._id.year+'-'+elem._id.month+'-'+elem._id.day;
+            obj.vendas = elem.quantity;
+            data.push(obj);
           });
+          options.data = data;
+          var line = new Morris.Line(options);
+
+        }).error(function() {
+            alert("Erro on update!")
+        });
       
 
          //-------------
@@ -520,45 +563,12 @@ function hoverCallback (index, options, content, row) {
         //- PIE CHART -
         //-------------
         // Get context with jQuery - using jQuery's .get() method.
-        var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+        var pieChartCanvas = $("#camisasPorTamanhoPieChart").get(0).getContext("2d");
         var pieChart = new Chart(pieChartCanvas);
+        
+        var color = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de"];
+          
         var PieData = [
-          {
-            value: 700,
-            color: "#f56954",
-            highlight: "#f56954",
-            label: "Chrome"
-          },
-          {
-            value: 500,
-            color: "#00a65a",
-            highlight: "#00a65a",
-            label: "IE"
-          },
-          {
-            value: 400,
-            color: "#f39c12",
-            highlight: "#f39c12",
-            label: "FireFox"
-          },
-          {
-            value: 600,
-            color: "#00c0ef",
-            highlight: "#00c0ef",
-            label: "Safari"
-          },
-          {
-            value: 300,
-            color: "#3c8dbc",
-            highlight: "#3c8dbc",
-            label: "Opera"
-          },
-          {
-            value: 100,
-            color: "#d2d6de",
-            highlight: "#d2d6de",
-            label: "Navigator"
-          }
         ];
         var pieOptions = {
           //Boolean - Whether we should show a stroke on each segment
@@ -584,15 +594,154 @@ function hoverCallback (index, options, content, row) {
           //String - A legend template
           legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
           //String - A tooltip template
-          tooltipTemplate: "<%=value %> <%=label%> users"
+          tooltipTemplate: "camisas <%=value %> <%=label%> "
         };
         //Create pie or douhnut chart
         // You can switch between pie and douhnut using the method below.  
-        pieChart.Doughnut(PieData, pieOptions);
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getOrderSizeCount()",
+            data:{},
+        }).success(function(data) {
+          JSON.parse(data).result.forEach(function(elem,index){
+            var obj = {};
+            obj.value = elem.quantity;
+            obj.label = elem._id;
+            obj.color = color[index%6];
+            obj.highlight = color[index%6];
+            PieData.push(obj);
+          });
+          pieChart.Doughnut(PieData, pieOptions);
+        }).error(function() {
+            alert("Erro on update!")
+        });
         //-----------------
         //- END PIE CHART -
         //-----------------
 
+
+
+
+                //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var pieChartCanvas2 = $("#camisasPorTipoPieChart").get(0).getContext("2d");
+        var pieChart2 = new Chart(pieChartCanvas2);
+        
+          
+        var PieData2 = [
+        ];
+        var pieOptions2 = {
+          //Boolean - Whether we should show a stroke on each segment
+          segmentShowStroke: true,
+          //String - The colour of each segment stroke
+          segmentStrokeColor: "#fff",
+          //Number - The width of each segment stroke
+          segmentStrokeWidth: 1,
+          //Number - The percentage of the chart that we cut out of the middle
+          percentageInnerCutout: 50, // This is 0 for Pie charts
+          //Number - Amount of animation steps
+          animationSteps: 100,
+          //String - Animation easing effect
+          animationEasing: "easeOutBounce",
+          //Boolean - Whether we animate the rotation of the Doughnut
+          animateRotate: true,
+          //Boolean - Whether we animate scaling the Doughnut from the centre
+          animateScale: false,
+          //Boolean - whether to make the chart responsive to window resizing
+          responsive: true,
+          // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+          maintainAspectRatio: false,
+          //String - A legend template
+          legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
+          //String - A tooltip template
+          tooltipTemplate: "camisas <%=value %> <%=label%> "
+        };
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.  
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getOrderTypeCount()",
+            data:{},
+        }).success(function(data) {
+          JSON.parse(data).result.forEach(function(elem,index){
+            var obj = {};
+            obj.value = elem.quantity;
+            obj.label = elem._id;
+            obj.color = color[index%6];
+            obj.highlight = color[index%6];
+            PieData2.push(obj);
+          });
+          pieChart2.Doughnut(PieData2, pieOptions2);
+        }).error(function() {
+            alert("Erro on update!")
+        });
+        //-----------------
+        //- END PIE CHART -
+        //-----------------
+
+
+
+                        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var pieChartCanvas3 = $("#camisasPorGeneroPieChart").get(0).getContext("2d");
+        var pieChart3 = new Chart(pieChartCanvas3);
+        
+          
+        var PieData3 = [
+        ];
+        var pieOptions3 = {
+          //Boolean - Whether we should show a stroke on each segment
+          segmentShowStroke: true,
+          //String - The colour of each segment stroke
+          segmentStrokeColor: "#fff",
+          //Number - The width of each segment stroke
+          segmentStrokeWidth: 1,
+          //Number - The percentage of the chart that we cut out of the middle
+          percentageInnerCutout: 50, // This is 0 for Pie charts
+          //Number - Amount of animation steps
+          animationSteps: 100,
+          //String - Animation easing effect
+          animationEasing: "easeOutBounce",
+          //Boolean - Whether we animate the rotation of the Doughnut
+          animateRotate: true,
+          //Boolean - Whether we animate scaling the Doughnut from the centre
+          animateScale: false,
+          //Boolean - whether to make the chart responsive to window resizing
+          responsive: true,
+          // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+          maintainAspectRatio: false,
+          //String - A legend template
+          legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
+          //String - A tooltip template
+          tooltipTemplate: "camisas <%=value %> <%=label%> "
+        };
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.  
+        $.ajax({
+            method:'GET',
+            url: "@routes.Application.getOrderGenderCount()",
+            data:{},
+        }).success(function(data) {
+          JSON.parse(data).result.forEach(function(elem,index){
+            var obj = {};
+            obj.value = elem.quantity;
+            obj.label = elem._id;
+            obj.color = color[index%6];
+            obj.highlight = color[index%6];
+            PieData3.push(obj);
+          });
+          pieChart3.Doughnut(PieData3, pieOptions3);
+        }).error(function() {
+            alert("Erro on update!")
+        });
+        //-----------------
+        //- END PIE CHART -
+        //-----------------
+        
 
         });
 
