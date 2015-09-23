@@ -161,6 +161,7 @@ public class MongoService {
         boolean updated = false;
         if(statusOrder!=null){
             update.addToSet("status", statusOrder);
+            update.set("statusCompra", statusOrder);
             updated = true;
         }
         if(updated){
@@ -190,6 +191,7 @@ public class MongoService {
         boolean updated = false;
         if(statusOrder!=null){
             update.addToSet("status", statusOrder);
+            update.set("statusCompra", statusOrder);
             updated = true;
         }
         if(statusEntrega!=null){
@@ -220,6 +222,34 @@ public class MongoService {
     public static List<Order> findOrdersByIdCompra(String code) {
         return DS.mop.find(new Query(where("idCompra").is(code)), Order.class);
     }
+
+
+    public static List<Order> findOrderByStatus(String statusCompra,String statusEntrega) {
+        Query query = new Query();
+
+        if((statusCompra!=null&&!statusCompra.equals(""))&&statusEntrega!=null&&!statusEntrega.equals("")){
+
+            query.addCriteria(Criteria.where(null)
+                .andOperator(
+                    Criteria.where("statusCompra").is(statusCompra),
+                    Criteria.where("statusEntrega").is(statusEntrega) ));
+        }else if(statusCompra!=null&&!statusCompra.equals("")){
+
+            query.addCriteria(Criteria.where(null)
+                .andOperator(
+                    Criteria.where("statusCompra").is(statusCompra)
+                     ));
+        }else if(statusEntrega!=null&&!statusEntrega.equals("")){
+
+            query.addCriteria(Criteria.where(null)
+                .andOperator(
+                    Criteria.where("statusEntrega").is(statusEntrega) ));
+        }
+
+        return DS.mop.find(query, Order.class);
+    }
+
+    
 
     public static boolean hasOrderById(String id){
         return   DS.mop.exists(new Query(where("_id").is(id)), Order.class);
@@ -739,6 +769,29 @@ public class MongoService {
         Query query = new Query();
         query.addCriteria(Criteria.where("createdDate").gte(startDate).lte(endDate));
         ordersByDate = DS.mop.find(query,Order.class);
+
+    }
+    
+    public static AggregationResults<DBObject> getDashboardProductsFaturamento(DateTime startDate, DateTime endDate){
+
+        //Products sold
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("$month","$createdDate");
+        obj.append("$dayOfMonth","$$createdDate");
+        obj.append("$year","$$createdDate");
+
+        BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
+                .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
+                .append("year", new BasicDBObject("$year", "$createdDate"));
+        Aggregation agg = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.project("total").andExpression("dayOfMonth(createdDate)").as("day")
+                        .andExpression("month(createdDate)").as("month")
+                        .andExpression("year(createdDate)").as("year"),
+                Aggregation.group(Fields.fields().and("day").and("month").and("year"))
+                        .sum("total").as("total")
+        );
+        return DS.mop.aggregate(agg,Order.class, DBObject.class);
 
     }
 

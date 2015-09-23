@@ -100,6 +100,17 @@ public class Application extends Controller {
 
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
+    public static Result getOrderProductsFaturamento(){
+        DateTime startDate = new DateTime();
+        DateTime endDate   = new DateTime();
+        AggregationResults<DBObject> aggResult = null;
+
+        aggResult = MongoService.getDashboardProductsFaturamento(startDate.minusMonths(1),endDate);
+        return ok(aggResult.getRawResults().toString());
+    }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
     public static Result getOrderProducts(){
         DateTime startDate = new DateTime();
         DateTime endDate   = new DateTime();
@@ -107,7 +118,6 @@ public class Application extends Controller {
 
         aggResult = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
         return ok(aggResult.getRawResults().toString());
-
     }
 
     @AddCSRFToken

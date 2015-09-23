@@ -75,8 +75,17 @@ public class OrderController extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result listOrders() {
-        List<Order> orders = MongoService.getAllOrders();
-        return ok(listOrders.render(orders));
+        String statusCompra = request().getQueryString("statusCompra");
+        String statusEntrega = request().getQueryString("statusEntrega");
+        Logger.debug(statusCompra+"-"+statusEntrega);
+        List<Order> orders = null;
+        if((statusCompra!=null&&!statusCompra.equals(""))||
+            (statusEntrega!=null&&!statusEntrega.equals(""))){
+            orders = MongoService.findOrderByStatus(statusCompra,statusEntrega);
+        }else{
+            orders = MongoService.getAllOrders();
+        }
+        return ok(listOrders.render(orders,statusEntrega,statusCompra));
     }
 
     @RequireCSRFCheck
@@ -194,7 +203,7 @@ public class OrderController extends Controller {
         StatusOrder statusOrder = new StatusOrder();
         statusOrder.setStatus(status);
 
-        order.getStatus().add(statusOrder);
+        order.addStatus(statusOrder);
         order.setStatusEntrega(statusEntrega.name());
 
         //save Inventory change
