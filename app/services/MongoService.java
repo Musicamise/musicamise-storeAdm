@@ -5,6 +5,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.Fields;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import play.Logger;
 
@@ -758,14 +759,21 @@ public class MongoService {
         return DS.mop.aggregate(agg,Order.class, DBObject.class);*/
         //Products sold
         BasicDBObject obj = new BasicDBObject();
-        obj.append("date","$createdDate");
-        obj.append("quantity","$products.quantity");
-        obj.append("gender","$products.genderSlug");
-        obj.append("size","$products.size");
+        obj.append("$month","$createdDate");
+        obj.append("$dayOfMonth","$$createdDate");
+        obj.append("$year","$$createdDate");
+
+        BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
+                .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
+                .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                Aggregation.project("products").andExpression("dayOfMonth(createdDate)").as("day")
+                        .andExpression("month(createdDate)").as("month")
+                        .andExpression("year(createdDate)").as("year"),
                 Aggregation.unwind("products"),
-                Aggregation.group("createdDate").count().as("orders").sum("products.quantity").as("quantity")
+                Aggregation.group(Fields.fields().and("day").and("month").and("year"))
+                        .sum("products.quantity").as("quantity")
         );
         return DS.mop.aggregate(agg,Order.class, DBObject.class);
 

@@ -6,6 +6,12 @@
 OPTIONS        /*all                             controllers.Application.preflight(all:String)
 
 GET     /                           controllers.Application.dashboard()
+GET     /getOrderSizeCount                           controllers.Application.getOrderSizeCount()
+GET     /getOrderTypeCount                           controllers.Application.getOrderTypeCount()
+GET     /getOrderGenderCount                           controllers.Application.getOrderGenderCount()
+GET     /getOrderColorCount                           controllers.Application.getOrderColorCount()
+GET     /getOrderProducts                           controllers.Application.getOrderProducts()
+
 
 GET            /signin                           controllers.Application.login()
 POST           /signin                           controllers.Authentication.authenticate()
