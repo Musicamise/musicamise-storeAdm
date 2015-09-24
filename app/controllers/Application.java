@@ -214,7 +214,7 @@ public class Application extends Controller {
                 results.with(newstring).put(entry.getInventory().getName(),0);
             }
             if(entry.getQuantity()<0){
-                int newValue = Math.abs(results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity());
+                int newValue = results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity();
                 results.with(newstring).put(entry.getInventory().getName(),newValue);
             }
         }
