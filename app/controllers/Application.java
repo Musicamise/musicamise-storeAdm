@@ -10,6 +10,8 @@ import com.mongodb.BasicDBList;
 import models.*;
 import models.Collection;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import org.w3c.dom.Document;
@@ -33,7 +35,6 @@ import java.io.File;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,37 +75,72 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result dashboard(){
-        //TODO
-        DateTime startDate = new DateTime();
-        DateTime endDate = new DateTime();
-        AggregationResults<DBObject> aggResultsProducts = null;
-        AggregationResults<DBObject> aggResultsSize = null;
-        AggregationResults<DBObject> aggResultsGender = null;
-        AggregationResults<DBObject> aggResultsEntry = null;
-        AggregationResults<DBObject> aggResultsOrder = null;
-        AggregationResults<DBObject> aggResultsOrderPrice = null;
-        AggregationResults<DBObject> aggResultsType = null;
-        AggregationResults<DBObject> aggResultsColor = null;
-        List<Order> ordersByDate  = null;
-        aggResultsProducts = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
-        aggResultsSize = MongoService.getDashboardSize(startDate.minusMonths(1),endDate);
-        aggResultsGender = MongoService.getDashboardSoldbyGender(startDate.minusMonths(1),endDate);
-        aggResultsType = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
-        aggResultsColor = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
+        String dateRange = request().getQueryString("dateRange");
 
-        aggResultsGender = MongoService.getDashboardGender(startDate.minusMonths(1),endDate);
+        return ok(dashboardTrue.render(dateRange));
+    }
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getUsuariosType(){
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
 
-        // List<DBObject> products = aggResultsProducts.getMappedResults();
-        // BasicDBList data = (BasicDBList)products.get(0).get("data");
-        return ok(dashboardTrue.render(null));
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        AggregationResults<DBObject> aggResult = null;
+        aggResult = MongoService.getDashboardUsuarioType(startDate,endDate);
+        return ok(aggResult.getRawResults().toString());
     }
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getUsuariosGrow(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         AggregationResults<DBObject> aggResult = null;
-        aggResult = MongoService.getDashboardUsuarioGrow(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardUsuarioGrow(startDate,endDate);
+        return ok(aggResult.getRawResults().toString());
+    }
+
+    @AddCSRFToken
+    @Security.Authenticated(Secured.class)
+    public static Result getUsuariosGender(){
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        AggregationResults<DBObject> aggResult = null;
+        aggResult = MongoService.getDashboardUsuarioGender(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
     }
 
@@ -112,10 +148,22 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getEntryProducts(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         List<InventoryEntry> entries = null;
-        entries = MongoService.getDashboardEntryProducts(startDate.minusMonths(1),endDate);
+        entries = MongoService.getDashboardEntryProducts(startDate,endDate);
         ObjectNode results = Json.newObject();
 
         for(InventoryEntry entry : entries){
@@ -138,10 +186,22 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getLeaveProducts(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         List<InventoryEntry> entries = null;
-        entries = MongoService.getDashboardEntryProducts(startDate.minusMonths(1),endDate);
+        entries = MongoService.getDashboardEntryProducts(startDate,endDate);
         ObjectNode results = Json.newObject();
 
         for(InventoryEntry entry : entries){
@@ -163,54 +223,114 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderProductsFaturamento(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
-        aggResult = MongoService.getDashboardProductsFaturamento(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardProductsFaturamento(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
     }
 
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderProducts(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
 
-        aggResult = MongoService.getDashboardProducts(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardProducts(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
     }
 
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderSizeCount(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
 
-        aggResult = MongoService.getDashboardSoldbySize(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardSoldbySize(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
 
     }
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderTypeCount(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
 
-        aggResult = MongoService.getDashboardSoldbyType(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardSoldbyType(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
 
     }
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderGenderCount(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
 
-        aggResult = MongoService.getDashboardSoldbyGender(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardSoldbyGender(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
 
     }
@@ -218,11 +338,23 @@ public class Application extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result getOrderColorCount(){
-        DateTime startDate = new DateTime();
-        DateTime endDate   = new DateTime();
+        String dateRange = request().getQueryString("dateRange");
+        DateTime endDate   = null;
+        DateTime startDate = null;
+
+
+        if(dateRange!=null&&!dateRange.equals("")) {
+            DateTimeFormatter formatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            try {
+                startDate = formatter.parseDateTime(dateRange.split(" - ")[0]);
+                endDate = formatter.parseDateTime(dateRange.split(" - ")[1]);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         AggregationResults<DBObject> aggResult = null;
 
-        aggResult = MongoService.getDashboardSoldbyColor(startDate.minusMonths(1),endDate);
+        aggResult = MongoService.getDashboardSoldbyColor(startDate,endDate);
         return ok(aggResult.getRawResults().toString());
 
     }

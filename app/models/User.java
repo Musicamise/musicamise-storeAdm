@@ -37,6 +37,7 @@ public class User {
 
     // private GenderUser gender;
     private String gender;
+    private String provider;
 
     private boolean marketingEmail;
     private boolean manager;
@@ -86,6 +87,14 @@ public class User {
         }
     }
 
+    
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
     public String getSalt() {
         return salt;
     }

@@ -15,6 +15,8 @@ GET     /getOrderProductsFaturamento                           controllers.Appli
 GET     /getEntryProducts                           controllers.Application.getEntryProducts()
 GET     /getLeaveProducts                           controllers.Application.getLeaveProducts()
 GET     /getUsuariosGrow                           controllers.Application.getUsuariosGrow()
+GET     /getUsuariosType                           controllers.Application.getUsuariosType()
+GET     /getUsuariosGender                           controllers.Application.getUsuariosGender()
 
 GET            /signin                           controllers.Application.login()
 POST           /signin                           controllers.Authentication.authenticate()
