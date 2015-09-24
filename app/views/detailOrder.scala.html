@@ -47,7 +47,7 @@
                     @for(inventorie<-order.getProducts){
                         <div class="form-group">
                             <label > 
-                              @inventorie.getProduct.getTitle : <br/> R$@inventorie.getProduct.getPrice / @inventorie.getSize / @inventorie.getGenderSlug</label>
+                              @inventorie.getProduct.getTitle : <br/> R$@inventorie.getProduct.getPrice / @inventorie.getSize/ @inventorie.getType / @inventorie.getGenderSlug</label>
                               <br/>
                              <label >Quantity: @inventorie.getQuantity</label>
                              <label >Total: @inventorie.getPriceWithQuantityFormatted</label>
