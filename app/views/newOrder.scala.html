@@ -30,7 +30,7 @@
                              <select name="product"  data-placeholder="Chose the product" style="width: 350px; display: none;"  class="product chosen-select-width" tabindex="-1">
                               <option value=""></option>
                               @for(inventorie<- inventories){
-                              <option  value="@inventorie.getSku" price="@inventorie.getProduct.getPrice" >@inventorie.getProduct.getTitle /R$ @inventorie.getProduct.getPrice /  @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>
+                              <option  value="@inventorie.getSku" price="@inventorie.getProduct.getPrice" >@inventorie.getProduct.getTitle /R$ @inventorie.getProduct.getPrice /  @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getType/ @inventorie.getQuantity</option>
                               }
                             </select>
                             <input type="text" style="width:70px;" class="quantity" name="quantity" value="" placeholder="Quantity">
