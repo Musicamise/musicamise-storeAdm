@@ -796,6 +796,7 @@ public class MongoService {
                 .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
                 match,
+                Aggregation.sort(Sort.Direction.DESC, "createdDate"),
                 Aggregation.project("total").andExpression("dayOfMonth(createdDate)").as("day")
                         .andExpression("month(createdDate)").as("month")
                         .andExpression("year(createdDate)").as("year"),
@@ -868,11 +869,13 @@ public class MongoService {
                 .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
                 match ,
+                Aggregation.sort(Sort.Direction.DESC, "createdDate"),
                 Aggregation.project("createdDate").andExpression("dayOfMonth(createdDate)").as("day")
                         .andExpression("month(createdDate)").as("month")
                         .andExpression("year(createdDate)").as("year"),
                 Aggregation.group(Fields.fields().and("day").and("month").and("year"))
                         .count().as("quantity")
+
         );
         return DS.mop.aggregate(agg,User.class, DBObject.class);
 

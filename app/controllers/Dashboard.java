@@ -113,7 +113,6 @@ public class Dashboard extends Controller {
         for (int i =0; i<aggResult.getMappedResults().size();i++ ) {
             total += (int)results.get(i).get("quantity");
             results.get(i).put("total", total);
-            Logger.debug(results.get(i).toString());
         }
 
 
@@ -263,7 +262,6 @@ public class Dashboard extends Controller {
         for (int i =0; i<aggResult.getMappedResults().size();i++ ) {
             fat += (double)results.get(i).get("total");
             results.get(i).put("total", fat);
-            Logger.debug(results.get(i).toString());
         }
 
 
