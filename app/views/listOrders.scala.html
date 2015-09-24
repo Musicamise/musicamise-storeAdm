@@ -66,7 +66,7 @@
                         <th>ID</th>
                         <th>ID-cliente</th>
                         <th>Created Date</th>
-                        <th>Full Name</th>
+                        <th>Valor</th>
                         <th>Email</th>
                         <th>Status</th>
                         <th>Detail</th>
@@ -78,9 +78,10 @@
                         <td>@order.getId</td>
                         <td>@order.getFriendlyId</td>
                         <td>@order.getCreatedDate</td>
-                        <td>@if(order.getUser!=null){@order.getUser.getFullName}else{
+                        <!-- <td>@if(order.getUser!=null){@order.getUser.getFullName}else{
                           <span class="label label-warning" style="font-size: 100%; font-weight: 200;">No User</span>}
-                        </td>
+                        </td> -->
+                        <td>@order.getTotalFormatted</td>
                         <td>@if(order.getUser!=null){@order.getUser.getEmail}else {@if((order.getEmail!=null)&&(!order.getEmail.equals(""))){@order.getEmail}else{
                            <span class="label label-warning" style="font-size: 100%; font-weight: 200;">No Email</span>
                         }}</td>
@@ -96,7 +97,7 @@
                         <th>ID</th>
                         <th>ID-cliente</th>
                         <th>Created Date</th>
-                        <th>Full Name</th>
+                        <th>Valor</th>
                         <th>Email</th>
                         <th>Status</th>
                         <th>Detail</th>
