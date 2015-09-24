@@ -227,7 +227,18 @@
 
             </section><!-- right col -->
             <section class="col-lg-12 connectedSortable">
-            
+              <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="active"><a href="#usuario_acumulado-chart" data-toggle="tab">Area</a></li>
+                  <li class="pull-left header"><i class="fa fa-inbox"></i> Usuarios Cadastrados acumulado por dia</li>
+                </ul>
+                <div class="tab-content no-padding">
+                  <!-- Morris chart - Sales -->
+                  <div class="chart tab-pane active" id="usuario_acumulado-chart" style="position: relative; height: 300px;"></div>
+                
+                </div>
+              </div><!-- /.nav-tabs-custom -->
              <!-- solid sales graph -->
               <div class="box box-solid bg-teal-gradient">
                 <div class="box-header">
@@ -288,6 +299,21 @@
                   </div><!-- /.row -->
                 </div><!-- /.box-footer -->
               </div><!-- /.box -->
+              <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="active"><a href="#faturamento-chart" data-toggle="tab">Area</a></li>
+                  <li class="pull-left header"><i class="fa fa-inbox"></i> Faturamento acumulado por dia</li>
+                </ul>
+                <div class="tab-content no-padding">
+                  <!-- Morris chart - Sales -->
+                  <div class="chart tab-pane active" id="faturamento-chart" style="position: relative; height: 300px;"></div>
+                
+                </div>
+              </div><!-- /.nav-tabs-custom -->
+
+               
+
             </section><!-- unique col -->
 
 
@@ -330,21 +356,75 @@ function hoverCallbackProduct (index, options, content, row) {
 
 
         var color = ["#f56954", "#00a65a", "#f39c12", "#00c0ef", "#3c8dbc", "#d2d6de"];
-        
-        // Users chart
+        // Usuarios acumulado chart
         // var area = new Morris.Area();
-        var option_user = {
-            element: 'usuarios-chart',
+        var option_usuarios_acumulado = {
+            element: 'usuario_acumulado-chart',
             resize: true,
             data: [
             ],
             xkey: 'y',
-            ykeys: ['quantidade'],
-            labels: ['Quantidade' ],
+            ykeys: ['total'],
+            labels: ['Total' ],
             lineColors: ['#a0d0e0'],
             hideHover: 'auto'
           };
-          //Donut Chart
+          $.ajax({
+              method:'GET',
+              url: "@routes.Dashboard.getUsuariosGrowTotal()?dateRange=@dateRange",
+              data:{},
+          }).success(function(response) {
+            var data = [];
+            JSON.parse(response).forEach(function(elem,index){
+                var obj = {};
+                obj.y = elem.year+'-'+elem.month+'-'+elem.day ;
+                obj.total = elem.total;
+                data.push(obj);
+            });
+            option_faturamento.data = data;
+
+            var line = new Morris.Area(option_usuarios_acumulado);
+
+          }).error(function() {
+              alert("Erro on update!")
+          });
+
+        // Faturamento acumulado chart
+        // var area = new Morris.Area();
+        var option_faturamento = {
+            element: 'faturamento-chart',
+            resize: true,
+            data: [
+            ],
+            xkey: 'y',
+            ykeys: ['total'],
+            labels: ['Total' ],
+            lineColors: ['#a0d0e0'],
+            hideHover: 'auto'
+          };
+          $.ajax({
+              method:'GET',
+              url: "@routes.Dashboard.getFaturamento()?dateRange=@dateRange",
+              data:{},
+          }).success(function(response) {
+            var data = [];
+            JSON.parse(response).forEach(function(elem,index){
+                var obj = {};
+                obj.y = elem.year+'-'+elem.month+'-'+elem.day ;
+                obj.total = elem.total;
+                data.push(obj);
+            });
+            option_faturamento.data = data;
+
+            var line = new Morris.Area(option_faturamento);
+
+          }).error(function() {
+              alert("Erro on update!")
+          });
+
+
+        // Users chart
+                  //Donut Chart
           var options_user_donut = {
             element: 'usuarios-donut',
             resize: true,
@@ -355,7 +435,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
           $.ajax({
               method:'GET',
-              url: "@routes.Application.getUsuariosType()?dateRange=@dateRange",
+              url: "@routes.Dashboard.getUsuariosType()?dateRange=@dateRange",
               data:{},
           }).success(function(response) {
             var data = [];
@@ -374,6 +454,8 @@ function hoverCallbackProduct (index, options, content, row) {
           }).error(function() {
               alert("Erro on update!")
           });
+
+
           var options_user_gender = {
             element: 'usuarios-gender',
             resize: true,
@@ -384,7 +466,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
           $.ajax({
               method:'GET',
-              url: "@routes.Application.getUsuariosGender()?dateRange=@dateRange",
+              url: "@routes.Dashboard.getUsuariosGender()?dateRange=@dateRange",
               data:{},
           }).success(function(response) {
             var data = [];
@@ -404,9 +486,24 @@ function hoverCallbackProduct (index, options, content, row) {
               alert("Erro on update!")
           });
 
+        // var area = new Morris.Area();
+
+          var option_user = {
+            element: 'usuarios-chart',
+            resize: true,
+            data: [
+            ],
+            xkey: 'y',
+            ykeys: ['quantidade'],
+            labels: ['Quantidade' ],
+            lineColors: ['#a0d0e0'],
+            hideHover: 'auto'
+          };
+
+
           $.ajax({
               method:'GET',
-              url: "@routes.Application.getUsuariosGrow()?dateRange=@dateRange",
+              url: "@routes.Dashboard.getUsuariosGrow()?dateRange=@dateRange",
               data:{},
           }).success(function(response) {
             var data = [];
@@ -446,7 +543,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getEntryProducts()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getEntryProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -523,7 +620,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getLeaveProducts()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getLeaveProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -603,7 +700,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderProducts()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getOrderProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -653,7 +750,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderProductsFaturamento()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getOrderProductsFaturamento()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -709,13 +806,13 @@ function hoverCallbackProduct (index, options, content, row) {
           //String - A legend template
           legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
           //String - A tooltip template
-          tooltipTemplate: "camisas <%=value %> <%=label%> "
+          tooltipTemplate: "Tamanho: <%=value %> <%=label%> "
         };
         //Create pie or douhnut chart
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderSizeCount()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getOrderSizeCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){
@@ -771,19 +868,19 @@ function hoverCallbackProduct (index, options, content, row) {
           //String - A legend template
           legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<segments.length; i++){%><li><span style=\"background-color:<%=segments[i].fillColor%>\"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>",
           //String - A tooltip template
-          tooltipTemplate: "camisas <%=value %> <%=label%> "
+          tooltipTemplate: "Modelo: <%=label%> <%=value %>  "
         };
         //Create pie or douhnut chart
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderTypeCount()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getOrderTypeCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){
             var obj = {};
             obj.value = elem.quantity;
-            obj.label = elem._id;
+            obj.label = elem._id+"";
             obj.color = color[index%6];
             obj.highlight = color[index%6];
             PieData2.push(obj);
@@ -838,7 +935,7 @@ function hoverCallbackProduct (index, options, content, row) {
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderGenderCount()?dateRange=@dateRange",
+            url: "@routes.Dashboard.getOrderGenderCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){
