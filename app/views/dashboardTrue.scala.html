@@ -1,4 +1,4 @@
-@(products:List[com.mongodb.DBObject])
+@(dateRange:String)
 @index{
 <!-- Content Header (Page header) -->
         <section class="content-header">
@@ -18,14 +18,19 @@
            <!-- Main row -->
           <div class="row">
             <div class=" col-lg-7 form-group">
+            <form>
+              
             <p>Status compra: PAGO</p>
                 <label>Date range:</label>
                 <div class="input-group">
                     <div class="input-group-addon">
                         <i class="fa fa-calendar"></i>
                     </div>
-                    <input type="text" id="dateRange" name="dateRange" value="" class="form-control pull-right active"   id="reservation">
+                    <input type="text" id="dateRange" name="dateRange" value="@dateRange" class="form-control pull-right active"   id="reservation">
                 </div><!-- /.input group -->
+                <button type="submit"> Filtrar dados</button>
+            </form>
+
             </div>
 
             <!-- Left col -->
@@ -206,13 +211,15 @@
                 <!-- Tabs within a box -->
                 <ul class="nav nav-tabs pull-right">
                   <li class="active"><a href="#usuarios-chart" data-toggle="tab">Area</a></li>
-                  <li><a href="#sales-chart" data-toggle="tab">Donut</a></li>
+                  <li><a href="#usuarios-donut" data-toggle="tab">Mode de entrada</a></li>
+                  <li><a href="#usuarios-gender" data-toggle="tab">Genero</a></li>
                   <li class="pull-left header"><i class="fa fa-inbox"></i> Usuarios Cadastrados</li>
                 </ul>
                 <div class="tab-content no-padding">
                   <!-- Morris chart - Sales -->
                   <div class="chart tab-pane active" id="usuarios-chart" style="position: relative; height: 300px;"></div>
-                  <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
+                  <div class="chart tab-pane" id="usuarios-donut" style="position: relative; height: 300px;"></div>
+                  <div class="chart tab-pane" id="usuarios-gender" style="position: relative; height: 300px;"></div>
                 </div>
               </div><!-- /.nav-tabs-custom -->
 
@@ -338,20 +345,68 @@ function hoverCallbackProduct (index, options, content, row) {
             hideHover: 'auto'
           };
           //Donut Chart
-          var donut = new Morris.Donut({
-            element: 'sales-chart',
+          var options_user_donut = {
+            element: 'usuarios-donut',
             resize: true,
-            colors: ["#3c8dbc", "#f56954", "#00a65a"],
+            colors: [],
             data: [
-              {label: "Download Sales", value: 12},
-              {label: "In-Store Sales", value: 30},
-              {label: "Mail-Order Sales", value: 20}
             ],
             hideHover: 'auto'
-          });
+          };
           $.ajax({
               method:'GET',
-              url: "@routes.Application.getUsuariosGrow()",
+              url: "@routes.Application.getUsuariosType()?dateRange=@dateRange",
+              data:{},
+          }).success(function(response) {
+            var data = [];
+            var colors = [];
+            JSON.parse(response).result.forEach(function(elem,index){
+                colors.push(color[index%6]);
+                var obj = {};
+                obj.label = elem._id;
+                obj.value = elem.quantity;
+                data.push(obj);
+            });
+            options_user_donut.data = data;
+            options_user_donut.colors = colors;
+            var donut = new Morris.Donut(options_user_donut);
+
+          }).error(function() {
+              alert("Erro on update!")
+          });
+          var options_user_gender = {
+            element: 'usuarios-gender',
+            resize: true,
+            colors: [],
+            data: [
+            ],
+            hideHover: 'auto'
+          };
+          $.ajax({
+              method:'GET',
+              url: "@routes.Application.getUsuariosGender()?dateRange=@dateRange",
+              data:{},
+          }).success(function(response) {
+            var data = [];
+            var colors = [];
+            JSON.parse(response).result.forEach(function(elem,index){
+                colors.push(color[index%6]);
+                var obj = {};
+                obj.label = elem._id;
+                obj.value = elem.quantity;
+                data.push(obj);
+            });
+            options_user_gender.data = data;
+            options_user_gender.colors = colors;
+            var donut = new Morris.Donut(options_user_gender);
+
+          }).error(function() {
+              alert("Erro on update!")
+          });
+
+          $.ajax({
+              method:'GET',
+              url: "@routes.Application.getUsuariosGrow()?dateRange=@dateRange",
               data:{},
           }).success(function(response) {
             var data = [];
@@ -391,7 +446,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getEntryProducts()",
+            url: "@routes.Application.getEntryProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -468,7 +523,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getLeaveProducts()",
+            url: "@routes.Application.getLeaveProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -528,6 +583,7 @@ function hoverCallbackProduct (index, options, content, row) {
         var options = {
             element: 'line-chart-vendas',
             resize: true,
+            xLabels:'day',
             data: [
             ],
             xkey: 'y',
@@ -547,7 +603,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderProducts()",
+            url: "@routes.Application.getOrderProducts()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -579,6 +635,7 @@ function hoverCallbackProduct (index, options, content, row) {
             resize: true,
             data: [
             ],
+            xLabels:'day',
             xkey: 'y',
             ykeys: ['vendas' ],
             labels: ['Faturamento'],
@@ -596,7 +653,7 @@ function hoverCallbackProduct (index, options, content, row) {
           };
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderProductsFaturamento()",
+            url: "@routes.Application.getOrderProductsFaturamento()?dateRange=@dateRange",
             data:{},
         }).success(function(response) {
           var data = [];
@@ -658,7 +715,7 @@ function hoverCallbackProduct (index, options, content, row) {
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderSizeCount()",
+            url: "@routes.Application.getOrderSizeCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){
@@ -720,7 +777,7 @@ function hoverCallbackProduct (index, options, content, row) {
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderTypeCount()",
+            url: "@routes.Application.getOrderTypeCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){
@@ -781,7 +838,7 @@ function hoverCallbackProduct (index, options, content, row) {
         // You can switch between pie and douhnut using the method below.  
         $.ajax({
             method:'GET',
-            url: "@routes.Application.getOrderGenderCount()",
+            url: "@routes.Application.getOrderGenderCount()?dateRange=@dateRange",
             data:{},
         }).success(function(data) {
           JSON.parse(data).result.forEach(function(elem,index){

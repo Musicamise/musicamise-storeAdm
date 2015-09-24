@@ -3,9 +3,11 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.Fields;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.mapreduce.MapReduceResults;
 import play.Logger;
 
@@ -226,6 +228,7 @@ public class MongoService {
 
     public static List<Order> findOrderByStatus(String statusCompra,String statusEntrega) {
         Query query = new Query();
+        query.with(new Sort(Sort.Direction.DESC, "createdDate"));
 
         if((statusCompra!=null&&!statusCompra.equals(""))&&statusEntrega!=null&&!statusEntrega.equals("")){
 
@@ -562,7 +565,9 @@ public class MongoService {
     }
 
     public static List<Order> getAllOrders() {
-        return DS.mop.findAll(Order.class);
+        Query query = new Query();
+        query.with(new Sort(Sort.Direction.DESC, "createdDate"));
+        return DS.mop.find(query,Order.class);
     }
     public static long countAllOrders() {
         return DS.mop.count(new Query(),Order.class);
@@ -779,12 +784,18 @@ public class MongoService {
         obj.append("$month","$createdDate");
         obj.append("$dayOfMonth","$$createdDate");
         obj.append("$year","$$createdDate");
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
 
         BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
                 .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
                 .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.project("total").andExpression("dayOfMonth(createdDate)").as("day")
                         .andExpression("month(createdDate)").as("month")
                         .andExpression("year(createdDate)").as("year"),
@@ -798,29 +809,23 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardProducts(DateTime startDate, DateTime endDate){
 
 
-        /*//Products sold
-        BasicDBObject obj = new BasicDBObject();
-        obj.append("date","$createdDate");
-        obj.append("quantity","$products.quantity");
-        obj.append("gender","$products.genderSlug");
-        obj.append("size","$products.size");
-        Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
-                Aggregation.unwind("products"),
-                Aggregation.group("products.sku").push(obj).as("data")
-        );
-        return DS.mop.aggregate(agg,Order.class, DBObject.class);*/
-        //Products sold
+
         BasicDBObject obj = new BasicDBObject();
         obj.append("$month","$createdDate");
         obj.append("$dayOfMonth","$$createdDate");
         obj.append("$year","$$createdDate");
 
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
         BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
                 .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
                 .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.project("products").andExpression("dayOfMonth(createdDate)").as("day")
                         .andExpression("month(createdDate)").as("month")
                         .andExpression("year(createdDate)").as("year"),
@@ -835,7 +840,8 @@ public class MongoService {
 
     public static List<InventoryEntry> getDashboardEntryProducts(DateTime startDate, DateTime endDate){
         Query query = new Query();
-        query.addCriteria(where("createdDate").gte(startDate).lte(endDate));
+        if(startDate!=null&&endDate!=null)
+            query.addCriteria(where("createdDate").gte(startDate).lte(endDate));
         
 
         return DS.mop.find(query,InventoryEntry.class);
@@ -849,11 +855,19 @@ public class MongoService {
         obj.append("$dayOfMonth","$$createdDate");
         obj.append("$year","$$createdDate");
 
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate));
+        }else{
+            match = Aggregation.match(Criteria.where(null).is(null));
+        }
+
+
         BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
                 .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
                 .append("year", new BasicDBObject("$year", "$createdDate"));
         Aggregation agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match ,
                 Aggregation.project("createdDate").andExpression("dayOfMonth(createdDate)").as("day")
                         .andExpression("month(createdDate)").as("month")
                         .andExpression("year(createdDate)").as("year"),
@@ -863,16 +877,77 @@ public class MongoService {
         return DS.mop.aggregate(agg,User.class, DBObject.class);
 
     }
+   public static AggregationResults<DBObject> getDashboardUsuarioType(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("$month","$createdDate");
+        obj.append("$dayOfMonth","$$createdDate");
+        obj.append("$year","$$createdDate");
+
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate));
+        }else{
+            match = Aggregation.match(Criteria.where(null).is(null));
+        }
+
+
+        BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
+                .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
+                .append("year", new BasicDBObject("$year", "$createdDate"));
+        Aggregation agg = Aggregation.newAggregation(
+                match ,
+                Aggregation.project("provider").andExpression("dayOfMonth(createdDate)").as("day")
+                        .andExpression("month(createdDate)").as("month")
+                        .andExpression("year(createdDate)").as("year"),
+                Aggregation.group(Fields.fields().and("provider"))
+                        .count().as("quantity")
+        );
+        return DS.mop.aggregate(agg,User.class, DBObject.class);
+
+    }
+    public static AggregationResults<DBObject> getDashboardUsuarioGender(DateTime startDate, DateTime endDate){
+        BasicDBObject obj = new BasicDBObject();
+        obj.append("$month","$createdDate");
+        obj.append("$dayOfMonth","$$createdDate");
+        obj.append("$year","$$createdDate");
+
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate));
+        }else{
+            match = Aggregation.match(Criteria.where(null).is(null));
+        }
+
+
+        BasicDBObject obj2 =  new BasicDBObject("month", new BasicDBObject("$month", "$createdDate"))
+                .append("day", new BasicDBObject("$dayOfMonth", "$createdDate"))
+                .append("year", new BasicDBObject("$year", "$createdDate"));
+        Aggregation agg = Aggregation.newAggregation(
+                match ,
+                Aggregation.project("gender").andExpression("dayOfMonth(createdDate)").as("day")
+                        .andExpression("month(createdDate)").as("month")
+                        .andExpression("year(createdDate)").as("year"),
+                Aggregation.group(Fields.fields().and("gender"))
+                        .count().as("quantity")
+        );
+        return DS.mop.aggregate(agg,User.class, DBObject.class);
+
+    }
     public static AggregationResults<DBObject> getDashboardSize(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
-
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where(null).is(null));
+        }
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("size","$products.size");
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("createdDate").push(obj).as("data")
         );
@@ -883,13 +958,19 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardGender(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
 
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("gender","$products.genderSlug");
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("createdDate").push(obj).as("data")
         );
@@ -900,12 +981,17 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardSoldbySize(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
-
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("products.size").sum("products.quantity").as("quantity")
         );
@@ -917,12 +1003,17 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardSoldbyGender(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
-
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("products.genderSlug").sum("products.quantity").as("quantity")
         );
@@ -933,12 +1024,17 @@ public class MongoService {
     public static AggregationResults<DBObject> getDashboardSoldbyType(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
 
-
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("products.type").sum("products.quantity").as("quantity")
         );
@@ -948,13 +1044,18 @@ public class MongoService {
 
     public static AggregationResults<DBObject> getDashboardSoldbyColor(DateTime startDate, DateTime endDate){
         BasicDBObject obj = new BasicDBObject();
-
+        MatchOperation match = null;
+        if(startDate!=null&&endDate!=null){
+            match = Aggregation.match(Criteria.where(null).andOperator(Criteria.where("createdDate").gte(startDate).lte(endDate),Criteria.where("statusCompra").is("PAGO")));
+        }else{
+            match = Aggregation.match(Criteria.where("statusCompra").is("PAGO"));
+        }
 
         //Products sold by size
         obj = new BasicDBObject();
         obj.append("quantity","$products.quantity");
         Aggregation  agg = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("createdDate").gte(startDate).lte(endDate)),
+                match,
                 Aggregation.unwind("products"),
                 Aggregation.group("products.color").sum("products.quantity").as("quantity")
         );
