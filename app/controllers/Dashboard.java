@@ -111,7 +111,7 @@ public class Dashboard extends Controller {
         List<DBObject> results = aggResult.getMappedResults();
         int total = 0;
         for (int i =0; i<aggResult.getMappedResults().size();i++ ) {
-            total += (double)results.get(i).get("quantity");
+            total += (int)results.get(i).get("quantity");
             results.get(i).put("total", total);
             Logger.debug(results.get(i).toString());
         }
