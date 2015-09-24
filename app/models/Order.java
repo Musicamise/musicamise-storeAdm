@@ -55,7 +55,7 @@ public class Order {
     private List<StatusOrder> status;
 
     private String statusEntrega;
-    private StatusOrder statusCompra;
+    private String statusCompra;
 
     @DateTimeFormat(iso = ISO.DATE_TIME)
     private Date createdDate = new Date();
@@ -80,7 +80,7 @@ public class Order {
 
     public void addStatus(StatusOrder status){
         this.status.add(status);
-        this.statusCompra = status;
+        this.statusCompra = status.getStatus().name();
     }
 
     public String toString(){
@@ -347,11 +347,11 @@ public class Order {
         this.status = status;
     }
 
-    public StatusOrder getStatusCompra() {
+    public String getStatusCompra() {
         return this.statusCompra;
     }
 
-    public void setStatusCompra(StatusOrder statusCompra) {
+    public void setStatusCompra(String statusCompra) {
         this.statusCompra = statusCompra;
     }
      public String getStatusEntrega() {

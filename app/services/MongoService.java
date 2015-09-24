@@ -163,7 +163,7 @@ public class MongoService {
         boolean updated = false;
         if(statusOrder!=null){
             update.addToSet("status", statusOrder);
-            update.set("statusCompra", statusOrder);
+            update.set("statusCompra", statusOrder.getStatus().name());
             updated = true;
         }
         if(updated){
@@ -193,7 +193,7 @@ public class MongoService {
         boolean updated = false;
         if(statusOrder!=null){
             update.addToSet("status", statusOrder);
-            update.set("statusCompra", statusOrder);
+            update.set("statusCompra", statusOrder.getStatus().name());
             updated = true;
         }
         if(statusEntrega!=null){
