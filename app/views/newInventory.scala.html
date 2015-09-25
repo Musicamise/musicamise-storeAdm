@@ -101,7 +101,7 @@
                       </div>
                       <div class="form-group">
                           <label >Modelo @if(inventory!=null){NO CHANGE}</label>
-                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  multiple="" class="chosen-select-width" tabindex="-1">
+                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
                              @if(inventory!=null&&inventory.getGenderSlug!=null){
                                 @for(productType<- Utils.ProductType.getList){
                                   @if(productType.equals(inventory.getType)){
