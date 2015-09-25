@@ -219,7 +219,7 @@
 
     function addProduct(){
       @for(inventorie<- inventories){
-        inventoriesJS['@inventorie.getSku']="<option  value='@inventorie.getSku' price='@inventorie.getProduct.getPrice' >@inventorie.getProduct.getTitle/R$ @inventorie.getProduct.getPrice  / @inventorie.getSize / @inventorie.getGenderSlug / @inventorie.getQuantity</option>";
+        inventoriesJS['@inventorie.getSku']="<option  value='@inventorie.getSku' price='@inventorie.getProduct.getPrice' >@inventorie.getProduct.getTitle/R$ @inventorie.getProduct.getPrice  / @inventorie.getSize / @inventorie.getGenderSlug /@inventorie.getType/ @inventorie.getQuantity</option>";
       }
       var productAlready = [];
       $('.product option:selected').each(function(){
