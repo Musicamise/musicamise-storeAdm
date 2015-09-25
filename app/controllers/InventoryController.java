@@ -122,7 +122,8 @@ public class InventoryController extends Controller {
             flash("inventory","Product does not Exist");
             return redirect(routes.InventoryController.inventory(id));
         }
-        if(gender!=null&&!MongoService.hasCollectionByGender(gender)||gender==null||gender.equals("")){
+        //gender!=null&&!MongoService.hasCollectionByGender(gender)||
+        if(gender==null||gender.equals("")){
             flash("inventory","Gender dont exists or Gender empty ");
             return redirect(routes.InventoryController.inventory(id));
         }
