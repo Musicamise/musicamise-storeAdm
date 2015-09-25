@@ -46,7 +46,7 @@ public class InventoryController extends Controller {
         Inventory inventory = MongoService.findInventoryById(id);
         inventory= (inventory!=null?inventory:new Inventory());
         List<Product> products = MongoService.getAllProducts();
-        List<Collection> genders = MongoService.findCollectionByGender();
+        List<Collection> genders = MongoService.findCollectionOnline();
         return ok(newInventory.render(inventory,products,genders));
     }
     

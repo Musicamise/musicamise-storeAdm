@@ -448,6 +448,10 @@ public class MongoService {
     public static Collection findCollectionById(String id) {
         return DS.mop.findById(id,Collection.class);
     }
+    public static List<Collection> findCollectionOnline() {
+
+        return DS.mop.find(new Query(where("onLineVisible").is(true)),Collection.class);
+    }
     public static List<Collection> findCollectionByGender() {
 
         return DS.mop.find(new Query(where("gender").is(true)),Collection.class);
