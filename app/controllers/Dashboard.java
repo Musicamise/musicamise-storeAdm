@@ -165,14 +165,14 @@ public class Dashboard extends Controller {
 
         for(InventoryEntry entry : entries){
             String newstring = new SimpleDateFormat("yyyy-MM-dd").format(entry.getCreatedDate());
-
-            if(!results.has(newstring)){
-                results.put(newstring,Json.newObject());
-            }
-            if(!results.with(newstring).has(entry.getInventory().getName())){
-                results.with(newstring).put(entry.getInventory().getName(),0);
-            }
             if(entry.getQuantity()>0){
+
+                if(!results.has(newstring)){
+                    results.put(newstring,Json.newObject());
+                }
+                if(!results.with(newstring).has(entry.getInventory().getName())){
+                    results.with(newstring).put(entry.getInventory().getName(),0);
+                }
                 int newValue = results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity();
                 results.with(newstring).put(entry.getInventory().getName(),newValue);
             }
@@ -203,14 +203,14 @@ public class Dashboard extends Controller {
 
         for(InventoryEntry entry : entries){
             String newstring = new SimpleDateFormat("yyyy-MM-dd").format(entry.getCreatedDate());
-
-            if(!results.has(newstring)){
-                results.put(newstring,Json.newObject());
-            }
-            if(!results.with(newstring).has(entry.getInventory().getName())){
-                results.with(newstring).put(entry.getInventory().getName(),0);
-            }
             if(entry.getQuantity()<0){
+
+                if(!results.has(newstring)){
+                    results.put(newstring,Json.newObject());
+                }
+                if(!results.with(newstring).has(entry.getInventory().getName())){
+                    results.with(newstring).put(entry.getInventory().getName(),0);
+                }
                 int newValue = results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity();
                 results.with(newstring).put(entry.getInventory().getName(),newValue);
             }
