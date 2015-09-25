@@ -400,7 +400,9 @@ function hoverCallbackProduct (index, options, content, row) {
             ykeys: ['total'],
             labels: ['Total' ],
             lineColors: ['#a0d0e0'],
-            hideHover: 'auto'
+            hideHover: 'auto',
+            hoverCallback: hoverCallbackMoney
+
           };
           $.ajax({
               method:'GET',
