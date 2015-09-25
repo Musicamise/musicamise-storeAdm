@@ -11,6 +11,8 @@ import play.mvc.*;
 import play.mvc.Http.*;
 import services.MongoService;
 
+import java.util.*;
+
 import static play.mvc.Results.*;
 
 public class Global extends GlobalSettings {
@@ -30,7 +32,7 @@ public class Global extends GlobalSettings {
         MongoService.createInitialContent();
 
         createUser();
-
+        createProducts();
         Logger.info("Application has started");
     }
     public static void createUser(){
@@ -38,6 +40,128 @@ public class Global extends GlobalSettings {
         User user = new User("Admin", "administrador@musicamise.com.br", password);
         user.setManager(true);
         MongoService.saveUser(user);
+    }
+    public static void createProducts(){
+       /* for(int i = 0 ;i<50; i++){
+            saveProduct(i); 
+        }
+        for(int i = 0 ;i<50; i++){
+            saveInventory(i); 
+        }*/
+    }
+    public static void saveProduct(int id){
+
+        String title = "title"+id;
+        String description = "description"+id;
+        String price = "4"+id;
+        String priceCompareWith = "0";
+        String online = "online"+id;
+        String canbuy = "canbuy"+id;
+        String store = "store"+id;
+        String newProduct = "newProduct"+id;
+        String weight = ""+id;
+        String mail = "mail"+id;
+        String[] tags = {"tags"+id} ;
+        String[] productType = {"productType"+id} ;
+        String[] collections ={"collections"+id} ; 
+
+
+        String[] localStores = {"localStores"+id};
+
+
+        boolean onlineBool = (online!=null)?true:false;
+        boolean canbuyBool = (canbuy!=null)?true:false;
+        boolean storeBool = (store!=null)?true:false;
+        boolean newProductBool = (newProduct!=null)?true:false;
+        boolean mailBool = (mail!=null)?true:false;
+
+        double priceDouble = Double.parseDouble(price);
+        double priceCompareWithDouble = Double.parseDouble(priceCompareWith);
+        double weightDouble = Double.parseDouble(weight);
+
+        Set<String> tagsList =  (tags!=null)?new HashSet<>(Arrays.asList(tags)):new HashSet<>();
+        Set<String> collectionsList =  (collections!=null)?new HashSet<>(Arrays.asList(collections)):new HashSet<>();
+        Set<String> productTypeList =  (productType!=null)?new HashSet<>(Arrays.asList(productType)):new HashSet<>();
+
+        Set<String> localStoresList =  (localStores!=null)?new HashSet<>(Arrays.asList(localStores)):new HashSet<>();
+
+
+        //build product object
+        Product product = new Product();
+
+        product.setTitle(title);
+        product.setDescription(description);
+        product.setNewProduct(newProductBool);
+        product.setOnLineVisible(onlineBool);
+        product.setCanBuy(canbuyBool);
+        product.setPrice(priceDouble);
+        product.setPriceCompareWith(priceCompareWithDouble);
+        product.setSendMail(mailBool);
+        product.setStoreVisible(storeBool);
+        product.setTypes(productTypeList);
+        product.setUserTags(tagsList);
+        product.setWeight(weightDouble);
+        product.setCollectionsSlugs(collectionsList);
+        product.setLocalStoresSlugs(localStoresList);
+
+
+        // product.setHasDiscount(hasDiscountBool);
+        // product.setDiscount(valueOfDiscountDouble);
+        // product.setDiscountType(typeDiscount);
+
+
+        List<Image> imagesNew = new ArrayList<>();
+
+        Image image = new Image();
+        String imageName = "voltei2_estampa";
+
+        image.setName(imageName);
+        image.setUrl("https://s3-sa-east-1.amazonaws.com/musicamise/voltei2_estampa.jpg");
+        imagesNew.add(image);
+
+        product.getImages().addAll(imagesNew);
+        MongoService.saveProduct(product);
+
+    }
+    public static void saveInventory(int id){
+
+        String outOfStock = null;
+        String productSize = "M";
+        String quantity = "10";
+        String sellInOutOfStock = null;
+        String gender = "masculino";
+        String productType = "Camiseta";
+        String color =  "rgb(255, 187, "+id+")";
+
+        boolean outOfStockBool = (outOfStock!=null)?true:false;
+        boolean sellInOutOfStockBool = (sellInOutOfStock!=null)?true:false;
+
+
+        int quantityInt = Integer.parseInt(quantity.trim().replace(".",""));
+
+        //Validation
+        Product product = MongoService.findProductByTitle("title"+id);
+
+        Inventory inventory = new Inventory();
+        inventory.setSku("sku"+(MongoService.countAllInventories()+1));
+
+        inventory.setOrderOutOfStock(outOfStockBool);
+        inventory.setProduct(product);
+        inventory.setQuantity(quantityInt);
+        inventory.setSize(productSize);
+        inventory.setSellInOutOfStock(sellInOutOfStockBool);
+        inventory.setGenderSlug(gender);
+        inventory.setType(productType);
+        inventory.setColor(color);
+
+        //save Inventory
+        MongoService.saveInventory(inventory);
+        // Save Inventory Entry
+        
+        //product update
+        product.getInventories().add(inventory);
+        MongoService.saveProduct(product);
+
     }
 
     public void onStop(Application app) {

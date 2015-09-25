@@ -73,7 +73,6 @@ public class ProductController extends Controller {
         String[] tags = (dataFiles.asFormUrlEncoded().get("tags") != null && dataFiles.asFormUrlEncoded().get("tags").length > 0) ? dataFiles.asFormUrlEncoded().get("tags") : null;
         String[] productType = (dataFiles.asFormUrlEncoded().get("productTypes") != null && dataFiles.asFormUrlEncoded().get("productTypes").length > 0) ? dataFiles.asFormUrlEncoded().get("productTypes") : null;
         String[] collections = (dataFiles.asFormUrlEncoded().get("collections") != null && dataFiles.asFormUrlEncoded().get("collections").length > 0) ? dataFiles.asFormUrlEncoded().get("collections") : null;
-        String color = (dataFiles.asFormUrlEncoded().get("color") != null && dataFiles.asFormUrlEncoded().get("color").length > 0) ? dataFiles.asFormUrlEncoded().get("color")[0] : null;
 
 
         String[] localStores = (dataFiles.asFormUrlEncoded().get("localStores") != null && dataFiles.asFormUrlEncoded().get("localStores").length > 0) ? dataFiles.asFormUrlEncoded().get("localStores") : null;
