@@ -21,5 +21,6 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   "com.amazonaws" % "aws-java-sdk" % "1.3.11",
   "com.typesafe.play" % "play-mailer_2.10" % "2.4.1",
-  "com.newrelic.agent.java" % "newrelic-api" % "3.15.0"
+  "com.newrelic.agent.java" % "newrelic-api" % "3.15.0",
+  "com.tinify" % "tinify" % "1.1.1"
 )
