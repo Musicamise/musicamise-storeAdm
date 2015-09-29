@@ -3,12 +3,16 @@ package models;
 import bootstrap.S3Plugin;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.tinify.Options;
+import com.tinify.Source;
+import com.tinify.Tinify;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import play.Logger;
+import play.Play;
 import services.MongoService;
 
 import java.io.File;
@@ -53,10 +57,32 @@ public class Image {
             throw new RuntimeException("Could not save");
         }
         else {
+            if(Play.application().configuration().getString("tiny.png.use").equals("true")){
 
-            PutObjectRequest putObjectRequest = new PutObjectRequest(S3Plugin.s3Bucket, name, imageFile);
-            putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead); // public for all
-            S3Plugin.amazonS3.putObject(putObjectRequest); // upload file
+                try {
+                    Tinify.setKey(Play.application().configuration().getString("tiny.png"));
+                    Tinify.validate();
+                    Source source = Tinify.fromFile(imageFile.getCanonicalPath());
+
+                    Options options = new Options()
+                            .with("service", "s3")
+                            .with("aws_access_key_id", Play.application().configuration().getString(S3Plugin.AWS_ACCESS_KEY)  )
+                            .with("aws_secret_access_key", Play.application().configuration().getString(S3Plugin.AWS_SECRET_KEY) )
+                            .with("region", "sa-east-1")
+                            .with("path", S3Plugin.s3Bucket + "/" + this.name);
+
+                    source.store(options);
+
+                } catch(java.lang.Exception e) {
+                    // Validation of API key failed.
+                    Logger.error("error on tinypng "+ e.getMessage());
+                }
+            }else{
+                PutObjectRequest putObjectRequest = new PutObjectRequest(S3Plugin.s3Bucket, name, imageFile);
+                putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead); // public for all
+                S3Plugin.amazonS3.putObject(putObjectRequest); // upload file
+            }
+
             try{
 
                 this.setUrl(getUrl().toString());
