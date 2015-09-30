@@ -162,23 +162,21 @@ public class CostumerController extends Controller {
 
     }
 
-    @Security.Authenticated(Secured.class)
-    public static Result unsubscribe(String userId){
+    public static Result unsubscribe(String userEmail){
         String message = "";
-        
-        Try{
+        try{
 
-            User user = MongoService.findUserById(id);
+            User user = MongoService.findUserByEmail(userEmail);
             if(user!=null){
                 user.setMarketingEmail(false);
-                MongoService.deleteUser(user);
+                MongoService.saveUser(user);
                 message ="Email removido com sucesso!";
             }else{
-                mesage = "Usuário não encontrado!";
+                message = "Usuário não encontrado!";
             }
 
         }catch(Exception e){
-            message = "Algum erro aconteceu, tente novamente atualizando a página!"
+            message = "Algum erro aconteceu, tente novamente atualizando a página!";
         }
         return ok(cancelamentoEmail.render(message));
 
