@@ -72,6 +72,7 @@ public class User {
     public User(){
         this.address = new ArrayList<>();
         this.tags = new ArrayList<>();
+        this.marketingEmail = true;
     }
     public User(String firstName, String email, String password){
         if(email !=null && !email.equals("")){
