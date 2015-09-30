@@ -34,7 +34,8 @@ public class MailSenderActor extends UntypedActor {
     if (message instanceof String) {
         Order order = MongoService.findOrderById(message.toString());
         if(order!=null){
-            SendEmail.sendOrderStatus(order);
+          String url = "https://musicamiseadmin.herokuapp.com/costumer/unsubscribe/"+order.getEmail();
+            SendEmail.sendOrderStatus(order,url);
         }
         log.info("Received String message: {}", message);
         getSender().tell(message, getSelf());
