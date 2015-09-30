@@ -69,7 +69,9 @@ public class OrderController extends Controller {
             return notFound();
         }else{
             StatusOrder lastSatus = order.getLastStatus();
-            return ok(EmailTemplateOrderStatus.render(order,lastSatus));
+            String unsub = routes.CostumerController.unsubscribe(order.getEmail()).absoluteURL(request());
+
+            return ok(EmailTemplateOrderStatus.render(order,lastSatus,unsub));
         }
     }
 
@@ -497,7 +499,9 @@ public class OrderController extends Controller {
 //                    myActor.tell(reference,null);
                     Order newOrder = MongoService.findOrderById(reference.toString());
                     if(newOrder!=null){
-                        SendEmail.sendOrderStatus(newOrder);
+                        String unsub = routes.CostumerController.unsubscribe(newOrder.getEmail()).absoluteURL(request());
+
+                        SendEmail.sendOrderStatus(newOrder,unsub);
                     }
                 }else{
                     return notFound();
@@ -590,7 +594,9 @@ public class OrderController extends Controller {
 //            myActor.tell(orderId,null);
             Order order = MongoService.findOrderById(orderId.toString());
             if(order!=null){
-                SendEmail.sendOrderStatus(order);
+                String unsub = routes.CostumerController.unsubscribe(order.getEmail()).absoluteURL(request());
+
+                SendEmail.sendOrderStatus(order,unsub);
             }
         }
     }

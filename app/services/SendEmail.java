@@ -56,7 +56,7 @@ public class SendEmail {
 //        mailerClient.configure(new Configuration(conf)).send(email);
     }
 
-    public static void sendOrderStatus(Order order) {
+    public static void sendOrderStatus(Order order,String unsubUrl) {
         try {
 
             String  emailTo = order.getEmail()!=null||!order.getEmail().equals("")?order.getEmail():order.getUser().getEmail();
@@ -74,11 +74,12 @@ public class SendEmail {
                 email.setBodyText("A text message");
 
                 StatusOrder lastSatus = order.getLastStatus();
-                email.setBodyHtml(views.html.EmailTemplateOrderStatus.render(order,lastSatus).toString());
+                email.setBodyHtml(views.html.EmailTemplateOrderStatus.render(order,lastSatus,unsubUrl).toString());
                 MailerPlugin.send(email);
                 //save that you sent a email with that status
                 Order.EmailSent emailSent = order.new EmailSent();
                 emailSent.setStatus(lastSatus.getStatus());
+
                 emailSent.setStatusEntrega(Utils.StatusEntrega.getStatusByName(order.getStatusEntrega()));
 
                 MongoService.updateOrderEmailSent(order.getId(),emailSent);
