@@ -92,6 +92,7 @@ GET     /product/image/delete/                                controllers.Produc
 GET     /product/newOrEdit/updateInventories                               controllers.ProductController.updateInventories(id :String ?= null,outOfStock :String ?= null,productSize :String ?= null,quantity :String ?= null,sellInOutOfStock :String ?= null,gender :String ?= null,productType :String ?= null,color :String ?= null)
 
 GET     /costumer                           controllers.CostumerController.listCostumers()
+GET     /costumer/unsubscribe/:userId                           controllers.CostumerController.unsubscribe(userId :String)
 GET     /costumer/newOrEdit                            controllers.CostumerController.costumer(id :String ?= null)
 POST     /costumer/newOrEdit/saveCostumer                               controllers.CostumerController.saveCostumer(id :String ?= null)
 GET     /costumer/delete                               controllers.CostumerController.deleteCostumer(id :String ?= null)
