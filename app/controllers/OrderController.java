@@ -494,9 +494,6 @@ public class OrderController extends Controller {
 
                     updateInventoryAndDiscountCodeWithStatus(newStatus,order);
 
-                    // send email if PAGO ou CANCELADO
-//                    ActorRef myActor = Akka.system().actorOf(Props.create(MailSenderActor.class), "myactor");
-//                    myActor.tell(reference,null);
                     Order newOrder = MongoService.findOrderById(reference.toString());
                     if(newOrder!=null){
                         String unsub = routes.CostumerController.unsubscribe(newOrder.getEmail()).absoluteURL(request());
