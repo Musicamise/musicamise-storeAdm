@@ -1,0 +1,163 @@
+@(order:models.Order,status:models.StatusOrder,unsubUrl:String)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width"/>
+ 
+</head>
+<body style="width: 100% !important;min-width: 100%;-webkit-text-size-adjust: 100%;-ms-text-size-adjust: 100%;margin: 0;padding: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;text-align: left;line-height: 19px;font-size: 14px">
+  <table class="body" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;height: 100%;width: 100%;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"><tbody><tr style="padding: 0;vertical-align: top;text-align: left"><td class="center" align="center" valign="top" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+            <center style="width: 100%;min-width: 580px">
+
+              <table class="row header" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;width: 100%;position: relative;background: #999"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="center" align="center" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                    <center style="width: 100%;min-width: 580px">
+
+                      <table class="container" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: inherit;width: 580px;margin: 0 auto"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="wrapper last" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;position: relative;padding-right: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+
+                            <table class="twelve columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 580px"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="six sub-columns" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;padding-right: 10px;min-width: 0;width: 50%;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                  <img src="https://s3-sa-east-1.amazonaws.com/musicamise/Logo.png" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;width: auto;max-width: 100%;float: left;clear: both;display: block" /></td>
+                                <td class="six sub-columns last" style="text-align: right;vertical-align: middle;word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;padding-right: 0;min-width: 0;width: 50%;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                  <span class="template-label" style="color: #fff;font-weight: bold;font-size: 11px">Musicamise</span>
+                                </td>
+                                <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                              </tr></table></td>
+                        </tr></table></center>
+                  </td>
+                </tr></table><br /><table class="container" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: inherit;width: 580px;margin: 0 auto"><tr style="padding: 0;vertical-align: top;text-align: left"><td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+
+                  <!-- content start -->
+
+                    <table class="row" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;width: 100%;position: relative;display: block"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="wrapper" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;position: relative;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+
+                          <table class="six columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 280px"><tr style="padding: 0;vertical-align: top;text-align: left"><td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                <h2 style="color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 36px">Obrigado por sua Compra!<br />
+                                    
+                                    @if(order.getUser!=null){
+                                        @order.getUser.getDisplayName
+                                    }else{
+                                        @order.getEmail
+                                    }
+                                    
+                                    </h2>
+                                <br /><p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Número da compra: 
+
+                                <br> @order.getFriendlyId</p>
+
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Recebemos seu pedido, aguarde nosso contato!</p><br /><p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Sua compra foi processada com o Status:
+                                <span>@if(status!=null){
+                                        @status.getStatus.name()
+                                      }</span>
+
+                                </p>
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Não se preocupe, agora deixe tudo com a Musicamise.</p>
+                              </td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr></table><table class="six columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 280px"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="panel" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 10px !important;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;background: #f2f2f2;border: 1px solid #d9d9d9">
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Você pode ver as regras de trocas e entregas nesse link: <a href="#" style="color: #2ba6cb;text-decoration: none">Click Aqui! »</a></p>
+                              </td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr></table><table class="six columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 280px"><tr style="padding: 0;vertical-align: top;text-align: left"><td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                <br /><h3 style="color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 32px">Detalhe da compra</h3>
+                                <br /><h3 style="color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 32px">Endereço de Entrega:</h3>
+                                   @if(order.getShippingAddress!=null){
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">@order.getShippingAddress.getName</p>
+
+                                  <br />
+
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Rua: @order.getShippingAddress.getAddress, @order.getShippingAddress.getNumber , @order.getShippingAddress.getBairro, @order.getShippingAddress.getCity, @order.getShippingAddress.getState </p> 
+
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">@order.getShippingAddress.getCep</p>
+                                  <br />
+                                  }else{
+                                     <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Compra sem endereço, entregue em mãos</p> <br /> 
+                                     <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Caso necessite de ajude entre em contato:</p>
+                                      <a href="mailto:administrador@@musicamise.com.br" style="color: #fff;text-decoration: none;font-weight: bold;font-family: Helvetica, Arial, sans-serif;font-size: 16px">administrador@@musicamise.com.br</a>
+                                  }
+                                  <h3 style="color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 32px">Forma de pagamento:</h3>
+                                @if(order.getPagSeguroInfo!=null){
+
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">@order.getPagSeguroInfo.getPaymentMethodType.replace("_"," ")</p><br /><p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px"><img src="https://s3-sa-east-1.amazonaws.com/musicamise/@(order.getPagSeguroInfo.getPaymentMethodCode).png" /> </p> 
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">@order.getPagSeguroInfo.getInstallmentCount X  de @order.getTotalFormatted </p>
+                                }else{
+                                  <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Compra realizada em caixa fora do pagseguro</p><br />
+
+                                }
+
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Você pode acomapnhar o seu pedido aqui:</p>
+                                <table class="button" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;width: 100%;overflow: hidden"><tr style="padding: 0;vertical-align: top;text-align: left"><td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 8px 0;vertical-align: top;text-align: center;color: #fff;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;display: block;width: auto !important;background: #2ba6cb;border: 1px solid #2284a1">
+                                      <a href="https://www.musicamise.com.br/#!/checkorder?id=@order.getId()" style="color: #fff;text-decoration: none;font-weight: bold;font-family: Helvetica, Arial, sans-serif;font-size: 16px">Click Aqui!</a>
+                                    </td>
+                                  </tr></table></td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr></table></td>
+                        <td class="wrapper last" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;position: relative;padding-right: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+
+                          <table class="six columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 280px"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="panel" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 10px !important;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;background: #f2f2f2;border: 1px solid #d9d9d9">
+                                <h6 style="color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 20px">Sua Compra</h6>
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Parabéns pela compra:</p>
+                                @for(inventory <- order.getProducts){
+                                  <table style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left">
+
+                                  <tr style="padding: 0;vertical-align: top;text-align: left">
+
+                                    <img src="@inventory.getProduct.getImages.get(0).getUrl" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;width: auto;max-width: 100%;float: left;clear: both;display: block" />
+
+                                    <td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                         @inventory.getProduct.getTitle - @inventory.getType - @inventory.getSize - @inventory.getGenderSlug
+                                          <span @if(inventory.getColor!=null){
+                                          style="background-color:@inventory.getColor; font-size: 100%; font-weight: 200;"
+                                          } > Cor</span>
+
+                                          <br />@inventory.getQuantity X @inventory.getProduct.getPriceFormatted. <br />
+                                        Total:  @inventory.getPriceWithQuantityFormatted
+                                      </td>
+                                    </tr>
+                                    </table>
+                                    <hr style="color: #d9d9d9;background-color: #d9d9d9;height: 1px;border: none" />
+                                    }
+
+                                </td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr>
+
+                            </table>
+
+                            <br />
+
+                            <table class="six columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 280px"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="panel" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 10px !important;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;background: #f2f2f2;border: 1px solid #d9d9d9">
+                                <h6 style="margin-bottom: 5px;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 20px">Se conect:</h6>
+                                <table class="tiny-button facebook" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;width: 100%;overflow: hidden"><tr style="padding: 0;vertical-align: top;text-align: left"><td style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 5px 0 4px;vertical-align: top;text-align: center;color: #fff;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px;display: block;width: auto !important;background: #3b5998;border: 1px solid #2284a1;border-color: #2d4473">
+                                      <a href="https://www.facebook.com/musicamise" style="color: #fff;text-decoration: none;font-weight: normal;font-family: Helvetica, Arial, sans-serif;font-size: 12px">Facebook</a>
+                                    </td>
+                                  </tr></table><br /><h6 style="margin-bottom: 5px;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;margin: 0;text-align: left;line-height: 1.3;word-break: normal;font-size: 20px">Informações:</h6>
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Telefone: <b>81 9 9699.5060</b></p>
+                                <p style="margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;text-align: left;line-height: 19px;font-size: 14px;margin-bottom: 10px">Email: <a href="mailto:administrador@@musicamise.com.br" style="color: #2ba6cb;text-decoration: none">administrador@@musicamise.com.br</a></p>
+                              </td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr></table></td>
+                      </tr></table><br /><br />
+
+                      <!-- Legal + Unsubscribe -->
+                      <table class="row" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;width: 100%;position: relative;display: block"><tr style="padding: 0;vertical-align: top;text-align: left"><td class="wrapper last" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;position: relative;padding-right: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+
+                          <table class="twelve columns" style="border-spacing: 0;border-collapse: collapse;padding: 0;vertical-align: top;text-align: left;margin: 0 auto;width: 580px"><tr style="padding: 0;vertical-align: top;text-align: left"><td align="center" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0;vertical-align: top;text-align: left;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px">
+                                <center style="width: 100%;min-width: 580px">
+                                  <p style="text-align: center;margin: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;padding: 0;line-height: 19px;font-size: 14px;margin-bottom: 10px"><a href="#" style="color: #2ba6cb;text-decoration: none">Termos</a> | <a href="#" style="color: #2ba6cb;text-decoration: none">Privacidade</a> | <a target="_blank" href="@unsubUrl" style="color: #2ba6cb;text-decoration: none">Unsubscribe</a></p>
+                                </center>
+                              </td>
+                              <td class="expander" style="word-break: break-word;-webkit-hyphens: auto;-moz-hyphens: auto;hyphens: auto;border-collapse: collapse !important;padding: 0 !important;vertical-align: top;text-align: left;visibility: hidden;width: 0;color: #222;font-family: &quot;Helvetica&quot;, &quot;Arial&quot;, sans-serif;font-weight: normal;margin: 0;line-height: 19px;font-size: 14px"></td>
+                            </tr></table></td>
+                      </tr>
+                    </table><!-- container end below -->
+                  </td>
+                </tr>
+              </table>
+            </center>
+          </td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>
