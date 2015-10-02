@@ -132,8 +132,12 @@
                }
               <h3 style="margin: 0;padding: 0;font-family: &quot;HelveticaNeue-Light&quot;, &quot;Helvetica Neue Light&quot;, &quot;Helvetica Neue&quot;, Helvetica, Arial, &quot;Lucida Grande&quot;, sans-serif;line-height: 1.1;margin-bottom: 15px;color: #000;font-weight: 500;font-size: 27px">Forma de pagamento:</h3>
                   @if(order.getPagSeguroInfo!=null){
+                     @if(order.getPagSeguroInfo.getPaymentMethodType!=null){
                       <p class="lead" style="margin: 0;padding: 0;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;margin-bottom: 10px;font-weight: normal;font-size: 17px;line-height: 1.6">@order.getPagSeguroInfo.getPaymentMethodType.replace("_"," ")</p>
+                      }
+                      @if(order.getPagSeguroInfo.getPaymentMethodCode!=null){
                       <p style="margin: 0;padding: 0;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;margin-bottom: 10px;font-weight: normal;font-size: 14px;line-height: 1.6"><img src="https://s3-sa-east-1.amazonaws.com/musicamise/@(order.getPagSeguroInfo.getPaymentMethodCode).png" style="margin: 0;padding: 0;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;max-width: 100%" /></p>
+                     }
                       <p class="lead" style="margin: 0;padding: 0;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;margin-bottom: 10px;font-weight: normal;font-size: 17px;line-height: 1.6">@order.getPagSeguroInfo.getInstallmentCount X  de @order.getTotalFormatted </p>
                   }else{
                     <p class="lead" style="margin: 0;padding: 0;font-family: &quot;Helvetica Neue&quot;, &quot;Helvetica&quot;, Helvetica, Arial, sans-serif;margin-bottom: 10px;font-weight: normal;font-size: 17px;line-height: 1.6"> Compra realizada em caixa fora do pagseguro</p><br />
