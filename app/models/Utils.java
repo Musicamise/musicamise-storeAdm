@@ -37,18 +37,30 @@ public class Utils {
         }
     }
 
+    public enum ProductRecheioType {
+        goiaba("Goiaba"), 
+        noses("Noses"),
+        romeo_e_julieta("Romeo e Julieta"),
+        nutella("nutella");
+
+        String name;
+        private ProductRecheioType(String name){
+            this.name = name;
+        }
+        public static List<String> getList() {
+            List<String> tags = new ArrayList<>();
+
+            for (Utils.ProductRecheioType tag : Utils.ProductRecheioType.values()) {
+                tags.add(tag.name());
+            }
+            return tags;
+        }
+    }
+
     public enum ProductType{
-        camiseta("Camiseta"),
-        golav("Gola V"),
-        regata("Regata"),
-        bata("Bata"),
-        manga_longa("Manga Longa"),
-        moletom("Moletom"),
-        body("Body"),
-        lenco("Lenço"),
-        acessorio("Acessório"),
-        poster("Poster"),
-        obra_de_arte("Obra de Arte");
+        tulipa("Tulipa"),
+        hortencias("Hortencias"),
+        folhas_em_ramas("Folhas em Ramas");
 
         String name;
         private ProductType(String name){
@@ -63,8 +75,24 @@ public class Utils {
             }
             return tags;
         }
+    }
+    public enum ProductStruct{
+        base("Base"),
+        flores("Flores");
 
+        String name;
+        private ProductType(String name){
+            this.name = name;
+        }
 
+        public static List<String> getList() {
+            List<String> tags = new ArrayList<>();
+
+            for (Utils.ProductType tag : Utils.ProductType.values()) {
+                tags.add(tag.name);
+            }
+            return tags;
+        }
     }
 
     public enum DiscountType {

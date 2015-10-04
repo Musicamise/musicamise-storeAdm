@@ -1,6 +1,6 @@
-#Musicamise Adminstration side
+#Guloseimas Adminstration side
 
-This project is the administration side for the prject Musicamise Client side [here](https://github.com/Musicamise/musicamise-cli)
+This project is the administration side for the prject Guloseimas Client side [here](https://github.com/Guloseimase/musicamise-cli)
 The administration provides the products, Discount codes, inventories, etc.
 And also has few views for orders and users mdoels.
 
@@ -32,7 +32,7 @@ This project needs:
 5. Submit a pull request :D
 
 ## History
-
+>       Musicamise project's
 
 
 ## Credits

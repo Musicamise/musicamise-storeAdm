@@ -62,47 +62,27 @@
                         </label>
                       </div>
 
-                      <div class="form-group">
-                          <label >Product Size  @if(inventory!=null){NO CHANGE}</label>
-                          <select  name="productSize" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                           @if(inventory!=null&&inventory.getSize!=null){
-
-                                @for(size<- Utils.ProductSizeType.getList()){
-                                  @if(size.equals(inventory.getSize)){
-                                    <option selected="">@size</option>
-                                  }
-                                }
-
-                           }else{
-                              <option value=""></option>
-                              @for(size<- Utils.ProductSizeType.getList()){
-                              <option >@size</option>
-                              }
-                           }
-                              
-                          </select>
-                      </div>
                        <div class="form-group">
-                          <label >Genders  @if(inventory!=null){NO CHANGE}</label>
+                          <label >Recheio  @if(inventory!=null){NO CHANGE}</label>
                           <select  name="gender" data-placeholder="Chose the Gender" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                             @if(inventory!=null&&inventory.getGenderSlug!=null){
-                                @for(gender<- genders){
-                                  @if(gender.getSlug.equals(inventory.getGenderSlug)){
-                                    <option selected="" value="@gender.getSlug" >@gender.getTitle</option>
+                             @if(inventory!=null&&inventory.getRecheio!=null){
+                                @for(recheioType<- Utils.ProductRecheioType.getList){
+                                  @if(recheioType.equals(inventory.getRecheio)){
+                                    <option selected="" value="@inventory.getRecheio">@inventory.getRecheio</option>
                                   }
                                 }
                              }else{
-                                @for(gender<- genders){
-                                  <option  value="@gender.getSlug" >@gender.getTitle</option>
+                                <option value=""></option>
+                                @for(recheioType<- Utils.ProductRecheioType.getList){
+                                  <option @if(recheioType.equals(inventory.getRecheio)){selected=""} value="@recheioType">@recheioType</option>
                                 }
                              }
-                              
                           </select>
                       </div>
                       <div class="form-group">
-                          <label >Modelo @if(inventory!=null){NO CHANGE}</label>
+                          <label >Tipo de flor @if(inventory!=null){NO CHANGE}</label>
                           <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                             @if(inventory!=null&&inventory.getGenderSlug!=null){
+                             @if(inventory!=null&&inventory.getType!=null){
                                 @for(productType<- Utils.ProductType.getList){
                                   @if(productType.equals(inventory.getType)){
                                     <option selected="" value="@inventory.getType">@inventory.getType</option>
@@ -118,7 +98,13 @@
                           </select>
                       </div>
                       <div class="form-group">
-                          <label >Cor </label>
+                          <label >Estruturas </label>
+                          <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
+                            <option value=""></option>
+                            @for(struct<- Utils.ProductStruct.getList){
+                              <option value="@struct">@struct</option>
+                            }
+                          </select>
                           <div id="colorPicker"></div>
                           <div class="input-group">
                           <span @if(inventory.getColor!=null){

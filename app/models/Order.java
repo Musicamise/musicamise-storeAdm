@@ -449,7 +449,7 @@ public class Order {
             this.type = type;
         }
 
-         public String getColor() {
+        public String getColor() {
             return color;
         }
 
