@@ -20,8 +20,8 @@ import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 /**
  * Created by Alvaro on 29/03/2015.
  */
@@ -38,11 +38,11 @@ public class Inventory {
 
     private int quantity;
 
-    private String size;
+    private String recheio;
 
-    private String color;
+    private List<Estrutura> estruturas;
 
-    private String genderSlug;
+    // private String genderSlug;
 
     private boolean orderOutOfStock;
 
@@ -53,14 +53,16 @@ public class Inventory {
     private String priceWithQuantityFormatted;
 
     public String toString(){
-        return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" color "+this.color+" type "+this.type+" genderSlug "
-                +this.genderSlug+" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
+        return "sku "+this.sku+" quantity "+this.quantity+" recheio "+this.recheio
+                +" estrutura "+this.estruturas.toString()+" type "+this.type
+                +" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
                 +" Price "+this.product.getPriceFormatted()
-                +" title "+this.product.getTitle()+" description "+this.product.getDescription();
+                +" title "+this.product.getTitle()+" description "
+                +this.product.getDescription();
     }
     public String getName(){
-        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.size+ "-"+this.type+"-"
-                +this.genderSlug;
+        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.recheio+ "-"+this.type+"-"
+                ;
     }
     public String getType() {
         return type;
@@ -70,12 +72,12 @@ public class Inventory {
         this.type = type;
     }
 
-     public String getColor() {
-        return color;
+     public List<Estrutura> getEstruturas() {
+        return estruturas;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setEstruturas(List<Estrutura> estruturas) {
+        this.estruturas = estruturas;
     }
 
     public double getPriceWithQuantity() {
@@ -98,14 +100,16 @@ public class Inventory {
 
     public Inventory(){
         this.product = new Product();
+        this.estruturas = new ArrayList<>();
     }
 
     public Inventory(Inventory inventory){
         this.sku = inventory.getSku();
         this.product = inventory.getProduct();
         this.quantity = inventory.getQuantity();
-        this.size = inventory.getSize();
-        this.genderSlug = inventory.getGenderSlug();
+        this.recheio = inventory.getRecheio();
+        this.estruturas = inventory.getEstruturas();
+        this.type = inventory.getType();
         this.orderOutOfStock = inventory.isOrderOutOfStock();
         this.sellInOutOfStock = inventory.isSellInOutOfStock();
     }
@@ -127,14 +131,14 @@ public class Inventory {
     }
 
 
-    public String getGenderSlug() {
+/*    public String getGenderSlug() {
         return genderSlug;
     }
 
     public void setGenderSlug(String genderSlug) {
         this.genderSlug = genderSlug;
     }
-
+*/
     public boolean isOrderOutOfStock() {
         return orderOutOfStock;
     }
@@ -143,12 +147,12 @@ public class Inventory {
         this.orderOutOfStock = orderOutOfStock;
     }
 
-    public String getSize() {
-        return size;
+    public String getRecheio() {
+        return recheio;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setRecheio(String recheio) {
+        this.recheio = recheio;
     }
 
     public int getQuantity() {
@@ -185,5 +189,27 @@ public class Inventory {
                 (DecimalFormat) NumberFormat.getCurrencyInstance(locale);
 
         return formatter.format(price);
+    }
+    @Document
+    public class Estrutura {
+        private String estrutura;
+        private String color;
+
+        public String getEstrutura() {
+            return estrutura;
+        }
+
+        public void setEstrutura(String estrutura) {
+            this.estrutura = estrutura;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
     }
 }
