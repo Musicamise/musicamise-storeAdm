@@ -57,7 +57,7 @@ public class Image {
             throw new RuntimeException("Could not save");
         }
         else {
-            if(Play.application().configuration().getString("tiny.png.use").equals("true")){
+            if(Play.application().configuration().getString("tiny.use").equals("true")){
 
                 try {
                     Tinify.setKey(Play.application().configuration().getString("tiny.png"));
