@@ -83,7 +83,7 @@
                           </select>
                       </div>
                        <div class="form-group">
-                          <label >Genders  @if(inventory!=null){NO CHANGE}</label>
+                          <label >Inventory Gender/Collection @if(inventory!=null){NO CHANGE}</label>
                           <select  name="gender" data-placeholder="Chose the Gender" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
                              @if(inventory!=null&&inventory.getGenderSlug!=null){
                                 @for(gender<- genders){
