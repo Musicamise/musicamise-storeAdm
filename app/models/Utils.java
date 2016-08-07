@@ -48,6 +48,7 @@ public class Utils {
         lenco("Lenço"),
         acessorio("Acessório"),
         poster("Poster"),
+        caneca("Caneca"),
         obra_de_arte("Obra de Arte");
 
         String name;
@@ -120,6 +121,7 @@ public class Utils {
     }
 
     public enum CollectionType {
+        caneca("Caneca"),
         destaque("Destaque"),
         unisex("Unisex"),
         masculino("Masculino"),
