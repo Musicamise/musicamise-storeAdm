@@ -26,7 +26,6 @@ public class Global extends GlobalSettings {
 
     public void onStart(Application app) {
         DS.init();
-
         MongoService.createInitialColletions();
         MongoService.createInitialTags();
         MongoService.createInitialContent();
@@ -36,8 +35,9 @@ public class Global extends GlobalSettings {
         Logger.info("Application has started");
     }
     public static void createUser(){
-        String password = System.getenv("ADMIN_PASSWORD")!=null?System.getenv("ADMIN_PASSWORD"):"admin";
-        User user = new User("Admin", "administrador@musicamise.com.br", password);
+        String passwordFromEnv = Play.application().configuration().getString("ADMIN_PASSWORD");
+        String password = passwordFromEnv!=null&&!passwordFromEnv.equals("")?passwordFromEnv:"admin";
+        User user = new User("Admin", "administrador@musicamise.com", password);
         user.setManager(true);
         MongoService.saveUser(user);
     }

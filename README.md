@@ -8,7 +8,7 @@ And also has few views for orders and users mdoels.
 
 This project uses play framework:
 
->  activetor run
+>  .\activetor run
 
 >   ajust the application.conf with your variables.
 

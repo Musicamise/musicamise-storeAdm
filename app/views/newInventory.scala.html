@@ -58,7 +58,7 @@
                       <label >Visibility</label>
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" name="outOfStock" @if(inventory.isOrderOutOfStock){checked=""}  > Out of Stock
+                          <input type="checkbox" name="outOfStock" @if(inventory!=null&&inventory.isOrderOutOfStock){checked=""}  > Out of Stock
                         </label>
                       </div>
 
@@ -102,7 +102,7 @@
                       <div class="form-group">
                           <label >Modelo @if(inventory!=null){NO CHANGE}</label>
                           <select name="productType" data-placeholder="Chose the tages" style="width: 350px; display: none;"  class="chosen-select-width" tabindex="-1">
-                             @if(inventory!=null&&inventory.getGenderSlug!=null){
+                             @if(inventory!=null&&inventory.getType!=null){
                                 @for(productType<- Utils.ProductType.getList){
                                   @if(productType.equals(inventory.getType)){
                                     <option selected="" value="@inventory.getType">@inventory.getType</option>
@@ -111,7 +111,7 @@
                              }else{
                                 <option value=""></option>
                                 @for(productType<- Utils.ProductType.getList){
-                                  <option @if(productType.equals(inventory.getType)){selected=""} value="@productType">@productType</option>
+                                  <option value="@productType">@productType</option>
                                 }
                              }
                               
@@ -121,22 +121,22 @@
                           <label >Cor </label>
                           <div id="colorPicker"></div>
                           <div class="input-group">
-                          <span @if(inventory.getColor!=null){
+                          <span @if(inventory!=null&&inventory.getColor!=null){
                                 style="background-color:@inventory.getColor;"
                                 }
                               id="color" class="input-group-addon"></span>
-                          <input disabled="" type="text" id="colorRGB"  value="@inventory.getColor"  class="form-control"/>
-                          <input  type="hidden" name="color" id="colorRGBValue"  value="@inventory.getColor"  class="form-control"/>
+                          <input disabled="" type="text" id="colorRGB"  @if(inventory!=null&&inventory.getColor!=null){value="@inventory.getColor"}else{value=""}   class="form-control"/>
+                          <input  type="hidden" name="color" id="colorRGBValue"  @if(inventory!=null&&inventory.getColor!=null){value="@inventory.getColor"}else{value=""}  class="form-control"/>
                           </div>
                       </div>
 
                       <div class="form-group">
                           <label for="quantity">Quantity</label><br/>
-                          <input type="text" class="" id="quantity" name="quantity" value="@inventory.getQuantity" placeholder="Quantity">
+                          <input type="text" class="" id="quantity" name="quantity" @if(inventory!=null){value="@inventory.getQuantity"}else{value=""} placeholder="Quantity">
                       </div>
                       <div class="checkbox">
                           <label>
-                              <input type="checkbox" name="sellInOutOfStock" @if(inventory.isSellInOutOfStock){checked=""}> Sell in Out of Stock
+                              <input type="checkbox" name="sellInOutOfStock" @if(inventory!=null&&inventory.isSellInOutOfStock){checked=""}> Sell in Out of Stock
                           </label>
                       </div>
 

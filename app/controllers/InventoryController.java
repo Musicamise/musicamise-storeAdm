@@ -43,8 +43,12 @@ public class InventoryController extends Controller {
     @AddCSRFToken
     @Security.Authenticated(Secured.class)
     public static Result inventory(String id){
-        Inventory inventory = MongoService.findInventoryById(id);
-        inventory= (inventory!=null?inventory:new Inventory());
+        Inventory inventory = null;
+        if(id!=null){
+            inventory = MongoService.findInventoryById(id);
+        }
+        boolean a = inventory==null;
+        Logger.debug("inventory is null "+a);
         List<Product> products = MongoService.getAllProducts();
         List<Collection> genders = MongoService.findCollectionOnline();
         return ok(newInventory.render(inventory,products,genders));

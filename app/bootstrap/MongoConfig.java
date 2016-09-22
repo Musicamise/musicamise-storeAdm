@@ -37,8 +37,8 @@ public class MongoConfig extends AbstractMongoConfiguration{
 	@Override
 	@Bean
 	public Mongo mongo() throws Exception {
-
-        clientURI = new MongoClientURI(System.getenv("MONGOLAB_URI"));
+		String mongo_uri = Play.application().configuration().getString("mongo.mongo_uri");
+        clientURI = new MongoClientURI(mongo_uri);
 		mongo = new MongoClient(clientURI);
 		return mongo;
 	}
