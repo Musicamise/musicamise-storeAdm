@@ -211,8 +211,6 @@ public class Dashboard extends Controller {
                 if(!results.with(newstring).has(entry.getInventory().getName())){
                     results.with(newstring).put(entry.getInventory().getName(),0);
                 }
-                Logger.debug(entry.getInventory().getName());
-                Logger.debug(newstring);
                 int newValue = results.with(newstring).findValue(entry.getInventory().getName()).intValue()+entry.getQuantity();
                 results.with(newstring).put(entry.getInventory().getName(),newValue);
             }
