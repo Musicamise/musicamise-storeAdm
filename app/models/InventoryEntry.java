@@ -34,7 +34,6 @@ public class InventoryEntry {
     @Id
     private String id;
 
-    @DBRef(lazy = true)
     private Inventory inventory;
 
     private int quantity;

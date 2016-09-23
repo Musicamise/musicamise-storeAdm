@@ -53,13 +53,26 @@ public class Inventory {
     private String priceWithQuantityFormatted;
 
     public String toString(){
-        return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" color "+this.color+" type "+this.type+" genderSlug "
+        String productPriceFormatted = "null";
+        String productTitle = "null";
+        String productDescription = "null";
+        if(this.product != null){
+           productPriceFormatted =this.product.getPriceFormatted();
+           productTitle =this.product.getTitle();
+           productDescription =this.product.getDescription();
+        }
+        return "sku "+this.sku+" quantity "+this.quantity+" size "+this.size+" color "+this.color+
+                " type "+this.type+" genderSlug "
                 +this.genderSlug+" priceWithQuantityFormatted "+this.priceWithQuantityFormatted
-                +" Price "+this.product.getPriceFormatted()
-                +" title "+this.product.getTitle()+" description "+this.product.getDescription();
+                +" Price "+productPriceFormatted
+                +" title "+productTitle+" description "+productDescription;
     }
     public String getName(){
-        return ""+this.sku +"-"+this.product.getSlug()+"-"+this.size+ "-"+this.type+"-"
+        String productSlug = "null";
+        if(this.product != null){
+           productSlug =this.product.getSlug();
+        }
+        return ""+this.sku +"-"+productSlug+"-"+this.size+ "-"+this.type+"-"
                 +this.genderSlug;
     }
     public String getType() {
