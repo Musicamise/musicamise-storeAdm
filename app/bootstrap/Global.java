@@ -37,9 +37,13 @@ public class Global extends GlobalSettings {
     public static void createUser(){
         String passwordFromEnv = Play.application().configuration().getString("ADMIN_PASSWORD");
         String password = passwordFromEnv!=null&&!passwordFromEnv.equals("")?passwordFromEnv:"admin";
-        User user = new User("Admin", "administrador@musicamise.com", password);
-        user.setManager(true);
-        MongoService.saveUser(user);
+        String emailAdmin = "administrador@musicamise.com";
+        boolean hasUserAdmin = MongoService.findUserByEmail(emailAdmin)!=null?true:false;
+        if(!hasUserAdmin){
+            User user = new User("Admin",emailAdmin , password);
+            user.setManager(true);
+            MongoService.saveUser(user);
+        }
     }
     public static void createProducts(){
        /* for(int i = 0 ;i<50; i++){
