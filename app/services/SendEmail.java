@@ -26,7 +26,7 @@ public class SendEmail {
         Email email = new Email();
         email.setSubject("Simple email");
         email.setFrom("Mister FROM <administrador@musicamise.com.br>");
-        email.addTo("Miss TO <alvaro@silvino.me>");
+        email.addTo("Miss TO <>");
 // adds attachment
         // email.addAttachment("attachment.pdf", new File("/some/path/attachment.pdf"));
 // adds inline attachment from byte array
